@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h1>Visage Tracker Demo sample project</h1>
+<p>
+The VisageTrackerDemo sample project demonstrates real-time head / facial features tracking on multiple faces from camera, video file
+or image based on the <a href="sdk-html/classVisageSDK_1_1VisageTracker.html"><em>VisageTracker</em></a> tracker class.
+</p>
+
+<h2>Building and running the project</h2>
+
+<p>
+The VisageTrackerDemo sample application is located in bin subfolder of visage|SDK for Mac OS X folder. To run the sample application double click on VisageTrackerDemo file.
+</p>
+
+<p>
+The VisageTrackerDemo sample project is located in the Samples/MacOSX/VisageTrackerDemo subfolder of the visage|SDK for Mac OS X folder.
+</p>
+<p>
+Prerequisites to building the sample project are:
+<ul>
+<li>Xcode (versions 8.3.x)</li>
+</ul>
+</p>
+<p>
+Project is opened in Xcode by double-clicking on the VisageTrackerDemo.xcodeproj project file. To build the project select Product->Build from menu bar. The project can be run by choosing Run option in
+Xcode.
+</p>
+
+<h2>Using the sample app</h2>
+<p>
+    The sample app consists of a  popup control and menu bar containing five menu items: FaceTrackerDemo, File, Tracking, Window and Help.
+    <br/>Tracking configuration can be selected from the popup control.
+    <br/>To start tracking select Tracking menu item and choose one tracking option: Track from camera, Track from video or Track from image.
+    Sample video files can be found in the folder /data/video. In order to use these videos it is necessary to install latest QuickTime player and copy missing codec components from dependencies/Codec_MacOSX to the Library/QuickTime folder.
+    <br/>To stop tracking select Tracking menu item and select Stop tracking option.
+    <br/>While tracking is running, FPS and tracking status and information is displayed at the bottom of the window.
+</p>
+</br>
+
+<h2>Implementation overview</h2>
+<p>
+The visage|SDK API is written in C++ and since development on Mac OS X is done in Objective-C a special way of interfacing
+the two must be employed. In this sample project this is done through <td><a href="sdk-html/interfaceTrackerWrapper.html">TrackerWrapper</a></td> Objective-C class that exposes
+Objective-C methods for using the tracker, while the implementation of those methods is done in Objective-C++, a
+combination of Objective-C and C++.
+</p>
+<p>
+The AppDelegate (Objective-C class) connects with GUI (that is defined in MainWindow.xib file) and
+implements actions that call to methods from TrackerWrapper class to start and stop the tracker and display the
+tracking results using <a href="sdk-html/interfaceCustomGLView.html">CustomGLView</a> object.
+</p>
+<p>
+The specific classes and methods that demonstrate visage|SDK are:
+<ul>
+<li><a href="sdk-html/interfaceTrackerWrapper.html">TrackerWrapper</a>: Provides an Objective-C interface to main tracker functions (start, stop, get results); calls <a href="sdk-html/classVisageSDK_1_1VisageRendering.html">VisageRendering::DisplayResults</a> in order to display tracking results.</li>
+</br>
+</ul>
+</p>
+<p>
+Other important classes are:
+<ul>
+<li> <a href="sdk-html/interfaceAppDelegate.html">AppDelegate</a>: Implements the app delegate.</li>
+<li><a href="sdk-html/interfaceCustomGLView.html">CustomGLView</a></td>: Implements OpenGL view for results display.</li>
+<li> <td><a href="sdk-html/classOpenGLInterface.html">OpenGLInterface</a></td>: Serves as an adapter for calling Objective-C methods of <td><a href="sdk-html/interfaceCustomGLView.html">CustomGLView</a></td> class from C++. </li>
+<li> <td><a href="sdk-html/classGUIInterface.html">GUIInterface</a></td>: Serves as an adapter for calling Objective-C methods of <td><a href="sdk-html/interfaceCustomGLView.html">CustomGLView</a></td> class from C++. </li>
+<li> <td><a href="sdk-html/classVisageSDK_1_1VisageRendering.html">VisageRendering</a></td>: Displays the current frame and the following tracking results using OpenGL.</li>
+<li> <td><a href="sdk-html/interfaceInformer.html">Informer</a></td>: Class used for displaying tracking information to the user.</li>
+</ul>
+</p>
+<p>
+More details about each class is available in documentation for specific class.</br></br>
+Users are free to modify the sample project to test the functionalities of the Visage tracker. The sample project also
+serves as a starting point when creating new projects that will use visage|SDK.
+</p>
+
+<h3>Configuration selection and modification</h3>
+<p>
+Popup control in the upper left corner of the main window contains all available tracking configuration files. These files are read from the Samples/data folder. The first configuration is selected by default. In order to select desired configuration, simply mark it in the popup control.
+</p>
+    <p> To edit configuration files go to the folder containing VisageTrackerDemo app (default is bin folder), right click (ctrl + click) on VisageTrackerDemo.App and select "Show Package Contents". Finder will display a folder containing Contents folder. Configuration files are in Contents/Resources folder.
+    </p>
+</body>
+</html>

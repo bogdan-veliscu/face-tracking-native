@@ -1,0 +1,399 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		43B924D31F9FD1CA00C10F47 /* VisageFaceAnalyser.h in Headers */ = {isa = PBXBuildFile; fileRef = 43B924D21F9FD1CA00C10F47 /* VisageFaceAnalyser.h */; };
+		43B924D51F9FD1F600C10F47 /* libVisageAnalyser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 43B924D41F9FD1F600C10F47 /* libVisageAnalyser.a */; };
+		5F2E9AF71BC449080097BFCD /* UIDeviceHardware.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2E9AF51BC449080097BFCD /* UIDeviceHardware.h */; };
+		5F2E9AF81BC449080097BFCD /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F2E9AF61BC449080097BFCD /* UIDeviceHardware.m */; };
+		7F0E734814F7C402005262D4 /* VisageTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F0E734514F7C402005262D4 /* VisageTracker.h */; };
+		7F80160B14EE989D0040D4AA /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F80160A14EE989D0040D4AA /* OpenGLES.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		7FEEBBCC14F7C35900136774 /* VisageTrackerUnityPlugin-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 7FEEBBCB14F7C35900136774 /* VisageTrackerUnityPlugin-Prefix.pch */; };
+		7FEEBBD014F7C36100136774 /* VisageTrackerUnityPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 7FEEBBCE14F7C36100136774 /* VisageTrackerUnityPlugin.h */; };
+		7FEEBBD114F7C36100136774 /* VisageTrackerUnityPlugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7FEEBBCF14F7C36100136774 /* VisageTrackerUnityPlugin.mm */; };
+		7FF119B114EE95F500128847 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF119B014EE95F500128847 /* Foundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		7FF119C314EE963800128847 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF119BD14EE963800128847 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		7FF119C414EE963800128847 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF119BE14EE963800128847 /* CoreGraphics.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		7FF119C514EE963800128847 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF119BF14EE963800128847 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		7FF119C614EE963800128847 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF119C014EE963800128847 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		7FF119C814EE963800128847 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF119C214EE963800128847 /* QuartzCore.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		D767EB241C74C55700BAFBC9 /* CameraGrabber.h in Headers */ = {isa = PBXBuildFile; fileRef = D767EB1E1C74C55700BAFBC9 /* CameraGrabber.h */; };
+		D767EB251C74C55700BAFBC9 /* CameraGrabber.mm in Sources */ = {isa = PBXBuildFile; fileRef = D767EB1F1C74C55700BAFBC9 /* CameraGrabber.mm */; };
+		D79347F01C75BD9D00D25354 /* libVisageVision.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D79347EF1C75BD9D00D25354 /* libVisageVision.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		43B924D21F9FD1CA00C10F47 /* VisageFaceAnalyser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VisageFaceAnalyser.h; path = ../../../include/VisageFaceAnalyser.h; sourceTree = "<group>"; };
+		43B924D41F9FD1F600C10F47 /* libVisageAnalyser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libVisageAnalyser.a; path = ../../../lib/libVisageAnalyser.a; sourceTree = "<group>"; };
+		5F2E9AF51BC449080097BFCD /* UIDeviceHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIDeviceHardware.h; path = source/UIDeviceHardware.h; sourceTree = SOURCE_ROOT; };
+		5F2E9AF61BC449080097BFCD /* UIDeviceHardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIDeviceHardware.m; path = source/UIDeviceHardware.m; sourceTree = SOURCE_ROOT; };
+		7F0E734514F7C402005262D4 /* VisageTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisageTracker.h; path = ../../../include/VisageTracker.h; sourceTree = "<group>"; };
+		7F80160A14EE989D0040D4AA /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		7FEEBBCB14F7C35900136774 /* VisageTrackerUnityPlugin-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "VisageTrackerUnityPlugin-Prefix.pch"; path = "source/VisageTrackerUnityPlugin-Prefix.pch"; sourceTree = SOURCE_ROOT; };
+		7FEEBBCE14F7C36100136774 /* VisageTrackerUnityPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisageTrackerUnityPlugin.h; path = source/VisageTrackerUnityPlugin.h; sourceTree = SOURCE_ROOT; };
+		7FEEBBCF14F7C36100136774 /* VisageTrackerUnityPlugin.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = VisageTrackerUnityPlugin.mm; path = source/VisageTrackerUnityPlugin.mm; sourceTree = SOURCE_ROOT; };
+		7FF119AD14EE95F500128847 /* libVisageTrackerUnityPlugin.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libVisageTrackerUnityPlugin.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FF119B014EE95F500128847 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		7FF119BD14EE963800128847 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		7FF119BE14EE963800128847 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		7FF119BF14EE963800128847 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		7FF119C014EE963800128847 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		7FF119C214EE963800128847 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		D7673FEB1BD5628700C7D50F /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = /usr/lib/libz.1.dylib; sourceTree = "<group>"; };
+		D767EB1E1C74C55700BAFBC9 /* CameraGrabber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraGrabber.h; path = ../Common/CameraGrabber.h; sourceTree = "<group>"; };
+		D767EB1F1C74C55700BAFBC9 /* CameraGrabber.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CameraGrabber.mm; path = ../Common/CameraGrabber.mm; sourceTree = "<group>"; };
+		D79347EF1C75BD9D00D25354 /* libVisageVision.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libVisageVision.a; path = ../../../lib/libVisageVision.a; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7FF119AA14EE95F500128847 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D79347F01C75BD9D00D25354 /* libVisageVision.a in Frameworks */,
+				7F80160B14EE989D0040D4AA /* OpenGLES.framework in Frameworks */,
+				7FF119C314EE963800128847 /* AVFoundation.framework in Frameworks */,
+				43B924D51F9FD1F600C10F47 /* libVisageAnalyser.a in Frameworks */,
+				7FF119C414EE963800128847 /* CoreGraphics.framework in Frameworks */,
+				7FF119C514EE963800128847 /* CoreMedia.framework in Frameworks */,
+				7FF119C614EE963800128847 /* CoreVideo.framework in Frameworks */,
+				7FF119C814EE963800128847 /* QuartzCore.framework in Frameworks */,
+				7FF119B114EE95F500128847 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7FF119A214EE95F500128847 = {
+			isa = PBXGroup;
+			children = (
+				43B924D21F9FD1CA00C10F47 /* VisageFaceAnalyser.h */,
+				D767EB1D1C74B50D00BAFBC9 /* Grabber */,
+				7FF119C914EE964400128847 /* VisageHeaders */,
+				7FF119B214EE95F500128847 /* VisageTrackerUnityPlugin */,
+				7FF119AF14EE95F500128847 /* Frameworks */,
+				7FF119AE14EE95F500128847 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7FF119AE14EE95F500128847 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7FF119AD14EE95F500128847 /* libVisageTrackerUnityPlugin.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7FF119AF14EE95F500128847 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				43B924D41F9FD1F600C10F47 /* libVisageAnalyser.a */,
+				D79347EF1C75BD9D00D25354 /* libVisageVision.a */,
+				D7673FEB1BD5628700C7D50F /* libz.1.dylib */,
+				7F80160A14EE989D0040D4AA /* OpenGLES.framework */,
+				7FF119BD14EE963800128847 /* AVFoundation.framework */,
+				7FF119BE14EE963800128847 /* CoreGraphics.framework */,
+				7FF119BF14EE963800128847 /* CoreMedia.framework */,
+				7FF119C014EE963800128847 /* CoreVideo.framework */,
+				7FF119C214EE963800128847 /* QuartzCore.framework */,
+				7FF119B014EE95F500128847 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7FF119B214EE95F500128847 /* VisageTrackerUnityPlugin */ = {
+			isa = PBXGroup;
+			children = (
+				7FEEBBCE14F7C36100136774 /* VisageTrackerUnityPlugin.h */,
+				7FEEBBCF14F7C36100136774 /* VisageTrackerUnityPlugin.mm */,
+				5F2E9AF51BC449080097BFCD /* UIDeviceHardware.h */,
+				5F2E9AF61BC449080097BFCD /* UIDeviceHardware.m */,
+				7FF119B314EE95F500128847 /* Supporting Files */,
+			);
+			path = VisageTrackerUnityPlugin;
+			sourceTree = "<group>";
+		};
+		7FF119B314EE95F500128847 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7FEEBBCB14F7C35900136774 /* VisageTrackerUnityPlugin-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		7FF119C914EE964400128847 /* VisageHeaders */ = {
+			isa = PBXGroup;
+			children = (
+				7F0E734514F7C402005262D4 /* VisageTracker.h */,
+			);
+			name = VisageHeaders;
+			sourceTree = "<group>";
+		};
+		D767EB1D1C74B50D00BAFBC9 /* Grabber */ = {
+			isa = PBXGroup;
+			children = (
+				D767EB1E1C74C55700BAFBC9 /* CameraGrabber.h */,
+				D767EB1F1C74C55700BAFBC9 /* CameraGrabber.mm */,
+			);
+			name = Grabber;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		7FF119AB14EE95F500128847 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FEEBBCC14F7C35900136774 /* VisageTrackerUnityPlugin-Prefix.pch in Headers */,
+				D767EB241C74C55700BAFBC9 /* CameraGrabber.h in Headers */,
+				5F2E9AF71BC449080097BFCD /* UIDeviceHardware.h in Headers */,
+				7FEEBBD014F7C36100136774 /* VisageTrackerUnityPlugin.h in Headers */,
+				7F0E734814F7C402005262D4 /* VisageTracker.h in Headers */,
+				43B924D31F9FD1CA00C10F47 /* VisageFaceAnalyser.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		7FF119AC14EE95F500128847 /* VisageTrackerUnityPlugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7FF119BA14EE95F500128847 /* Build configuration list for PBXNativeTarget "VisageTrackerUnityPlugin" */;
+			buildPhases = (
+				7FF119A914EE95F500128847 /* Sources */,
+				7FF119AA14EE95F500128847 /* Frameworks */,
+				7FF119AB14EE95F500128847 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VisageTrackerUnityPlugin;
+			productName = VisageTrackerUnityPlugin;
+			productReference = 7FF119AD14EE95F500128847 /* libVisageTrackerUnityPlugin.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7FF119A414EE95F500128847 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0900;
+			};
+			buildConfigurationList = 7FF119A714EE95F500128847 /* Build configuration list for PBXProject "VisageTrackerUnityPlugin" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7FF119A214EE95F500128847;
+			productRefGroup = 7FF119AE14EE95F500128847 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7FF119AC14EE95F500128847 /* VisageTrackerUnityPlugin */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7FF119A914EE95F500128847 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FEEBBD114F7C36100136774 /* VisageTrackerUnityPlugin.mm in Sources */,
+				D767EB251C74C55700BAFBC9 /* CameraGrabber.mm in Sources */,
+				5F2E9AF81BC449080097BFCD /* UIDeviceHardware.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		7FF119B814EE95F500128847 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-fembed-bitcode-marker";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		7FF119B914EE95F500128847 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_CFLAGS = "-fembed-bitcode";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7FF119BB14EE95F500128847 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DSTROOT = /tmp/VisageTrackerUnityPlugin.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "source/VisageTrackerUnityPlugin-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					IOS,
+					VISAGE_STATIC,
+				);
+				HEADER_SEARCH_PATHS = (
+					/usr/include/libxml2,
+					"\"$(SRCROOT)/../../../include\"",
+					"\"$(SRCROOT)/../../../include/libIOS\"",
+					"\"$(SRCROOT)/../../../Samples/iOS/Common\"",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../lib\"",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WARNING_CFLAGS = "-Wno-comment";
+			};
+			name = Debug;
+		};
+		7FF119BC14EE95F500128847 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DSTROOT = /tmp/VisageTrackerUnityPlugin.dst;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "source/VisageTrackerUnityPlugin-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					VISAGE_STATIC,
+					IOS,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				HEADER_SEARCH_PATHS = (
+					/usr/include/libxml2,
+					"\"$(SRCROOT)/../../../include\"",
+					"\"$(SRCROOT)/../../../include/libIOS\"",
+					"\"$(SRCROOT)/../../../Samples/iOS/Common\"",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../lib\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRIP_STYLE = all;
+				WARNING_CFLAGS = "-Wno-comment";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7FF119A714EE95F500128847 /* Build configuration list for PBXProject "VisageTrackerUnityPlugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7FF119B814EE95F500128847 /* Debug */,
+				7FF119B914EE95F500128847 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7FF119BA14EE95F500128847 /* Build configuration list for PBXNativeTarget "VisageTrackerUnityPlugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7FF119BB14EE95F500128847 /* Debug */,
+				7FF119BC14EE95F500128847 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7FF119A414EE95F500128847 /* Project object */;
+}

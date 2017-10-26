@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h1>Visage Tracker Unity Demo sample project</h1>
+
+<p>
+The VisageTrackerUnityDemo sample project demonstrates the integration of visage|SDK with Unity game engine and
+is aimed at developers starting to use face tracking functionality of visage|SDK in Unity game engine and development
+tool.
+</p>
+<p>
+The sample project shows how face tracking is used to put virtual object (glasses) on the user’s face in Unity. Developers may use parts of this project to speed up their own
+development in Unity using visage|SDK or use this application as a starting point for own projects.
+</p>
+
+<h2>Building and running the project</h2>
+
+<p>
+The files related to VisageTrackerUnityDemo sample project are located in the Samples/MacOSX/VisageTrackerUnityDemo
+subfolder of the visage|SDK for Mac OS X folder.<br/><br/>
+Prerequisites to running the sample project are:
+<ul>
+<li>Xcode (version 8.3.x)</li>
+<li>Unity (version 5.6.x)</li>
+</ul>
+
+To build and run VisageTrackerUnityDemo sample two steps are involved: creating the Unity project from the provided
+Unity package and building the application.<br/><br/>
+
+</p>
+
+<h3>Step 1. Creating the Unity project from Unity package</h3>
+
+<p>
+To create the Unity project from provided Unity package follow these steps:<br/>
+<ol>
+<li>Open Unity</li><br/>
+<li>Create a new Unity project</li><br/>
+<li>Import <b>VisageTrackerUnityDemo.unitypackage</b> that is provided in the Samples/MacOSX/VisageTrackerUnityDemo folder. <br/> This is done in 
+Unity by
+selecting Assets->Import Package->Custom Package... item from the menu. That way all the assets that
+are used by the example project will be imported into the new project.</li><br/>
+<li>Create new folder <b>StreamingAssets/Visage Tracker</b>  under <b>Assets</b> folder in your Unity project and copy following files from visageSDK-MacOS/Samples/data folder:
+<ul>
+<li>bdtsdata folder</li>
+<li>candide3.fdp</li>
+<li>candide3.wfm</li>
+<li>jk_300.fdp</li>
+<li>jk_300.wfm</li>
+<li>Facial Features Tracker - High.cfg</li>
+<li>Facial Features Tracker - Low.cfg</li>
+<li>Head Tracker.cfg</li>
+</ul>
+</li><br/>
+ <b>NOTE:</b> If you have a license key file, add it also to the <b>StreamingAssets/Visage Tracker</b> folder and refer to the <a href="licensing.html#include_license">Including the License Key File in your application</a> section for more details. <br/>  <br/> 
+
+<li>Create new folder <b>Plugins</b> under <b>Assets</b> folder in your Unity project and copy <b>VisageTrackerUnityPlugin.bundle</b> from visageSDK-MacOS/lib folder.
+</li><br/>
+<li>Select and open the Main scene, located in Project's Assets.</li><br/>
+</ol>
+</p>
+
+<h3>Step 2. Building the application</h3>
+<p>
+To build the application follow these steps:
+<ol>
+<li>Build the application by selecting File->Build settings... and under Platform choose PC and Mac Standalone and set Mac OS X as target platform.</li> <br/>
+<li>Go to Player Settings, uncheck the box next to <b>Auto Graphics API</b> for Mac and remove <b>OpenGLCore</b> from the list.</li> <br/>
+<li>Press the Build button to generate the project.</li> <br/>
+</ol>
+</p>
+</ol>
+</p>
+
+<h2>Using the sample application</h2>
+<p>
+To start the application, double-click on VisageTrackerUnity.app.
+<br/>
+<br/>
+Tracking will start automatically when a frontal face is found in the camera frame. Available buttons are: Play/Pause in the lower left corner and Switch camera in the lower right corner of the screen.<br/>
+On top of the video frames is a 3D model of glasses that is transformed with the information about rotation and translation from the tracker. It blends seamlessly with the background video.
+<br/>
+<br/>
+<b> NOTE:</b>  Without the valid License Key tracking will stop after 1 minute. Appropriate message will appear on the screen to inform the user before the start of the tracking and after the tracking time expires. Please refer to the <a href="licensing.html#include_license">Including the License Key File in your application</a> section for details.
+</p>
+
+<h2>Implementation overview</h2>
+<p>
+The project consists of a main scene with the Unity’s GameObjects that provide different functionalities. A GameObject
+is the main building block of a scene in Unity. It consists of different Components and can parent other GameObjects.
+Manipulation of GameObjects is done with Scripts. It is recommended for developers to get familiar with Unity basics
+before continuing. The integration with visage|SDK is done through a plugin (VisageTrackerUnityPlugin) that wraps
+native code calls to visage|SDK and provides functions that can be called from Unity scripts.
+</p>
+
+<h3>Tracker GameObject</h3>
+<p>
+The core of the example is the Tracker GameObject. It consists of different components attached to it. The main
+component of the Tracker GameObject is the Tracker script component that handles the communication with the tracker
+(starts it and gets results from it). The behavior of the script can be modified by changing its properties and the script
+code. Other properties can be added as well. The existing Tracker script properties of interest are as follows:
+<ul>
+<li>Controllable Objects: list of objects that will be transformed automatically while the face tracking is performed</li>
+<li>Config File: filename of the configuration file that will be used by the tracker</li>
+</ul>
+
+<b>NOTE:</b> Because of the different coordinate systems used by the visage|SDK face tracker and the Unity game engine
+mirroring around x-axis is applied to the relevant GameObjects.<br/><br/>
+Object in the scene that is also in the Controllable Objects list is the GlassesModel GameObject.
+</p>
+
+<h3>Cameras</h3>
+<p>
+There are two cameras in the scene, one for 3D scene (Main Camera) and other for video display (Video Camera).
+The main camera "Field of View" is automatically set according to the Tracker focus (camera_focus parameter in
+configuration file) and input image aspect by the Tracker script. The Video Camera renders objects in the Video layer
+by using orthographic projection.
+</p>
+
+<h3>Video object</h3>
+<p>
+Video GameObject contains Video Plane that is used for displaying video and is automatically scaled to input frame
+aspect ratio by the <a href="VideoController.txt">VideoController</a> script attached to it.
+</p>
+
+<h3>Glasses object</h3>
+<p>
+Since the Glasses object is in the Tracker script Controllable Objects list, rotation and translation information from the tracker is applied to it. This enables the overlaying of virtual objects to the tracked face that transform correctly with
+it. Other custom objects can be used instead of the glasses object. For a more comprehensive guide on how to achieve occlusion or 
+on how to properly introduce other objects to the scene see <a href="modeling_guide.pdf" target="_blank">AR modeling guide</a>.
+</p>
+
+<h3><a id="uniplug" ></a> VisageTrackerUnityPlugin</h3>
+<p>
+The integration of visage|SDK face tracking with Unity is done through a plugin that wraps native code calls and
+provides functions that can be called from Unity scripts. The provided prebuilt plugin VisageTrackerUnityPlugin.a can
+be used as-is. The project and the source code for the VisageTrackerUnityPlugin plugin are also provided and can be
+used to implement different functionality if needed. For more information about the plugin including it's source code, see the <a href="unity_plugin.html">VisageTrackerUnityPlugin</a> project and its documentation.
+</p>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+<h1>Creating a new Xcode project</h1>
+
+<p>To enable visage|SDK tracking functionality in new projects the additional frameworks, libraries and files need to be
+added to the Xcode project.</p>
+<p>After creating a new Xcode project the first step is to add neccessary Mac OS X frameworks:
+<ol>
+<li>From the Project navigator select the root item (project name).</li>
+<li>In the right window from the TARGETS section select your target.</li>
+<li>Select Build Phases and open Link Binary With Libraries section.</li>
+<li>Click the Add (+) button and add following frameworks and libraries:<ul>
+<li>Cocoa.framework (Face Detector,Visage Tracker Demo)</li>
+<li>CoreVideo.framework (Visage Tracker Demo)</li>
+<li>CoreMedia.framework (Visage Tracker Demo)</li>
+<li>AVFoundation.framework (Visage Tracker Demo)</li>
+<li>QTKit.framework (Visage Tracker Demo)</li>
+<li>IOKit.framework (Face Detector,Visage Tracker Demo)</li> 
+<li>OpenGL.framework (Visage Tracker Demo)</li>
+</ul>
+</li>
+<li>Press Add Other... button and select visage|SDK libraries (from visageSDK-MacOS/lib folder):
+<ul>
+<li>libVisageVision.a</li>
+<li>libVisageGaze.a</li>
+<li>libVisageAnalyser.a</li>
+</ul>
+<li>Create a new group and name it OpenCV.</li>
+<li>Open visageSDK/dependencies/OpenCV_MacOSX/lib folder, select all the items and drag them to the OpenCV group in the project explorer.</li>
+</ul>
+</li>
+</ol>
+
+The second step is to modify project settings:
+<ol>
+<li>From the Project navigator select the root item (project name).</li>
+<li>In the right window from the TARGETS section select your target.</li>
+<li>Select Build Settings.</li>
+<li>Set "OS X Deployment Target" to 10.8.</li>
+<li>Find the "Preprocessor Macros" setting and add the following two: <b>VISAGE_STATIC</b> and <b>MAC_OS_X</b></li>
+<li>Find the "Other Warning Flags" setting and add the following: <b>-Wno-comment</b></li>
+<li>
+Find the "Header Search Paths" settings and add the following paths (the visageSDK-MacOS path should be relative
+to the project path):
+<ul>
+<li>/usr/include/libxml2</li>
+<li>visageSDK-MacOS/include</li>
+<li>visageSDK-MacOS/dependencies/OpenCV_MacOSX/include</li>
+<li>visageSDK-MacOS/dependencies/OpenCV_MacOSX/include/opencv2</li>
+</ul>
+</li>
+</ol>
+
+The third step is to add visage|SDK required resources:
+<ol>
+<li>Create a new group called Resources in the Project navigator by right clicking on the project root item and
+selecting New Group from the popup menu.</li>
+<li>
+Add the following files from Samples/data folder by dragging and dropping them into newly created Resources
+group, a dialog window will appear. In this window, select the "Create folder references for any added
+folders":
+<ul>
+<li>Head Tracker.cfg</li>
+<li>Facial Features Tracker - Low.cfg</li>
+<li>Facial Features Tracker - High.cfg</li>
+<li>candide3.fdp</li>
+<li>candide3.wfm</li>
+<li>jk_300.fdp/li>
+<li>jk_300.wfm/li>
+<li>bdtsdata folder containing the additional data files</li>
+</ul>
+</li>
+<li>This step is optional. After requesting and receiving license key file add it to the project by dragging and dropping it into previously
+created Resources group. Also, please read the section <a href="licensing.html#include_license">Including the License Key File in your application</a> in the Registration and Licensing page.</li>
+</ol>
+<br/>
+
+The fourth step is to modify precompiled header file (.pch file) and add "<b>#include &lt;cv.h&gt;</b>" before and MacOS frameworks
+#import commands.<br/>
+Note: do not forget to add license initialisation code before any calls to visage|SDK, for example see <a href="licensing.html#visageVision-t"><em>Including the
+License Key File in your application</em></a> project and code section.
+</p>
+</body>
+</html>

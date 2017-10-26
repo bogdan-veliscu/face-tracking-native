@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'Face Detector' target in the 'Face Detector' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif

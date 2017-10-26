@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h1>Face Detect Demo sample project</h1>
+<p>
+The Face Detect Demo sample project demonstrates facial features detection based on the <a href="sdk-html/classVisageSDK_1_1VisageFeaturesDetector.html"><em>VisageSDK::FacialFeaturesDetector</em></a> class.
+</p>
+
+<h2>Building and running the project</h2>
+
+<p>
+The FaceDetectDemo sample application is located in bin subfolder of visage|SDK for Mac OS X folder. To run the sample application double click on FaceDetectDemo file.
+</p>
+
+<p>
+The FaceDetectDemo sample project is located in the Samples/MacOSX/FaceDetect subfolder of the visage|SDK for OS X folder.
+</p>
+<p>
+Prerequisites to building the sample project are:
+<ul>
+<li>Xcode (versions 7.x+)</li>
+</ul>
+</p>
+<p>
+Project is opened in Xcode by double-clicking on the FaceDetectDemo.xcodeproj project file. To build the project select Product->Build from menu bar. The project sample app can be run by choosing Run option in Xcode.
+</p>
+
+<h2>Using the sample app</h2>
+<p>
+The sample app consists of a main window and a menu. Image is selected by File->Open in the menu. Results of face detection are displayed in the window. Sample images are provided in data/images sub-folder of visage|SDK for Mac OS X folder.
+</p>
+<p>
+	<b> NOTE:</b>  Without the valid license appropriate message will appear and detection results will be shown with a 2 seconds delay. 
+</p>
+</br>
+<h2>Implementation overview</h2>
+<p>
+The visage|SDK API is written in C++ and since development on OS X is done in Objective-C, an interface between them must be implemented. In this sample project this is done through <a href="sdk-html/interfaceVisageFeaturesDetectorWrapper.html"><em>VisageFeaturesDetectorWrapper</em></a> Objective-C class that exposes Objective-C methods for using the detector, while the implementation of those methods is done in Objective-C++, a combination of Objective-C and C++.
+</p>
+<p>
+The AppDelegate (Objective-C class) connects with GUI (that is defined in MainWindow.xib file) and implements actions that calls to methods from <a href="sdk-html/interfaceVisageFeaturesDetectorWrapper.html"><em>VisageFeaturesDetectorWrapper</em></a> class to detect and display facial features.
+</p>
+<p>
+The specific classes and methods that demonstrate visage|SDK are:
+<ul>
+<li><a href="sdk-html/interfaceVisageFeaturesDetectorWrapper.html"><em>VisageFeaturesDetectorWrapper</em></a>: Provides the Objective-C interface to main face detector functions.</li>
+<li><a href="sdk-html/interfaceVisageFeaturesDetectorWrapper.html"><em>VisageFeaturesDetectorWrapper::drawFeatures</em></a>: Method that is used to detect and display the detected features.</li>
+</ul>
+</p>
+<p>
+Other important classes are:
+<ul>
+<li><a href="sdk-html/interfaceAppDelegate.html"><em>AppDelegate</em></a>: Implements the app delegate.</li>
+</ul>
+</p>
+<p>
+<p>More details about each class is available in documentation for specific class.</p>
+<p>Users are free to modify the sample project to test the functionalities of the Facial Features Detector. The sample project also serves as a starting point when creating new projects that will use visage|SDK. </p>
+</p>
+</body>
+</html>

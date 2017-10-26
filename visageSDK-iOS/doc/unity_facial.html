@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h1>Facial Animation Unity Demo sample project</h1>
+
+<p>
+The FacialAnimationUnityDemo sample project demonstrates the integration of visage|SDK with Unity game engine and is aimed at developers starting to use face tracking functionality of visage|SDK to drive facial animation using blendshapes and bones in the Unity game engine.
+</p>
+<p>
+The sample project shows how to animate a character and make it mimic the users facial expressions using action units from visage|SDK. Developers may use parts of this project to speed up their own
+development in Unity using visage|SDK or use this application as a starting point for own projects.
+</p>
+
+<h2>Building and running the project</h2>
+
+<p>
+The files related to FacialAnimationUnityDemo sample project are located in the Samples/iOS/FacialAnimationUnityDemo
+subfolder of the visage|SDK for iOS folder.<br/><br/>
+Prerequisites to running the sample project are:
+<ul>
+<li>Xcode (version 8.3.x)</li>
+<li>Unity (version 5.6.x)</li>
+<li>iOS device (iPhone 6 or iPad 4 recommended; iPhone 4s works with reduced performance)</li>
+</ul>
+
+To build and run FacialAnimationUnityDemo sample two steps are involved: creating the Unity project from the provided
+Unity package and generating and modifying the Xcode project from Unity. These tasks are executed semi - automatically.<br/><br/>
+
+<b>NOTE:</b> The Visage Tracker Unity plugin for iOS will not work in Unity editor, it will only work on actual device.
+
+</p>
+
+<h3>Step 1. Creating the Unity project from Unity package</h3>
+
+<p>
+To create the Unity project from provided Unity package follow these steps:<br/>
+<ol>
+<li>Open Unity</li> <br/>
+<li>Create a new Unity project</li> <br/>
+<li>Import <b> FacialAnimationUnityDemo.unitypackage </b>  that is provided in the Samples/iOS/FacialAnimationUnityDemo folder. <br/> 
+	This is done in Unity by selecting Assets->Import Package->Custom Package... item from the menu. <br/> 
+	All the assets that are used by the example project will be imported into the new project.</li> <br/>
+<li>Create new folder <b>StreamingAssets/Visage Tracker</b>  under <b>Assets</b> folder in your Unity project and copy following files from visageSDK-iOS/Samples/data folder:
+<ul>
+<li>bdtsdata folder</li>
+<li>candide3.fdp</li>
+<li>candide3.wfm</li>
+<li>jk_300.fdp</li>
+<li>jk_300.wfm</li>
+<li>Facial Features Tracker - High.cfg</li>
+<li>Facial Features Tracker - Low.cfg</li>
+<li>Head Tracker.cfg</li>
+</ul>
+</li><br/>
+<li>Create new folder <b>Plugins</b> under <b>Assets</b> folder in your Unity project and copy <b>libVisageTrackerUnityPlugin.a</b> from visageSDK-iOS/lib folder.
+</li><br/>	
+<li>Select and open the Main scene (Jones), located in the Project's Assets/Visage Tracker/Jones/.</li>
+</ol>
+</p>
+
+<h3>Step 2. Generating the Xcode project from Unity</h3>
+<p>
+To generate the Xcode project for this sample follow these steps:<br/>
+<ol>
+<li>In Unity, select <b> File->Build settings...</b> A new window will appear. Switch the platform to iOS and add the current scene.</li> <br/>
+<li>Open the player settings by pressing <b>Player Settings...</b> button.</li> <br/>
+<li>In <b>PlayerSettings</b> please set the Company name to "visagetechnologies", Product name to "facialanimationunitydemo" and Bundle Identifier
+to "com.visagetechnologies.facialanimationunitydemo".</li> <br/>
+<li>Press the Build button to generate the project, a new dialog window will appear. In this window, locate and set
+destination folder to <b>Samples/iOS/FacialAnimationUnityDemo</b>. This generates Xcode project in that folder.</li><br/>
+
+ <b>NOTE:</b>  If Unity reports error during build, please double check which platform is selected in the Build settings. <br/>  <br/> 
+
+<li>All the necessary data will be copied from Unity's StreamingAssets folder to the \Data\Raw\ folder of the Xcode project.<br>Library <b>libVisageTrackerUnityPlugin.a</b> will however be copied from Unity's Plugins folder to \Libraries\Plugins\ folder of the Xcode project. </li><br/>
+<li>Please double check that targeted iOS device is selected as active scheme. Go to Build Settings and set iOS Deploymenet Target to 8.1 and Enable Bitcode to NO. <br/>
+Build the Xcode project. <br/>
+</li><br/>
+<b>NOTE:</b>  Sometimes Xcode returns link error that it can't locate libiPhone-lib.a. In such cases click on Project->Build Phases->Link Binary With Libraries, remove the libiPhone-lib.a and add it again. To add a new library click + option, a new window will appear, select Add Other...->Libraries->libiPhone-lib.a. <br/> <br/>
+<li>This step is optional. If you have a license key file, add it to the Assets/StreamingAssets/Visage Tracker folder in Unity project. File will be automatically copied to newly generated Xcode project. For more details please read the section <a href="licensing.html#include_license">Including the License Key File in your application</a> in the Registration and Licensing page.</li><br/>
+<b>NOTE:</b>  In case you receive error message that App Transport Security has blocked a cleartext HTTP (http://) resource load in newly generated Xcode project from Unity, please set the NSAllowsArbitraryLoads key to YES under NSAppTransportSecurity dictionary in your .plist file <br/> <br/>
+</ol>
+</p>
+
+<p>
+<b>NOTE:</b> Once you link with iOS 10 you must declare access to any user private data types (camera, photos, microphone, etc.). You do this by adding a usage key to your app’s Info.plist together with a purpose string.
+</p>
+
+<h2>Using the sample app</h2>
+<p>
+As soon as the application starts, tracking will begin. When a face is found in the camera frame, the character will
+start moving - mimicking the user's facial expressions. Try opening your mouth, smiling or moving your eyebrows.
+</p>
+<p>
+	<b> NOTE:</b>  Without the valid License Key tracking will stop after 1 minute. Appropriate message will appear on the screen to inform the user before the start of the tracking and after the tracking time expires. 
+</p>
+
+<h3>Implementation overview</h3>
+<p>
+The project consists of a main scene with the Unity’s GameObjects that provide different functionalities. A GameObject
+is the main building block of a scene in Unity. It consists of different Components and can parent other GameObjects.
+Manipulation of GameObjects is done with Scripts. It is recommended for developers to get familiar with Unity basics
+before continuing. The integration with visage|SDK is done through the VisageTrackerUnityPlugin.
+</p>
+
+<h4>Visage Tracker GameObject</h4>
+<p>
+The core of the example is the Visage Tracker GameObject. It handles communication with the tracker
+(starts it and gets results from it). The behaviour of the script can be modified by changing its properties and the script
+code. Other properties can be added as well. The existing Visage Tracker script properties of interest are as follows:<br/>
+• Config File iOS: filename of the tracker configuration file (see the <a href="VisageTracker Configuration Manual.pdf">VisageTracker Configuration manual</a> for information on modifying the tracker configuration) that will be used by the tracker for iOS<br/>
+• BindingConfigurations: list of binding configurations (see the Binding Configuration section on this page) used in the scene<br/>
+</p>
+
+<h4>Cameras</h4>
+<p>
+There are two cameras in the scene, one for displaying the character (Main Camera) and other for the background (Background Camera).
+The main camera "Field of View" is automatically set according to the Visage Tracker focus (camera_focus parameter in
+configuration file).
+</p>
+
+<h4>Jones</h4>
+<p>
+Jones is the character with defined blendshape animations which are controlled using the a binding configuration and bones
+which are controlled using the <i>Visage Tracker/Jones/Scripts/Movement.cs</i> script. The visage|SDK provides relevant information about facial expressions through action units. Their values are then mapped to specific blendshapes using 
+binding configurations in the <i>VisageTracker.cs</i> script. For more information on creating characters with such blendshapes, consult the <a href="modeling_guide.pdf" target="_blank">Modeling Guide</a>.
+</p>
+
+<h4>Binding Configuration</h4>
+<p>
+Binding configurations map action unit values to specific blendshapes and animate them. A reference binding configuration used to animate Jones is located in <i>Visage Tracker/Jones/jones.bind.txt</i>. <br/>
+<i>ActionUnitBinding.cs</i> components are created based on the <i>VisageTracker.cs</i> Binding Configuration list in the current scene at runtime. They receive action unit data from the Visage Tracker component and map them to [0,1] values based on the info given in the binding configuration. You can omit the binding configuration in the Visage Tracker GameObject and create the <i>ActionUnitBinding.cs</i> components manually for more control.
+</p>
+
+<h4>Visage Tracker Unity Plugin</h4>
+<p>
+The integration of visage|SDK face tracking with Unity is done through a plugin that wraps native code calls and
+provides functions that can be called from Unity scripts. For more information about the plugin including it's source code, see the <a href="unity_plugin.html">VisageTrackerUnityPlugin</a> project and its documentation.
+</p>
+
+</body>
+</html>

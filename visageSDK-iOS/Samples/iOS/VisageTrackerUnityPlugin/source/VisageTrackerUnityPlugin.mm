@@ -22,6 +22,10 @@ static CameraGrabber *cameraGrabber = 0;
 static VsImage *m_Frame = 0;
 static VisageFaceAnalyser *m_FaceAnalizer = 0;
 
+static int detectedAge = -2;
+static int detectedGender = -2;
+static int ageRefreshRequested = 1;
+
 static unsigned char *pixelsRGBA = 0;
 //
 static FaceData trackingData[4];
@@ -106,13 +110,17 @@ extern "C" {
 		
 		m_Tracker = new VisageTracker(config);
         
-        _initFaceAnalyser(config);
+        NSBundle *mainBundle = [NSBundle mainBundle];
+        NSString *myFile = [mainBundle pathForResource:@"Data/Raw/Visage Tracker/bdtsdata/LBF/vfadata" ofType: @""];
+        
+        _initFaceAnalyser(MakeStringCopy([myFile UTF8String]));
     }
 	
 	void _releaseTracker()
 	{
 		delete m_Tracker;
         delete m_FaceAnalizer;
+        vsReleaseImage(&m_Frame);
 		m_Tracker = 0;
 	}
     
@@ -122,16 +130,22 @@ extern "C" {
             delete m_FaceAnalizer;
         }
         m_FaceAnalizer = new VisageFaceAnalyser();
-        m_FaceAnalizer->init(config);
+        printf("@@ VisageFaceAnalyser initi with config: %s\n", config);
+        int ret = m_FaceAnalizer->init(config);
+        NSLog(@"### VisageFaceAnalyser _initFaceAnalyser :%d", ret);
+    }
+    
+    void _refreshAgeEstimate(){
+        ageRefreshRequested = 1;
     }
     
     int _estimateAge(){
         
-        return m_FaceAnalizer->estimateAge(m_Frame, &trackingData[0]);
+        return detectedAge;
         
     }
     int _estimateGender(){
-        return m_FaceAnalizer->estimateGender(m_Frame, &trackingData[0]);
+        return detectedGender;
     }
 	
 	void _openCamera(int orientation, int device, int width, int height, int isMirrored)
@@ -198,6 +212,8 @@ extern "C" {
 			format = VISAGE_FRAMEGRABBER_FMT_LUMINANCE;
 		else
 			format = VISAGE_FRAMEGRABBER_FMT_BGRA;
+        
+        m_Frame = vsCreateImage(vsSize(frameWidth, frameHeight), VS_DEPTH_8U, 4);
 	}
 	
 	// closes camera
@@ -256,17 +272,30 @@ extern "C" {
 	// starts face tracking on current frame
 	int _track()
 	{
-        m_Frame = vsCreateImage(vsSize(frameWidth, frameHeight), VS_DEPTH_8U, 4);
+
         trackerStatus = m_Tracker->track(frameWidth, frameHeight, (const char *)pixels, trackingData,format);
         
-        if (format == 1) {
-            //Convert to RGBA for image to be drawn
-            YUV_TO_RGBA(pixels, (unsigned char*)m_Frame->imageData, frameWidth, frameHeight);
-        }
-        else {
-            memcpy(m_Frame->imageData, pixels, m_Frame->imageSize);
-        }
+        if(ageRefreshRequested){
+            ageRefreshRequested =0;
+            if (format == 1) {
+                //Convert to RGBA for image to be drawn
+                YUV_TO_RGBA(pixels, (unsigned char*)m_Frame->imageData, frameWidth, frameHeight);
+            }
+            else {
+                memcpy(m_Frame->imageData, pixels, m_Frame->imageSize);
+            }
+            
+            m_Frame->width = cam_width;
+            m_Frame->height = cam_height;
         
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                detectedAge = m_FaceAnalizer->estimateAge(m_Frame, &trackingData[0]);
+                detectedGender = m_FaceAnalizer->estimateGender(m_Frame, &trackingData[0]);
+                NSLog(@"#### Detected age:%d and gender: %d", detectedAge, detectedGender);
+            });
+           
+        }
+                
 		if(trackerStatus[0] == TRACK_STAT_OFF && pixels)
 		{
 			if (format == VISAGE_FRAMEGRABBER_FMT_LUMINANCE)

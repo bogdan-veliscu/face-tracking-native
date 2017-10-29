@@ -68,7 +68,11 @@ extern "C" {
 	
 	/** Performs face tracking on current frame and returns tracker status.
 	 */
-	EXPORT_API int _track();
+    EXPORT_API int _track();
+    
+    
+    EXPORT_API void _refreshAgeEstimate();
+    
 	
 	/** Returns camera info.
 	 */

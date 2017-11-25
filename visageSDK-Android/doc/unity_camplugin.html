@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h2>Android Camera Plugin project</h2>
+
+<p>
+The AndroidCameraPlugin is Java plugin used for accessing and handling Android camera. It's use is demonstrated in <a href="unity_ar.html">VisageTrackerUnityDemo</a> and <a href="unity_facial.html">FacialAnimationUnityDemo</a> samples.
+</p>
+
+<h3>Building the project</h3>
+
+<p>
+The files related to Android Camera Plugin project are located in the Samples/Android/AndroidCameraPlugin
+sub-folder of the visage|SDK for Android folder.<br/><br/>
+Prerequisites to building the sample project are :<br/>
+<ul>
+  <li>Java JDK (version 8 or higher)</li>
+  <li>Android Studio 2.3.2</li>
+  <li>Android SDK (version 4.1.2 API or higher)</li>
+  <li>Unity (version 5.x)</li>
+</ul> 
+
+To build the AndroidCameraPlugin, please follow these steps:
+<ol>
+<li>Open AndroidCameraPlugin project (located in Samples/Android) into Android Studio. </li>
+<li>Navigate to folder AndroidCameraPlugin/app/libs and delete existing file classes.jar</li>
+<li>Navigate to directoy where Unity is installed and copy file classes.jar (typically located in C:\Program Files\Unity\Editor\Data\PlaybackEngines?\androidplayer\development\bin)</li>
+<li>Paste the file to AndroidCameraPlugin/app/libs</li>
+<li>Open Gradle on the right and click "Refresh all Gradle projects" under Gradle projects</li>
+<li>Under Gradle projects, go to AndroidCameraPlugin -> :app -> Tasks -> other</li>
+<li>Double click on task <b>exportJar</b> and AndroidCameraPlugin.jar will be created in the AndroidCameraPlugin/app/release folder</li>
+<li>AndroidCameraPlugin.jar and AndroidManifest.xml should be replaced with new versions in Plugins/Android folder of your Unity project.
+<br/> <b>NOTE:</b> Package name in AndroidManifest.xml should match the package name in CameraActivity.jar</li>  
+</ol>
+
+<h3>Implementation overview</h3>
+<p>
+Project is used for handling camera on Android. This is realised as Android activity which is created from C# script in Unity when the application starts. Switching between front and back facing camera is done by calling Android activity's functions from Unity script. </br> <a href="unity_plugin.html">VisageTrackerUnityPlugin</a> provides Java interface to events such as sending frames from camera to tracker and camera parameters changes.
+</br> AndroidCameraPlugin source code is available <a href="html/CameraActivity_8java_source.html"><em>here</em></a>.
+</p>
+
+</body>
+</html>

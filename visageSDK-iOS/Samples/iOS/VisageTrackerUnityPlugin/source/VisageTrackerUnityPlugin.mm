@@ -111,6 +111,12 @@ extern "C" {
 		m_Tracker = new VisageTracker(config);
         
         NSBundle *mainBundle = [NSBundle mainBundle];
+        NSString *myLicenseFoloder = @"Data/Raw/Visage Tracker/919-046-857-953-067-951-656-595-019-143-317.vlc";
+        
+        NSLog(@"## initializeLicenseManager v2 : %@", myLicenseFoloder);
+        
+        initializeLicenseManager(MakeStringCopy([myLicenseFoloder UTF8String]));
+        
         NSString *myFile = [mainBundle pathForResource:@"Data/Raw/Visage Tracker/bdtsdata/LBF/vfadata" ofType: @""];
         
         _initFaceAnalyser(MakeStringCopy([myFile UTF8String]));

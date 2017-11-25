@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h1>Visage Tracker Unity Demo sample project</h1>
+
+<p>
+The VisageTrackerUnityDemo sample project demonstrates the integration of visage|SDK with Unity game engine and
+is aimed at developers starting to use face tracking functionality of visage|SDK in Unity game engine and development
+tool. A pre-built Android application is located in the <a href="../bin"><em>bin</em></a> folder. The full source code of this sample is located in <a href="../Samples/Android/VisageTrackerUnityDemo"><em>Samples/Android/VisageTrackerUnityDemo</em></a>.
+</p>
+<p>
+The sample project shows how face tracking is used to put virtual object (glasses) on the user’s face in Unity, and
+how to access the full 3D face model of the face. Developers may use parts of this project to speed up their own
+development in Unity using visage|SDK or use this application as a starting point for own projects.
+</p>
+
+<h2>Using the pre-built application</h2>
+<p>
+To start the application, a transfer and installation of the application on an Android device must be done first. To do this, use Windows Explorer to drag the Visage Tracker Unity Demo APK file from the bin folder in visage|SDK for Android root folder on to your phone's SD card (which will show as a drive on the PC).
+Use the file explorer application on your Android device to locate the transferred APK file and run the installation.<br/><br/>After the installation is finished, you can run the application on the device. <br/>
+You can switch between front and back facing camera and pause the application by pressing corresponding buttons. In the top left corner tracking results are displayed.
+When a face is found in the camera frame, tracking starts. On top of the video frames is
+the textured 3D face model generated and animated by the tracker and a 3D model of glasses that is transformed with
+the information about rotation and translation from the tracker. Those two blend seamlessly with the background video.
+</p>
+<br/>
+<h2>Building the project</h2>
+
+<p>
+The files related to Visage Tracker Unity Demo sample project are located in the Samples/Android/VisageTrackerUnityDemo
+sub-folder of the visage|SDK for Android folder.<br/><br/>
+The prerequisites to building and running the sample project are :<br/>
+<ul>
+<li>Java JDK (version 8 or higher)</li>
+<li>Android SDK (version 5 API or higher)</li>
+<li>Unity (version 5.x)</li>
+<li>Android device (with API 4.1.2 or higher)</li>
+</ul>
+
+The steps necessary to build and run the VisageTrackerUnityDemo sample are as follows:<br/>
+<ul>
+
+<li>Creating a Unity project from the provided package</li>
+<li>Generating the Android application from Unity</li>
+</ul>
+
+</p>
+<br/>
+<h3>Step 1. Creating a Unity project from the Unity package</h3>
+
+<p>
+To create a Unity project from the provided Unity package, follow these steps:<br/><br/>
+<ol>
+<li>Create a new Unity project</li>
+<li>Import VisageTrackerUnityDemo.unitypackage (provided in Samples/Android/VisageTrackerUnityDemo folder) by
+selecting Assets->Import Package->Custom Package... item from the menu. <br/> That way all the assets that
+are used by the example project will be imported into the new project.</li>
+<li>Select and open the Main scene.</li>
+<li>Following files need to be copied to the folder Assets/Plugins/Android:
+<ul>
+<li>Libraries <b>libVisageVision.so</b> and <b>libVisageTrackerUnityPlugin.so</b> (located in <i>lib/armeabi-v7a</i>)</li>
+<li><b>AndroidCameraPlugin.jar</b> and <b>AndroidManifest.xml</b> (located in <i>Samples/Android/AndroidCameraPlugin/app/release</i>)</li>
+</ul>
+</li>
+<li>Following files and folders (located in Samples/data) need to be copied to the folder Assets/StreamingAssets/Visage Tracker:
+<ul>
+<li>bdtsdata folder</li>
+<li>candide3.wfm</li>
+<li>candide3.fdp</li>
+<li>jk_300.wfm</li>
+<li>jk_300.fdp</li>
+<li>configuration file (e.g. Head Tracker.cfg)</li>
+</ul>
+</li>
+
+</ol>
+</p>
+<br/>
+<h3>Step 2. Generating the Android application</h3>
+<p>
+To generate Android application for this sample follow these steps:<br/><br/>
+<ol>
+<li>Generate the Android application by selecting File->Build settings... and choosing Android as target.</li>
+<li>Add the Main scene to the application by clicking on Add Current button.</li>
+<li>Open the player settings by pressing Player Settings... button.</li>
+<li>Set the Default orientation to Portrait.</li>
+<li>Set the Company name to "visagetechnologies.com", Product name to "Visage Tracker Unity Demo" and Bundle Identifier
+to "com.visagetechnologies.visagetrackerunitydemo".</li>
+<li>Press the Build button to build the application, a dialog window will appear. In this window, locate and set
+destination folder to Samples/Android/VisageTrackerUnityDemo. Press build to generate an apk application file in the selected folder.</li>
+</ol>
+</p>
+
+<h3>Implementation overview</h3>
+<p>
+The project consists of a main scene with the Unity’s GameObjects that provide different functionalities. A GameObject
+is the main building block of a scene in Unity. It consists of different Components and can parent other GameObjects.
+Manipulation of GameObjects is done with Scripts. It is recommended for developers to get familiar with Unity basics
+before continuing. The integration with visage|SDK is done through the VisageTrackerUnityPlugin.
+</p>
+
+<h4>Tracker GameObject</h4>
+<p>
+The core of the example is the Tracker GameObject. It consists of different components attached to it. The main
+component of the Tracker GameObject is the Tracker script component that handles the communication with the tracker
+(starts it and gets results from it). The behaviour of the script can be modified by changing its properties and the script
+code. Other properties can be added as well. The existing Tracker script properties of interest are as follows:<br/>
+• Controllable Objects: list of objects that will be transformed automatically while the face tracking is performed<br/>
+• Config File: filename of the configuration file that will be used by the tracker<br/>
+Note: Because of the different coordinate systems used by the visage|SDK face tracker and the Unity game engine
+mirroring around x-axis is applied to the relevant GameObjects.
+Object in the scene that is also in the Controllable Objects list is the Glasses Model GameObject.
+</p>
+
+<h4>Cameras</h4>
+<p>
+There are two cameras in the scene, one for 3D scene (Main Camera) and other for video display (Video Camera).
+The main camera "Field of View" is automatically set according to the Tracker focus (camera_focus parameter in
+configuration file) and input image aspect by the Tracker script. The Video Camera renders objects in the Video layer
+by using orthographic projection.
+</p>
+
+<h4>Video object</h4>
+<p>
+Video GameObject contains Video Plane that is used for displaying video and is automatically scaled to input frame
+aspect ratio by the VideoController script attached to it.
+</p>
+
+<h4>Glasses object</h4>
+<p>
+The rotation and translation information from the tracker are applied to the Glasses object as they are in the Tracker
+script Controllable Objects list. This enables overlaying virtual objects to the tracked face that transform correctly with
+it. Other custom objects can be used instead of the glasses object.  For a more comprehensive guide on how to achieve occlusion or on how 
+to properly introduce other objects to the scene see <a href="modeling_guide.pdf" target="_blank">AR modeling guide</a>.
+</p>
+
+<h4>Visage Tracker Unity Plugin</h4>
+<p>
+The integration of visage|SDK face tracking with Unity is done through a plugin that wraps native code calls and
+provides functions that can be called from Unity scripts. For more information about the plugin including it's source code, see the <a href="unity_plugin.html">VisageTrackerUnityPlugin</a> project and its documentation.
+</p>
+
+<h4>Android Camera Plugin</h4>
+<p>
+Accessing and handling Android camera is done through Java plugin. For more information about the plugin including it's source code, see the <a href="unity_camplugin.html">AndroidCameraPlugin</a> project and its documentation.
+</p>
+
+</body>
+</html>

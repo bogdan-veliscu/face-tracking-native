@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h2>Face Detect Demo sample project</h2>
+<p>
+The Face Detect Demo sample project demonstrates facial features detection and face recognition based on the <a href="html/classVisageSDK_1_1VisageFeaturesDetector.html"><em>VisageSDK::FacialFeaturesDetector</em></a> and <a href="html/classVisageSDK_1_1VisageFaceRecognition.html"><em>VisageSDK::VisageFaceRecognition</em></a> classes.<br/>
+There is a pre-built Android application located in the <a href="../bin"><em>bin</em></a> folder. Full source code of this sample is located in <a href="../Samples/Android/FaceDetectDemo"><em>Samples/Android/FaceDetectDemo</em></a>.
+</p>
+
+<h3>Using the sample application</h3>
+<p>
+To start the application a transfer and installation of the application on an Android device must be done first. To do this use Windows Explorer to drag the Visage Face Detect Demo APK file from bin folder in visage|SDK for Android root folder on to your phone's SD card (which will show as a drive on the PC).
+Use file explorer application on Android device to locate transferred APK file and run the installation. After the installation is finished you can run the application on the device. <br/><br/>
+The application displays three buttons: Detect, Match Faces and Analyse Face.
+Detect button loads an image from the device gallery. If any features were detected, they are drawn on the loaded image and shown on the screen. Match Faces button loads an image bundled with the sample application and performs face recognition on it. As a result, the name of the recognized person (or the name of the person with the most similar face found in the VisageFaceRecognition gallery) will be drawn on the loaded image and shown on the screen. Sample images are provided in assets/trackerdata folder. Analyse Face will perform FaceAnalysis on faces detected in the image loaded from the device gallery and display gender and age estimation for all faces and emotion estimation on the biggest face found in the image.
+</p>
+
+<h3>Building and running the project</h3>
+
+<p>
+The FaceDetectDemo sample project is located in the Samples/Android/DetectorDemo sub-folder of the visage|SDK for Android folder.
+</p>
+<p>
+Prerequisites for building and running the sample project are: <br/>
+<ul>
+  <li>Java JDK (version 8 or higher)</li>
+  <li>Android Studio 2.3.3
+  <ul>
+	<li>Android SDK</li>
+	<li>Android NDK (r13)</li>
+</ul>
+  </li>
+  <li>Android device (with API 4.4.2 or higher) </li>
+</ul> 
+Sample applications were built and tested using:
+<ul>
+	<li>gradle version 3.3</li>
+	<li>experimental plugin (for NDK support) 0.6.0</li>
+</ul>
+</p>
+
+<p>Project is opened by choosing "Open an existing Android Studio project" after running Android Studio. Sample is located in "visageSDK-Android/Samples/Android". After that the following steps are necessary:<br/><br/>
+<ol>
+<li>Select the "Project" tab on the left and open file <i>local.properties</i> under Gradle Scripts</li>
+<li><i>local.properties</i> must be modified as follows:
+<ul>
+	<li>ndk.dir = path_to_AndroidNDK (e.g. ndk.dir=E\:\\Android_environment\\AndroidSDK\\ndk-bundle)</li>
+	<li>sdk.dir = path_to_AndroidSDK (e.g. sdk.dir=E\:\\Android_environment\\AndroidSDK)</li>
+</ul>
+</li>
+<li>To compile the native code, go to Build -> Make Project</li>
+<li>Now the application can be built by pressing the run button and choosing your Android device</li>
+</ol>
+</p>
+
+<h3>Implementation overview</h3>
+<p>
+The visage|SDK API is written in C++ and since development on Android is done in Java, an interface between them must be implemented. In this sample project this is done through C++ classes that expose Java methods for using the detector and recognizer, while the implementation of those methods is done in C++.
+</p>
+The specific classes and methods that demonstrate visage|SDK are:<br/>
+<ul>
+<li><a href="html/VisageFeaturesDetectorWrapper_8cpp.html"><em>VisageFeaturesDetectorWrapper</em></a>: Provides a Java interface to detector and face analysis functions (initializing, detecting facial features); displays
+tracking results.</li>
+<li><a href="html/VisageFaceRecognitionWrapper_8cpp.html"><em>VisageFaceRecognitionWrapper</em></a>: Provides a Java interface to recognizer functions (initializing, detecting facial features); displays
+tracking results.</li>
+<li><a href="html/DrawingWrapper_8cpp.html"><em>DrawingWrapper</em></a>: Uses OpenGL to display image processed by VisageFaceRecognition or VisageFeaturesDetector functionality.</li>
+</ul>
+</body>
+</html>

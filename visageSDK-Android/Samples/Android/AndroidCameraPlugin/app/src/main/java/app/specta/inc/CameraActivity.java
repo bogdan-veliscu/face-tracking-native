@@ -1,0 +1,339 @@
+package app.specta.inc;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.app.AlertDialog;
+import android.view.SurfaceHolder;
+import android.widget.TextView;
+import android.graphics.ImageFormat;
+import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.PreviewCallback;
+import android.hardware.Camera.Size;
+import android.os.Bundle;
+import android.util.TypedValue;
+import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.WindowManager;
+import android.widget.Toast;
+
+import android.opengl.GLES11Ext;
+import android.opengl.GLES20;
+import java.io.IOException;
+import java.util.List;
+import java.lang.*;
+import java.lang.String;
+
+import com.unity3d.player.UnityPlayer;
+import com.unity3d.player.UnityPlayerActivity;
+
+public class CameraActivity extends UnityPlayerActivity
+{
+    public final String TAG = "SPECTA-CameraPreview";
+
+    Camera cam;
+    int ImageWidth = -1;
+    int ImageHeight = -1;
+    SurfaceTexture tex;
+    public float cameraFps;
+    int pickCam = -1;
+    int camId = -1;
+    int orientation;
+    boolean openCam = false;
+
+    // unity texture
+    private int nativeTexturePointer = -1;
+
+    /**
+     * Called when device is rotated; calculates new screen orientation
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+
+        super.onConfigurationChanged(newConfig);
+        camId = getCameraId();
+        CameraInfo camInfo = new CameraInfo();
+
+        try{
+            Camera.getCameraInfo(camId, camInfo);
+        }catch(Exception e){
+            Log.e(TAG, "onConfigurationChanged ERROR", e);
+        }
+        Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+
+        orientation = camInfo.orientation;
+
+        if (camInfo.facing == CameraInfo.CAMERA_FACING_FRONT)
+            setParameters((display.getRotation()*90 + orientation)%360, -1, -1, -1);
+        else if (camInfo.facing == CameraInfo.CAMERA_FACING_BACK)
+            setParameters((orientation - display.getRotation()*90 + 360)%360, -1, -1, -1);
+    }
+
+    @Override
+    public void onCreate(Bundle _savedInstanceState) {
+        super.onCreate(_savedInstanceState);
+    }
+
+    @Override
+    public void onPause() {
+        closeCamera();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        if (openCam)
+            GrabFromCamera(ImageWidth, ImageHeight, pickCam);
+        super.onResume();
+    }
+
+    /**
+     * Calculates supported frame dimensions that are closest (by eucledian distance) to desired width and height
+     * @param parameters camera parameters
+     * @param width desired frame width
+     * @param height desired frame height
+     */
+
+    private void setPreviewSize(Camera.Parameters parameters, int width, int height){
+        int idx = 0;
+        double dist1 = 100000;
+        double dist2 = 100000;
+        List<Size> sizes = parameters.getSupportedPreviewSizes();
+        for (int i = 0;i<sizes.size();i++){
+            dist2 = Math.abs(Math.sqrt(Math.pow((sizes.get(i).width-width),2) + Math.pow((sizes.get(i).height-height),2)));
+            if (dist2<dist1){
+                idx = i;
+                dist1 = dist2;
+            }
+        }
+
+        Log.i(TAG, "SettingPreview size to:" + width + "x" + height);
+        parameters.setPreviewSize(sizes.get(idx).width, sizes.get(idx).height);
+    }
+
+    /**
+     * Start grabbing frames from camera
+     */
+    public int GrabFromCamera(int imWidth, int imHeight, int pickCamera){
+        //on first call (from onResume), function parameters are set to -1; frame dimensions and camera are set on next call from Unity script
+        if (imWidth == -1 || imHeight == -1)
+        {
+            imWidth = 320;
+            imHeight = 240;
+        }
+
+        this.pickCam = pickCamera;
+        camId = getCameraId(pickCam);
+        try{
+            cam = Camera.open(camId);
+        }catch(Exception e){
+            Log.e(TAG, "Unable to open camera");
+                    Toast.makeText(getBaseContext(), "Unable to open camera", Toast.LENGTH_SHORT).show();
+            return -1;
+        }
+
+        ImageWidth = imWidth;
+        ImageHeight = imHeight;
+        Camera.Parameters parameters = cam.getParameters();
+        setPreviewSize(parameters, ImageWidth, ImageHeight);
+        parameters.setPreviewFormat(ImageFormat.NV21);
+        cam.setParameters(parameters);
+        Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+        int screenOrientation = display.getRotation();
+
+        final Size previewSize=cam.getParameters().getPreviewSize();
+        Log.i (TAG,  "Current preview size is " + previewSize.width + ", " + previewSize.height);
+
+        int dataBufferSize=(int)(previewSize.height*previewSize.width*
+                (ImageFormat.getBitsPerPixel(cam.getParameters().getPreviewFormat())/8.0));
+
+        for (int i=0;i<10;i++){
+            cam.addCallbackBuffer(new byte[dataBufferSize]);
+        }
+
+        // create the texture
+        nativeTexturePointer = createExternalTexture();
+        tex = new SurfaceTexture(nativeTexturePointer);
+        try {
+            cam.setPreviewTexture(tex);
+        } catch (IOException e) {
+            Log.e(TAG, "setPreviewTexture ERROR", e);
+        }
+
+        CameraInfo cameraInfo = new CameraInfo();
+        Camera.getCameraInfo(camId, cameraInfo);
+        orientation = cameraInfo.orientation;
+        int flip = 0;
+        if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT){
+            flip = 1; // Mirror image from frontal camera
+        }
+        ImageWidth = previewSize.width;
+        ImageHeight = previewSize.height;
+
+        if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT)
+            setParameters((screenOrientation*90 + orientation)%360, ImageWidth, ImageHeight, flip);
+        else
+            setParameters((orientation - screenOrientation*90 + 360)%360, ImageWidth, ImageHeight, flip);
+
+        cam.setPreviewCallbackWithBuffer(new PreviewCallback() {
+            private long timestamp = 0;
+            public void onPreviewFrame(byte[] data, Camera camera) {
+                Log.v("CameraTest","FPS = "+1000.0/(System.currentTimeMillis()-timestamp));
+                //cameraFps = 1000.0f/(System.currentTimeMillis()-timestamp);
+                timestamp=System.currentTimeMillis();
+                WriteFrame(data);
+                camera.addCallbackBuffer(data);
+                //updateTexture();
+                Log.v(TAG, " Camera preview ended :" +
+                        data[11] + "|"+ data[22]+ "|"+ data[33]+ "|"+ data[44]+ "|"+ data[55]+ "|"+ data[66]+ "|"+ data[77]);
+            }
+        });
+        cam.startPreview();
+        openCam = true;
+        return  nativeTexturePointer;
+    }
+
+
+    public void updateTexture() {
+        // check for errors at the beginning
+        checkGlError("begin_updateTexture()");
+
+        Log.d(TAG, "GLES20.glActiveTexture..");
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        checkGlError("glActiveTexture");
+        Log.d(TAG, "GLES20.glBindTexture..");
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                nativeTexturePointer);
+        checkGlError("glBindTexture");
+
+        Log.d(TAG,"ThreadID="+Thread.currentThread().getId());
+        Log.d(TAG, "texture.updateTexImage..");
+
+        tex.updateTexImage();
+        checkGlError("updateTexImage");
+    }
+
+    // check for OpenGL errors
+    private void checkGlError(String op) {
+        int error;
+        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+            Log.e(TAG, op + ": glError 0x" + Integer.toHexString(error));
+        }
+    }
+
+    // create texture here instead by Unity
+    private int createExternalTexture() {
+        int[] textureIdContainer = new int[1];
+        GLES20.glGenTextures(1, textureIdContainer, 0);
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                textureIdContainer[0]);
+
+        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+
+        return textureIdContainer[0];
+    }
+    public void closeCamera ()
+    {
+        if (cam !=null){
+            cam.stopPreview();
+            cam.release();
+            cam = null;
+        }
+    }
+
+    /**
+     * Getting camera device ID
+     * @param imCamID if set to 1, back facing camera will be chosen; else front facing camera will be chosen;
+     * @return camera device ID
+     */
+
+    int getCameraId(int pickCamera){
+        int cameraId = -1;
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numberOfCameras; i++) {
+            CameraInfo info = new CameraInfo();
+            Camera.getCameraInfo(i, info);
+            cameraId = i;
+
+            Log.e(TAG, "getCameraId :" + i);
+            if (info.facing == CameraInfo.CAMERA_FACING_FRONT && pickCamera != 1)
+                return cameraId;
+            else if (info.facing == CameraInfo.CAMERA_FACING_BACK && pickCamera == 1)
+                return cameraId;
+        }
+        return -1;
+    }
+
+        public void AlertDialogFunction(final String message)
+        {
+            runOnUiThread(new Runnable() {
+                private String licenseMessage = message;
+                @Override
+                public void run() {
+                TextView title = new TextView(UnityPlayer.currentActivity);
+                title.setText("License warning");
+                title.setGravity(Gravity.CENTER);
+                title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+
+                TextView msg = new TextView(UnityPlayer.currentActivity);
+                msg.setText(message);
+                msg.setGravity(Gravity.CENTER);
+                msg.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+
+                new AlertDialog.Builder(UnityPlayer.currentActivity, AlertDialog.THEME_TRADITIONAL)
+                        .setCustomTitle(title)
+                        .setView(msg)
+                        .setPositiveButton(android.R.string.yes, null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+                }
+            });
+        }
+
+    int getCameraId(){
+        int cameraId = -1;
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numberOfCameras; i++) {
+            CameraInfo info = new CameraInfo();
+            Camera.getCameraInfo(i, info);
+            cameraId = i;
+            if (info.facing == CameraInfo.CAMERA_FACING_FRONT) {
+                break;
+            }
+        }
+        return cameraId;
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        closeCamera();
+        super.onDestroy();
+    }
+
+    public static native void WriteFrame(byte[] frame);
+
+    public static native void setParameters(int orientation, int width, int height, int flip);
+
+    static
+    {
+        System.loadLibrary("VisageVision");
+        System.loadLibrary("VisageTrackerUnityPlugin");
+    }
+
+
+}

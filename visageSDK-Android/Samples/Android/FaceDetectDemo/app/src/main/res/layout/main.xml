@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Face Detect Demo"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/btnRecognize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Match Faces"
+        android:layout_below="@+id/btnDetect"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/btnAnalyse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Analyse Face"
+        android:layout_below="@+id/btnRecognize"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/btnDetect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Detect"
+        android:layout_centerVertical="true"
+        android:layout_alignRight="@+id/btnRecognize"
+        android:layout_alignEnd="@+id/btnRecognize"
+        android:layout_alignLeft="@+id/btnRecognize"
+        android:layout_alignStart="@+id/btnRecognize" />
+    
+
+</RelativeLayout>
+		

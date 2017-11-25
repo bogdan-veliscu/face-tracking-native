@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h1>Licensing</h1>
+
+<p>By having any Visage Technologies Program, or part of it, installed or copied on your computer, you agree to the terms
+of the <a href="../license.txt"><em>Visage Technologies AB Software License Agreement</em></a>. If you do not agree with these terms,
+please entirely remove any Visage Technologies Programs from your computer. <br/>
+This section focuses on technical issues such as obtaining and using the license key files. For detailed commercial
+conditions please <a href="http://www.visagetechnologies.com/contact/" target="New">contact Visage Technologies</a>.</p>
+
+
+<p>Applications developed using visage|SDK must be licensed in order to function. Licensing is based on License Key Files. A single License Key File is valid for one or more installations on one or more platforms (operating systems). The License Key File can be opened in a text editor in order to read the licensing information, but it is important not to change the file in any way as it would become invalid.</p>
+
+
+<p>Applications without a valid license key will still function, but tracking time shall be limited to one minute and appropriate
+warning messages shall be displayed.</p>
+
+<h2>Obtaining the License Key File</h2>
+
+<p>For 30-day evaluation, simply send an email request to your Visage Technologies contact person and you will receive a License Key File by email.</p>
+
+<p>If you are purchasing a license, please decide on your <b>Application's  Package Name</b> and send it to your Visage Technologies
+contact person together with your purchase order. In return, you will receive a License Key File by email.</p>
+
+
+
+<h2><a class="anchor" id="include_license"></a>Including the License Key File in your application</h2>
+
+<p>For Visage Tracker Demo and Face Detect Demo demo samples, license file should be copied to <b>assets/trackerdata</b> folder. 
+<br/>
+
+For Facial Animation Unity and Visage Tracker Unity samples, license file should be copied to <b>Assets\StreamingAssets\Visage Tracker</b> folder.
+<br/>
+In your application, you need to call the initialization
+function in order to let the Application read the License Key File. This is done as follows in your application code:
+<br/>
+
+<pre>
+
+// neccessary prototype declaration for licensing
+namespace VisageSDK
+{
+    void initializeLicenseManager(JNIEnv* env, jobject obj, const char *licenseKeyFileName);
+}
+
+...
+
+    //initialize licensing
+    initializeLicenseManager(env, obj, "absolute_path/name-of-the-license-file.vlc");
+
+</pre>
+
+<br/>
+where "name-of-the-license-file.vlc" is the name of your License Key File and "absolute_path" is the absolute path to the License Key
+File (internal or external storage) e.g. "/data/data/com.visagetechnologies.visagetrackerdemo/files/XXX-XXX-XXX-XXX-XXX-XXX-XXX-XXX-XXX-XXX-XXX.vlc".
+</p>
+
+<p>
+In the Sample projects the licensing code is already inserted, so you just need to provide the absolute path to the license key file name when you obtain the license key file. Specifically:<br/>
+<br/>
+In the Visage Tracker Demo sample project, the licensing code is found in the <i>Java_com_visagetechnologies_visagetrackerdemo_TrackerActivity_TrackerInit</i> method, in the <i>AndroidWrapper.cpp</i> file.<br/>
+<br/>
+In the Face Detect Demo sample project, the licensing code is found in the <i>Java_com_visagetechnologies_facedetectdemo_DetectorActivity_DetectorInit</i> method, in the <i>VisageFeaturesDetectorWrapper.cpp</i> file <br/>
+<br/>
+In the Visage Tracker Unity Demo and Facial Animation Unity Demo, License File field (script Tracker.cs) needs to be edited in the Inspector as follows: 
+<br/>
+<i>"license_file_name.vlc"</i>
+<br/><br/>
+Additionally, the license key file needs to be added to the list of files to be unzipped. 
+<br/><br/>
+In the Visage Tracker Unity Demo (script Tracker.cs) and Facial Animation Unity Demo (script VisageTracker.cs) samples, add the license key file name to the Paths Needed field in the method Unzip() as follows:
+<br/>
+<i>"license_file_name.vlc"</i>
+<br/>
+</p>
+
+</body>
+</html>

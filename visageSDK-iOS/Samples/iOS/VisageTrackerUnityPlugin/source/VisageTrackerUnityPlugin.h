@@ -53,6 +53,8 @@ extern "C" {
 	/** Initialises the tracker.
 	 */
 	EXPORT_API void _initTracker(char* config, char* license);
+    
+    
 	
 	/** Releases memory allocated by the tracker in the initTracker function.
 	 */

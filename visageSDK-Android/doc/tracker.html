@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h2>Visage Tracker Demo sample project</h2>
+<p>
+This sample application demonstrates facial features tracking on multiple faces from camera or image file and retrieving/displaying tracking results. Currently, tracking is limited to 4 faces, although this can be modified.
+Pre-built Android application is located in the <a href="../bin"><em>bin</em> folder</a>. Full source code of this sample is located in <a href="../Samples/Android/VisageTrackerDemo"><em>Samples/Android/VisageTrackerDemo</em></a>.
+</p> 
+
+<h3>Using the sample application</h3>
+<p>
+To try the Visage Tracker Demo application, you need to transfer and install application on your Android device. First, connect your phone as a storage device and transfer the apk file onto SD card. Then, use file explorer on the Android device to locate and install the sample application. After the installation is finished you can run the application on the device. <br/>
+The sample application consists of a menu where you can choose to track from an Image or from Camera. <br/>
+In case of image tracking you will be prompted to choose the image. <br/>
+<center> <img src="images/appstart.jpg" width="320" alt="Visage Technologies logo" /></center>  <br/>
+<center>Figure 1.1: Application started</center><br/>
+In case of camera tracking, tracking starts automatically when the face is detected in the camera image.<br/><br/>
+<center> <img src="images/apptracknew.jpg" width="320" alt="Visage Technologies logo" /></center><br/>
+<center>Figure 1.2: Application is tracking</center><br/>
+</p>
+
+<h3>Building the sample project</h3>
+<p>
+The VisageTrackerDemo sample project is located in the <a href="../Samples/Android/VisageTrackerDemo"><em>VisageTrackerDemo</em></a> subfolder of the visage|
+SDK for Android folder. <br/><br/>
+Prerequisites for building and running the sample project are: <br/>
+<ul>
+  <li>Java JDK (version 8 or higher)</li>
+  <li>Android Studio 2.3.3
+  <ul>
+	<li>Android SDK</li>
+	<li>Android NDK (r13)</li>
+</ul>
+  </li>
+  <li>Android device (with API 4.4.2 or higher) </li>
+</ul> 
+Sample applications were built and tested using:
+<ul>
+	<li>gradle version 3.3</li>
+	<li>experimental plugin (for NDK support) 0.6.0</li>
+</ul>
+</p>
+
+<p>Project is opened by choosing "Open an existing Android Studio project" after running Android Studio. Sample is located in "visageSDK-Android/Samples/Android". After that the following steps are necessary:<br/><br/>
+<ol>
+<li>Select the "Project" tab on the left and open file <i>local.properties</i> under Gradle Scripts</li>
+<li><i>local.properties</i> must be modified as follows:
+<ul>
+	<li>ndk.dir = path_to_AndroidNDK (e.g. ndk.dir=E\:\\Android_environment\\AndroidSDK\\ndk-bundle)</li>
+	<li>sdk.dir = path_to_AndroidSDK (e.g. sdk.dir=E\:\\Android_environment\\AndroidSDK)</li>
+</ul>
+</li>
+<li>To compile the native code, go to Build -> Make Project</li>
+<li>Now the application can be built by pressing the run button and choosing your Android device</li>
+</ol>
+</p>
+
+<h3>Implementation overview</h3>
+<p>
+The visage|SDK API is written in C++. Since development on Android is done in Java, this sample uses the <a href="html/AndroidWrapper_8cpp.html"><em>AndroidWrapper</em></a> C++ class that exposes Java methods for using the tracker, while the implementation of those methods is done in C++.
+The <a href="html/AndroidWrapper_8cpp.html"><em>AndroidWrapper</em></a> C++ class connects with GUI and
+implements actions that call start and stop the tracker and display the
+tracking results.<br/>
+The specific classes and methods that demonstrate visage|SDK are:<br/>
+<ul>
+  <h3>C++:</h3>
+<li>
+	<a href="html/AndroidWrapper_8cpp.html"><em>AndroidWrapper</em></a>: Provides an Java interface to main tracker functions; displays tracking results
+</li>
+<li>
+	<a href="html/classVisageSDK_1_1AndroidImageCapture.html"><em>AndroidImageCapture</em></a>: Used for passing one raw image to the tracker.
+</li>
+<li>
+	<a href="html/classVisageSDK_1_1AndroidCameraCapture.html"><em>AndroidCameraCapture</em></a>: Used for passing input from Android camera to the tracker.
+</li>
+  <h3>Java:</h3>
+<li>
+  <a href="html/classcom_1_1visagetechnologies_1_1visagetrackerdemo_1_1StartupActivity.html"><em>StartupActivity</em></a>: Android activity that starts when sample application is launched.
+</li>
+<li>
+  <a href="html/classcom_1_1visagetechnologies_1_1visagetrackerdemo_1_1TrackerActivity.html"><em>TrackerActivity</em></a>: Android activity that starts tracking from image or camera.
+</li>
+<li>
+  <a href="html/classcom_1_1visagetechnologies_1_1visagetrackerdemo_1_1ImageTrackerView.html"><em>ImageTrackerView</em></a>: Loading image from SD card, sending image data to tracker, displaying image and tracking results.
+</li>
+<li>
+  <a href="html/classcom_1_1visagetechnologies_1_1visagetrackerdemo_1_1JavaCamTrackerView.html"><em>JavaCamTrackerView</em></a>: Grabbing camera preview frame, sending frame data to tracker, displaying camera video feed and tracking results.
+</li>
+
+</ul>
+</p>
+
+
+
+
+
+
+</body>
+</html>

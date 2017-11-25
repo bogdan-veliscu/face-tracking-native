@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h1>Facial Animation Unity Demo sample project</h1>
+
+<p>
+The FacialAnimationUnityDemo sample project demonstrates the integration of visage|SDK with Unity game engine and is aimed at developers starting to use face tracking functionality of visage|SDK to drive facial animation using blendshapes and bones in the Unity game engine. 
+A pre-built Android application is located in the <a href="../bin"><em>bin</em></a> folder. The full source code of this sample is located in <a href="../Samples/Android/FacialAnimationUnityDemo"><em>Samples/Android/FacialAnimationUnityDemo</em></a>.
+</p>
+<p>
+The sample project shows how to animate a character and make it mimic the user's facial expressions using action units from visage|SDK. Developers may use parts of this project to speed up their own
+development in Unity using visage|SDK or use this application as a starting point for their own projects.
+</p>
+
+<h2>Using the pre-built application</h2>
+<p>
+To start the application, a transfer and installation of the application on an Android device must be done first. To do this, use Windows Explorer to drag the Visage Tracker Facial Animation Unity Demo APK file from the bin folder in visage|SDK for Android root folder on to your phone's SD card (which will show as a drive on the PC).
+Use the file explorer application on your Android device to locate the transferred APK file and run the installation.
+<br/><br/>
+After the installation is finished, you can run the application on the device. <br/>
+As soon as the application starts, tracking will begin. You can switch between front and back facing camera and pause the application by pressing corresponding buttons. When a face is found in the camera frame, the character will
+start moving - mimicking the user's facial expressions. Try opening your mouth, smiling or moving your eyebrows.
+If no license key is present, the tracking will automatically stop after a period of time - please refer to the <a href="licensing.html">licensing section</a> for details.
+</p>
+<br/>
+<h2>Building the project</h2>
+
+<p>
+The files related to Facial Animation Unity Demo sample project are located in the Samples/Android/FacialAnimationUnityDemo
+sub-folder of the visage|SDK for Android folder.<br/><br/>
+The prerequisites to building and running the sample project are :<br/>
+<ul>
+<li>Java JDK (version 8 or higher)</li>
+<li>Android SDK (version 5 API or higher)</li>
+<li>Unity (version 5.x)</li>
+<li>Android device (with API 4.1.2 or higher)</li>
+</ul>
+
+The steps necessary to build and run the VisageTrackerUnityDemo sample are as follows:<br/>
+<ul>
+<li>Creating a Unity project from the provided package</li>
+<li>Generating the Android application from Unity</li>
+</ul>
+</p>
+<br/>
+<h3>Step 1. Creating a Unity project from the Unity package</h3>
+
+<p>
+To create a Unity project from the provided Unity package follow these steps:<br/><br/>
+<ol>
+<li>Create a new Unity project</li>
+<li>Import FacialAnimationUnityDemo.unitypackage (provided in Samples/Android/FacialAnimationUnityDemo folder) by
+selecting Assets->Import Package->Custom Package... item from the menu. <br/> That way all the assets that
+are used by the example project will be imported into the new project.</li>
+<li>Select and open the <i>Visage Tracker/Joines/jones</i> scene.</li>
+<li>Following files need to be copied to the folder Assets/Plugins/Android:
+<ul>
+<li>Libraries <b>libVisageVision.so</b> and <b>libVisageTrackerUnityPlugin.so</b> (located in <i>lib/armeabi-v7a</i>)</li>
+<li><b>AndroidCameraPlugin.jar</b> and <b>AndroidManifest.xml</b> (located in <i>Samples/Android/AndroidCameraPlugin/app/release</i>)</li>
+</ul>
+</li>
+<li>Following files and folders (located in Samples/data) need to be copied to the folder Assets/StreamingAssets/Visage Tracker:
+<ul>
+<li>bdtsdata folder</li>
+<li>candide3.wfm</li>
+<li>candide3.fdp</li>
+<li>jk_300.wfm</li>
+<li>jk_300.fdp</li>
+<li>configuration file (e.g. Head Tracker.cfg)</li>
+</ul>
+</li>
+</ol>
+</p>
+
+<h3>Step 2. Generating the Android application</h3>
+<p>
+To generate the Android application for this sample follow these steps:<br/><br/>
+<ol>
+<li>Generate the Android application by selecting File->Build settings... and choosing Android as target.</li>
+<li>Add the Jones scene to the application by clicking on Add Current button.</li>
+<li>Open the player settings by pressing Player Settings... button.</li>
+<li>Set the Default orientation to Portrait.</li>
+<li>Set the Company name to "visagetechnologies.com", Product name to "Facial Animation Demo" and Bundle Identifier
+to "com.visagetechnologies.facialanimationdemo".</li>
+<li>Press the Build button to build the application, a dialog window will appear. In this window, locate and set
+destination folder to Samples/Android/FacialAnimationUnityDemo. Press build to generate an apk application file in the selected folder.</li>
+</ol>
+<b>NOTE:</b> If Unity reports error during build, please double check which platform is selected in the Build settings. <br/>
+<br/><br/>
+</p>
+
+<h2>Implementation overview</h2>
+<p>
+The project consists of a main scene with the Unity’s GameObjects that provide different functionalities. A GameObject
+is the main building block of a scene in Unity. It consists of different Components and can parent other GameObjects.
+Manipulation of GameObjects is done with Scripts. It is recommended for developers to get familiar with Unity basics
+before continuing. The integration with visage|SDK is done through the VisageTrackerUnityPlugin.
+</p>
+
+<h3>Visage Tracker GameObject</h3>
+<p>
+The core of the example is the Visage Tracker GameObject. It handles communication with the tracker
+(starts it and gets results from it). The behaviour of the script can be modified by changing its properties and the script
+code. Other properties can be added as well. The existing Visage Tracker script properties of interest are as follows:<br/>
+• Config File Andriod: filename of the tracker configuration file (see the <a href="VisageTracker Configuration Manual.pdf">VisageTracker Configuration manual</a> for information on modifying the tracker configuration) that will be used by the tracker for Android<br/>
+• BindingConfigurations: list of binding configurations (see the Binding Configuration section on this page) used in the scene<br/>
+</p>
+
+<h3>Cameras</h3>
+<p>
+There are two cameras in the scene, one for displaying the character (Main Camera) and other for the background (Background Camera).
+The main camera "Field of View" is automatically set according to the Visage Tracker focus (camera_focus parameter in
+configuration file).
+</p>
+
+<h3>Jones</h3>
+<p>
+Jones is the character with defined blendshape animations which are controlled using the a binding configuration and bones
+which are controlled using the <i>Visage Tracker/Jones/Scripts/Movement.cs</i> script. The visage|SDK provides relevant information about facial expressions through action units. Their values are then mapped to specific blendshapes using 
+binding configurations in the <i>VisageTracker.cs</i> script. For more information on creating characters with such blendshapes, consult the <a href="modeling_guide.pdf" target="_blank">Modeling Guide</a>.
+</p>
+
+<h3>Binding Configuration</h3>
+<p>
+Binding configurations map action unit values to specific blendshapes and animate them. A reference binding configuration used to animate Jones is located in <i>Visage Tracker/Jones/jones.bind.txt</i>. <br/>
+<i>ActionUnitBinding.cs</i> components are created based on the <i>VisageTracker.cs</i> Binding Configuration list in the current scene at runtime. They receive action unit data from the Visage Tracker component and map them to [0,1] values based on the info given in the binding configuration. You can omit the binding configuration in the Visage Tracker GameObject and create the <i>ActionUnitBinding.cs</i> components manually for more control.
+</p>
+
+<h3>Visage Tracker Unity Plugin</h3>
+<p>
+The integration of visage|SDK face tracking with Unity is done through a plugin that wraps native code calls and
+provides functions that can be called from Unity scripts. For more information about the plugin including it's source code, see the <a href="unity_plugin.html">VisageTrackerUnityPlugin</a> project and its documentation.
+</p>
+
+<h3>AndroidCamera Plugin</h3>
+<p>
+Accessing and handling Android camera is done through Java plugin. For more information about the plugin including it's source code, see the <a href="unity_camplugin.html">AndroidCameraPlugin</a> project and its documentation.
+</p>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Introduction</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<h2>Visage Tracker Unity Plugin (C# wrapper) project</h2>
+
+<p>
+The VisageTrackerUnityPlugin is a wrapper that exposes some of VisageTracker's functionality for use in managed programming languages such as C# and Java. A prebuilt version of the wrapper is provided in <em>libs/libVisageTrackerUnityPlugin.so</em>. It's use is demonstrated in <a href="unity_ar.html">VisageTrackerUnityDemo</a> and <a href="unity_facial.html">FacialAnimationUnityDemo</a> samples where a C# script is used to call functions exposed in this library. This project is designed to be integrated in other applications and cannot be run on its own.
+</p>
+
+<h3>Building the project</h3>
+
+<p>
+The files related to Visage Tracker Unity Plugin project are located in the Samples/Android/VisageTrackerUnityPlugin
+sub-folder of the visage|SDK for Android folder.<br/><br/>
+Prerequisites to building the sample project are :<br/>
+<ul>
+<li>Android NDK (revision r10e)</li>
+</ul>
+
+To build the VisageTrackerUnityPlugin the Android NDK's "ndk-build.cmd" (or equivalent on linux) must be executed from inside the Samples/Android/VisageTrackerUnityPlugin folder. The quickest way to do this is to open the command line and execute the following commands on Windows (or equivalent on linux):<br/>
+<ul>
+<li>cd [path to VisageTrackerUnityPlugin]</li>
+<li>[path to Android NDK]\ndk-build.cmd</li>
+</ul>
+For example: 
+<ul>
+<li>cd c:\VisageSDK\Samples\Android\VisageTrackerUnityPlugin</li>
+<li>c:\android-ndk-r9d\ndk-build.cmd</li>
+</ul>
+The NDK will build the library in the libs subfolder of the VisageTrackerUnityPlugin project folder. The build will include all dependent libraries.
+</p>
+
+<h3>Implementation overview</h3>
+<p>
+The project consists Android make scripts and C++ source code and header files. It demonstrates how to use some of Visage Tracker's properties such as translation, rotation and Action Units and wraps some of Visage Tracker's functions such as initiating and stopping tracking. More functionality can be exposed in the same manner. Refer to the API documentation for more information on how to access various properties and functionalities of the Visage Tracker.
+<br/>
+VisageTrackerUnityPlugin is also used as Java interface since camera handling and sending frames to tracker is realised in <a href="unity_camplugin.html">Java plugin</a>. <br/><br/> 
+</p>
+
+</body>
+</html>

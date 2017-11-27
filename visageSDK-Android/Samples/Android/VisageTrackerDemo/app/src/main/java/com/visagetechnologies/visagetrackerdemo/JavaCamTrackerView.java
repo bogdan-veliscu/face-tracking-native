@@ -25,7 +25,7 @@ public class JavaCamTrackerView extends TrackerView implements Runnable
 	
 	Camera cam;
 	Context _context;
-	SurfaceTexture tex2;
+	SurfaceTexture tex;
 	public float cameraFps;
 	public int previewWidth, previewHeight;
 	Thread videoReader;
@@ -101,6 +101,7 @@ public class JavaCamTrackerView extends TrackerView implements Runnable
 		}
         this.previewHeight = previewSize.height;
         this.previewWidth = previewSize.width;
+
         cam.setPreviewCallbackWithBuffer(new PreviewCallback() {
         	private long timestamp = 0;
 			public void onPreviewFrame(byte[] data, Camera camera) {
@@ -108,7 +109,7 @@ public class JavaCamTrackerView extends TrackerView implements Runnable
 				cameraFps = 1000.0f/(System.currentTimeMillis()-timestamp);
 				timestamp=System.currentTimeMillis();
 				camera.addCallbackBuffer(data);
-				WriteFrameCamera(data);				
+				WriteFrameCamera(data);
 			}
 		});
         cam.startPreview();

@@ -7,7 +7,12 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.app.AlertDialog;
+import android.graphics.Canvas;
+import android.media.Image;
+import android.opengl.GLSurfaceView;
 import android.view.SurfaceHolder;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -33,7 +38,10 @@ import java.lang.String;
 import com.unity3d.player.UnityPlayer;
 import com.unity3d.player.UnityPlayerActivity;
 
-public class CameraActivity extends UnityPlayerActivity
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener, Runnable
 {
     public final String TAG = "SPECTA-CameraPreview";
 
@@ -47,8 +55,12 @@ public class CameraActivity extends UnityPlayerActivity
     int orientation;
     boolean openCam = false;
 
+    boolean surfaceReady = false;
+
+    CameraSurface cameraSurface;
     // unity texture
     private int nativeTexturePointer = -1;
+
 
     /**
      * Called when device is rotated; calculates new screen orientation
@@ -57,13 +69,13 @@ public class CameraActivity extends UnityPlayerActivity
     public void onConfigurationChanged(Configuration newConfig) {
 
         super.onConfigurationChanged(newConfig);
-        camId = getCameraId();
+
         CameraInfo camInfo = new CameraInfo();
 
         try{
             Camera.getCameraInfo(camId, camInfo);
         }catch(Exception e){
-            Log.e(TAG, "onConfigurationChanged ERROR", e);
+
         }
         Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
 
@@ -75,9 +87,13 @@ public class CameraActivity extends UnityPlayerActivity
             setParameters((orientation - display.getRotation()*90 + 360)%360, -1, -1, -1);
     }
 
+
     @Override
     public void onCreate(Bundle _savedInstanceState) {
         super.onCreate(_savedInstanceState);
+        cameraSurface = new CameraSurface(this);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        addContentView(cameraSurface, params);
     }
 
     @Override
@@ -120,7 +136,7 @@ public class CameraActivity extends UnityPlayerActivity
     /**
      * Start grabbing frames from camera
      */
-    public int GrabFromCamera(int imWidth, int imHeight, int pickCamera){
+    public void GrabFromCamera(int imWidth, int imHeight, int pickCamera){
         //on first call (from onResume), function parameters are set to -1; frame dimensions and camera are set on next call from Unity script
         if (imWidth == -1 || imHeight == -1)
         {
@@ -134,8 +150,8 @@ public class CameraActivity extends UnityPlayerActivity
             cam = Camera.open(camId);
         }catch(Exception e){
             Log.e(TAG, "Unable to open camera");
-                    Toast.makeText(getBaseContext(), "Unable to open camera", Toast.LENGTH_SHORT).show();
-            return -1;
+            Toast.makeText(getBaseContext(), "Unable to open camera", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         ImageWidth = imWidth;
@@ -157,13 +173,11 @@ public class CameraActivity extends UnityPlayerActivity
             cam.addCallbackBuffer(new byte[dataBufferSize]);
         }
 
-        // create the texture
-        nativeTexturePointer = createExternalTexture();
-        tex = new SurfaceTexture(nativeTexturePointer);
+        tex = new SurfaceTexture(0);
         try {
             cam.setPreviewTexture(tex);
         } catch (IOException e) {
-            Log.e(TAG, "setPreviewTexture ERROR", e);
+            e.printStackTrace();
         }
 
         CameraInfo cameraInfo = new CameraInfo();
@@ -184,19 +198,15 @@ public class CameraActivity extends UnityPlayerActivity
         cam.setPreviewCallbackWithBuffer(new PreviewCallback() {
             private long timestamp = 0;
             public void onPreviewFrame(byte[] data, Camera camera) {
-                Log.v("CameraTest","FPS = "+1000.0/(System.currentTimeMillis()-timestamp));
+                //Log.v("CameraTest","FPS = "+1000.0/(System.currentTimeMillis()-timestamp));
                 //cameraFps = 1000.0f/(System.currentTimeMillis()-timestamp);
-                timestamp=System.currentTimeMillis();
+                //timestamp=System.currentTimeMillis();
                 WriteFrame(data);
                 camera.addCallbackBuffer(data);
-                //updateTexture();
-                Log.v(TAG, " Camera preview ended :" +
-                        data[11] + "|"+ data[22]+ "|"+ data[33]+ "|"+ data[44]+ "|"+ data[55]+ "|"+ data[66]+ "|"+ data[77]);
             }
         });
         cam.startPreview();
         openCam = true;
-        return  nativeTexturePointer;
     }
 
 
@@ -205,6 +215,7 @@ public class CameraActivity extends UnityPlayerActivity
         checkGlError("begin_updateTexture()");
 
         Log.d(TAG, "GLES20.glActiveTexture..");
+
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         checkGlError("glActiveTexture");
         Log.d(TAG, "GLES20.glBindTexture..");
@@ -229,6 +240,8 @@ public class CameraActivity extends UnityPlayerActivity
 
     // create texture here instead by Unity
     private int createExternalTexture() {
+
+        Log.i(TAG, "createExternalTexture START:");
         int[] textureIdContainer = new int[1];
         GLES20.glGenTextures(1, textureIdContainer, 0);
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
@@ -243,6 +256,7 @@ public class CameraActivity extends UnityPlayerActivity
         GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
                 GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
+        Log.i(TAG, "createExternalTexture pointer:" +textureIdContainer[0]);
         return textureIdContainer[0];
     }
     public void closeCamera ()
@@ -252,6 +266,101 @@ public class CameraActivity extends UnityPlayerActivity
             cam.release();
             cam = null;
         }
+    }
+
+    public int getPreviewSizeWidth() {
+        return ImageWidth;
+    }
+
+    public int getPreviewSizeHeight() {
+
+        return ImageHeight;
+    }
+
+    public int getNativeTexturePointer (){
+        return nativeTexturePointer;
+}
+
+    /*
+ * JAVA texture creation
+ */
+    public int startCamera() {
+
+        if(!surfaceReady) {
+            Log.d(TAG, "#### StartCamera - surface not ready");
+            return  -1;
+        }
+
+        if (nativeTexturePointer > 0){
+            Log.d(TAG, "####### startCamera nativeTexturePointer="+nativeTexturePointer);
+            return  nativeTexturePointer;
+        }
+
+        // open the camera
+        cam = Camera.open();
+        setupCamera();
+
+        Log.d(TAG, "###### camera opened: " + (cam != null));
+
+        try {
+            cam.setPreviewTexture(tex);
+
+            cam.setPreviewCallbackWithBuffer(new PreviewCallback() {
+                private long timestamp = 0;
+                public void onPreviewFrame(byte[] data, Camera camera) {
+                    Log.v("CameraTest","FPS = "+1000.0/(System.currentTimeMillis()-timestamp));
+                    //cameraFps = 1000.0f/(System.currentTimeMillis()-timestamp);
+                    timestamp=System.currentTimeMillis();
+                    WriteFrame(data);
+                    camera.addCallbackBuffer(data);
+                    //updateTexture();
+                    Log.v(TAG, "Camera preview ended :" +
+                            data[11] + "|"+ data[22]+ "|"+ data[33]+ "|"+ data[44]+ "|"+ data[55]+ "|"+ data[66]+ "|"+ data[77]);
+                }
+            });
+
+            cam.startPreview();
+            openCam = true;
+
+        } catch (IOException ioe) {
+            Log.w("MainActivity", " ##### CAM LAUNCH FAILED");
+        }
+
+        Log.d(TAG, "#######  CAMERA START END -- nativeTexturePointer="+nativeTexturePointer);
+        return nativeTexturePointer;
+    }
+
+    //@SuppressLint("NewApi")
+    private void setupCamera() {
+        Camera.Parameters parms = cam.getParameters();
+
+        // Give the camera a hint that we're recording video. This can have a
+        // big impact on frame rate.
+        parms.setRecordingHint(true);
+        parms.setPreviewFormat(ImageFormat.NV21);
+
+        // leave the frame rate set to default
+        cam.setParameters(parms);
+
+        Camera.Size mCameraPreviewSize = parms.getPreviewSize();
+        ImageWidth = parms.getPreviewSize().width;
+        ImageHeight = parms.getPreviewSize().height;
+
+        // only for debugging output
+        int[] fpsRange = new int[2];
+        parms.getPreviewFpsRange(fpsRange);
+        String previewFacts = mCameraPreviewSize.width + "x"
+                + mCameraPreviewSize.height;
+        if (fpsRange[0] == fpsRange[1]) {
+            previewFacts += " @" + (fpsRange[0] / 1000.0) + "fps";
+        } else {
+            previewFacts += " @[" + (fpsRange[0] / 1000.0) + " - "
+                    + (fpsRange[1] / 1000.0) + "] fps";
+        }
+
+        Log.i(TAG, "previewFacts=" + previewFacts);
+
+        checkGlError("endSetupCamera");
     }
 
     /**
@@ -322,17 +431,74 @@ public class CameraActivity extends UnityPlayerActivity
     public void onDestroy()
     {
         closeCamera();
+
         super.onDestroy();
     }
 
+
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        init();
+    }
+
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
+        //resize(width, height);
+    }
+
+    @Override
+    public void onDrawFrame(GL10 gl) {
+       render();
+    }
+
+    public void onFrameAvailable(SurfaceTexture surfaceTexture){
+       // Log.i(TAG, "#####   onSurfaceCreated=");
+        // updateTexture();
+    }
     public static native void WriteFrame(byte[] frame);
 
     public static native void setParameters(int orientation, int width, int height, int flip);
+    public static native void bindTexture(int pointer);
+
+    public static native void init();
+    public static native void resize(int width, int height);
+    public static native void render();
 
     static
     {
         System.loadLibrary("VisageVision");
         System.loadLibrary("VisageTrackerUnityPlugin");
+    }
+
+
+    /** Implementation of run method of Runnable interface.
+     * Android requires that all rendering to a surface is done from separate thread than the one which created the View object. Rendering thread is started from surfaceCreated method.
+     * Method calls rendering loop of application.
+     */
+    public void run()
+    {
+        Canvas c = null;
+        boolean isAutoStopped = false;
+        while(cameraSurface != null)
+        {
+            try
+            {
+                //int st = GetStatus();
+                //int count = GetNotifyCount();
+                c = cameraSurface.getHolder().lockCanvas(null);
+                synchronized(this)
+                {
+                    cameraSurface.requestRender();
+                }
+            }
+            finally
+            {
+                if(c != null)
+                {
+                    cameraSurface.getHolder().unlockCanvasAndPost(c);
+                }
+            }
+        }
     }
 
 

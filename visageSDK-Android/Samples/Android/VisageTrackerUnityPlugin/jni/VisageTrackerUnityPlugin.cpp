@@ -79,7 +79,9 @@ extern "C" {
 	JavaVM* _vm = 0; 
 	JNIEnv* jni_env = 0;
 	jobject obj_Activity;
-	
+
+	static int textureID = 0;
+
 	void AlertCallback(const char* warningMessage)
 	{
 		jclass dataClass = jni_env->GetObjectClass(obj_Activity);
@@ -137,19 +139,42 @@ extern "C" {
 	
 	void Java_app_specta_inc_CameraActivity_WriteFrame(JNIEnv *env, jobject obj, jbyteArray frame)
 	{
-		LOGI("Java_app_specta_inc_CameraActivity_WriteFrame - called");
+		//LOGI("Java_app_specta_inc_CameraActivity_WriteFrame - called");
 		pthread_mutex_lock(&writeFrame_mutex);
 		if (!parametersChanged){
 			jbyte *pixelData = env->GetByteArrayElements(frame, 0);
-			LOGI("Java_app_specta_inc_CameraActivity_WriteFrame: %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
+			//LOGI("Java_app_specta_inc_CameraActivity_WriteFrame: %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
 
 			imageCapture->WriteFrameYUV((unsigned char*)pixelData);
 			env->ReleaseByteArrayElements(frame, pixelData, 0);
 		}
 		parametersChanged = false;
-		LOGI("Java_app_specta_inc_CameraActivity_WriteFrame - END");
+		//LOGI("Java_app_specta_inc_CameraActivity_WriteFrame - END");
 		pthread_mutex_unlock(&writeFrame_mutex);
 	}
+
+    void Java_app_specta_inc_CameraActivity_bindTexture(JNIEnv *env, jobject obj, jint texID){
+        LOGI("Java_app_specta_inc_CameraActivity_bindTexture : %d", texID);
+        _bindTexture(texID);
+    }
+
+
+    void Java_app_specta_inc_CameraActivity_init(JNIEnv*)
+    {
+        LOGI("Java_app_specta_inc_CameraActivity_init - START");
+    	initializeOpenGL();
+    	LOGI("Java_app_specta_inc_CameraActivity_init - END");
+    }
+    void Java_app_specta_inc_CameraActivity_resize(JNIEnv*, jint width, jint height)
+    {
+        LOGI("Java_app_specta_inc_CameraActivity_resize - START");
+    	resizeViewport(width, height);
+    	LOGI("Java_app_specta_inc_CameraActivity_resize - START");
+    }
+    void Java_app_specta_inc_CameraActivity_render(JNIEnv*)
+    {
+    	renderFrame();
+    }
 
 	void Java_app_specta_inc_CameraActivity_setParameters(JNIEnv *env, jobject obj, jint orientation, jint width, jint height, jint flip)
 	{
@@ -334,18 +359,88 @@ extern "C" {
 
 	void _bindTexture(int texID)
 	{
-		// binds a texture with the given native hardware texture id through opengl	
-		if (texID != -1 && pixelData != 0)
-		{
-			glBindTexture(GL_TEXTURE_2D, texID);
-			if (camOrientation == 90 || camOrientation == 270)
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camHeight, camWidth, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
-			else
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+        textureID = texID;
+    	if (textureID != -1 && pixelData != 0)
+        		{
+        	    	glActiveTexture(GL_TEXTURE0);
+        			//glBindTexture(GL_TEXTURE_2D, textureID);
+        			glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureID);
+        			if (camOrientation == 90 || camOrientation == 270)
+        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camHeight, camWidth, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+        			else
+        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
 
-			LOGI("_bindTexture : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
-		}
+        			LOGI("_bindTexture : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
+
+
+		        // Bind screen buffer into use.
+                //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                glViewport(0, 0, camWidth, camHeight);
+
+        		}
 	}
+
+	void initializeOpenGL()
+    {
+    	glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+
+    	GLuint renderedTexture;
+        glGenTextures(1, &renderedTexture);
+        textureID = renderedTexture;
+        LOGI("# Native initializeOpenGL :%d", textureID);
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureID);
+
+        glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
+    int getTexturePointer(){
+        return textureID;
+    }
+
+    void resizeViewport(int newWidth, int newHeight)
+    {
+    	glViewport(0, 0, newWidth, newHeight);
+    }
+    void renderFrame()
+    {
+    	glClear(GL_COLOR_BUFFER_BIT);
+    	if (textureID != -1 && pixelData != 0)
+        		{
+        	    	glActiveTexture(GL_TEXTURE0);
+        			//glBindTexture(GL_TEXTURE_2D, textureID);
+        			glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureID);
+        			if (camOrientation == 90 || camOrientation == 270)
+        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camHeight, camWidth, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+        			else
+        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+
+        			LOGI("_bindTexture : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
+
+                glViewport(0, 0, camWidth, camHeight);
+
+        		}
+    }
+
+    void _getRawFrame(int* height, int *width, char *rawData){
+        		pthread_mutex_lock(&grabFrame_mutex);
+
+        		LOGI("# Native _getRawFrame:%d", pixelData[0]);
+                if (camOrientation == 90 || camOrientation == 270){
+        		    *height = camHeight;
+        		    *width  = camWidth;
+        		} else {
+        		    *height = camWidth;
+                    *width  = camHeight;
+        		}
+        		int frameSize = camHeight * camWidth * 3;
+        		memcpy(rawData, pixelData, (frameSize)*sizeof(char));
+                LOGI("_getRawFrame : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
+                LOGI("_getRawFrame : %d | %d | %d | %d" , rawData[11],rawData[22],rawData[33],rawData[44]);
+        		pthread_mutex_unlock(&grabFrame_mutex);
+    }
 
 	// a helper function to get all the needed info in one native call
 	bool _getFaceModel(int* vertexNumber, float* vertices, int* triangleNumber, int* triangles, float* texCoord)
@@ -501,5 +596,7 @@ extern "C" {
 
 		return true;
 	}
+
+
 	
 }

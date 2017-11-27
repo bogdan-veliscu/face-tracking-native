@@ -429,11 +429,11 @@ extern "C" {
 
         		LOGI("# Native _getRawFrame:%d", pixelData[0]);
                 if (camOrientation == 90 || camOrientation == 270){
-        		    *height = camHeight;
-        		    *width  = camWidth;
-        		} else {
         		    *height = camWidth;
                     *width  = camHeight;
+        		} else {
+                    *height = camHeight;
+                    *width  = camWidth;
         		}
         		int frameSize = camHeight * camWidth * 3;
         		memcpy(rawData, pixelData, (frameSize)*sizeof(char));

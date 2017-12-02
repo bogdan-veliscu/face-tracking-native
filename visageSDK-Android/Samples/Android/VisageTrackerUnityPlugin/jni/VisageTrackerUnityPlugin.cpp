@@ -6,11 +6,13 @@
 
 #include "VisageTrackerUnityPlugin.h"
 #include "VisageTracker.h"
+#include "VisageFaceAnalyser.h"
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #include "AndroidCameraCapture.h"
 #include <jni.h>
 #include <unistd.h>
+#include <thread>
 
 #include <android/log.h>
 #define  LOG_TAG    "UnityPlugin"
@@ -22,6 +24,15 @@
 using namespace VisageSDK;
 
 static VisageTracker* m_Tracker = 0;
+static VisageFaceAnalyser* m_FaceAnalizer = 0;
+
+static int detectedAge = -2;
+static int detectedGender = -2;
+static int ageRefreshRequested = 1;
+
+int format = VISAGE_FRAMEGRABBER_FMT_LUMINANCE;
+static VsImage *m_Frame = 0;
+
 static AndroidCameraCapture *imageCapture = 0;
 
 
@@ -120,6 +131,8 @@ extern "C" {
 		jclass unity = jni_env->FindClass("com/unity3d/player/UnityPlayer");
 		jfieldID fid_Activity	= jni_env->GetStaticFieldID(unity, "currentActivity", "Landroid/app/Activity;");
 		obj_Activity	= jni_env->GetStaticObjectField(unity, fid_Activity);
+
+		LOGI("_initTracker with license: %s", license);
 		initializeLicenseManager(jni_env, obj_Activity, license, AlertCallback);
 		
 		if (m_Tracker)
@@ -134,9 +147,37 @@ extern "C" {
 	void _releaseTracker()
 	{
 		delete m_Tracker;
+		delete m_FaceAnalizer;
+		delete m_Frame;
 		m_Tracker = 0;
 	}
-	
+
+	void _initFaceAnalyser(char* config, char* license){
+
+            printf("@@ VisageFaceAnalyser _initFaceAnalyser");
+            if (m_FaceAnalizer){
+                delete m_FaceAnalizer;
+            }
+            m_FaceAnalizer = new VisageFaceAnalyser();
+            printf("@@ VisageFaceAnalyser init with config: %s\n", config);
+            int ret = m_FaceAnalizer->init(config);
+            printf("### VisageFaceAnalyser _initFaceAnalyser :%d", ret);
+        }
+
+        void _refreshAgeEstimate(){
+            ageRefreshRequested = 1;
+        }
+
+        int _estimateAge(){
+
+            return detectedAge;
+
+        }
+        int _estimateGender(){
+            return detectedGender;
+        }
+
+
 	void Java_app_specta_inc_CameraActivity_WriteFrame(JNIEnv *env, jobject obj, jbyteArray frame)
 	{
 		//LOGI("Java_app_specta_inc_CameraActivity_WriteFrame - called");
@@ -152,12 +193,6 @@ extern "C" {
 		//LOGI("Java_app_specta_inc_CameraActivity_WriteFrame - END");
 		pthread_mutex_unlock(&writeFrame_mutex);
 	}
-
-    void Java_app_specta_inc_CameraActivity_bindTexture(JNIEnv *env, jobject obj, jint texID){
-        LOGI("Java_app_specta_inc_CameraActivity_bindTexture : %d", texID);
-        _bindTexture(texID);
-    }
-
 
     void Java_app_specta_inc_CameraActivity_init(JNIEnv*)
     {
@@ -218,7 +253,7 @@ extern "C" {
 		if (!parametersChanged){
 			jbyte *pixelData = env->GetByteArrayElements(frame, 0);
 
-		    LOGI("Java_com_visagetechnologies_facialanimationdemo_CameraActivity_WriteFrame: %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
+		    //LOGI("Java_com_visagetechnologies_facialanimationdemo_CameraActivity_WriteFrame: %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
 
 			imageCapture->WriteFrameYUV((unsigned char*)pixelData);
 			env->ReleaseByteArrayElements(frame, pixelData, 0);
@@ -287,10 +322,16 @@ extern "C" {
 		long ts;
 		pixelData = (char*)imageCapture->GrabFrame(ts);
 
-        LOGI("_grabFrame: %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
+        //LOGI("_grabFrame: %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
 		pthread_mutex_unlock(&grabFrame_mutex);
 	}
-	
+	void updateAnalyserEstimations(){
+       printf("#### updateAnalyserEstimations ");
+       //detectedAge = m_FaceAnalizer->estimateAge(m_Frame, &trackingData[0]);
+       //detectedGender = m_FaceAnalizer->estimateGender(m_Frame, &trackingData[0]);
+       printf("#### Detected age:%d and gender: %d", detectedAge, detectedGender);
+    }
+
 	int _track()
 	{
 		pthread_mutex_lock(&grabFrame_mutex);
@@ -302,10 +343,26 @@ extern "C" {
 		
 		if (trackingStatus[0] == TRACK_STAT_OFF)
 			pixelData = 0;
-		LOGI("# Native _track:%d", trackingStatus[0]);
+
+        if(ageRefreshRequested && m_FaceAnalizer && pixelData[0] > 0){
+            ageRefreshRequested =0;
+            printf("#### ageRefreshRequested ");
+            //memcpy(m_Frame->imageData, pixelData, m_Frame->imageSize);
+
+            printf("#### ageRefreshRequested - after mem set");
+            m_Frame->width = camWidth;
+            m_Frame->height = camHeight;
+
+            printf("#### ageRefreshRequested - before thread");
+            std::thread bgCheck(updateAnalyserEstimations);
+            printf("#### ageRefreshRequested - after thread");
+        }
+
+		//LOGI("# Native _track:%d", trackingStatus[0]);
 		pthread_mutex_unlock(&grabFrame_mutex);
 		return trackingStatus[0];
 	}
+
 
 	const char* _get3DData(float* tx, float* ty, float* tz,float* rx, float* ry, float* rz)
 	{		
@@ -370,7 +427,7 @@ extern "C" {
         			else
         				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
 
-        			LOGI("_bindTexture : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
+        			//LOGI("_bindTexture : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
 
 
 		        // Bind screen buffer into use.
@@ -382,7 +439,7 @@ extern "C" {
 
 	void initializeOpenGL()
     {
-    	glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+    	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 
     	GLuint renderedTexture;
         glGenTextures(1, &renderedTexture);
@@ -407,6 +464,7 @@ extern "C" {
     void renderFrame()
     {
     	glClear(GL_COLOR_BUFFER_BIT);
+    	/*
     	if (textureID != -1 && pixelData != 0)
         		{
         	    	glActiveTexture(GL_TEXTURE0);
@@ -417,17 +475,16 @@ extern "C" {
         			else
         				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
 
-        			LOGI("_bindTexture : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
+        			//LOGI("_bindTexture : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
 
                 glViewport(0, 0, camWidth, camHeight);
 
         		}
+        		*/
     }
 
     void _getRawFrame(int* height, int *width, char *rawData){
         		pthread_mutex_lock(&grabFrame_mutex);
-
-        		LOGI("# Native _getRawFrame:%d", pixelData[0]);
                 if (camOrientation == 90 || camOrientation == 270){
         		    *height = camWidth;
                     *width  = camHeight;
@@ -436,9 +493,11 @@ extern "C" {
                     *width  = camWidth;
         		}
         		int frameSize = camHeight * camWidth * 3;
-        		memcpy(rawData, pixelData, (frameSize)*sizeof(char));
-                LOGI("_getRawFrame : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
-                LOGI("_getRawFrame : %d | %d | %d | %d" , rawData[11],rawData[22],rawData[33],rawData[44]);
+        		if (pixelData[0] > 0){
+        		    memcpy(rawData, pixelData, (frameSize)*sizeof(char));
+        		}
+
+                //LOGI("_getRawFrame : %d | %d | %d | %d" , rawData[11],rawData[22],rawData[33],rawData[44]);
         		pthread_mutex_unlock(&grabFrame_mutex);
     }
 

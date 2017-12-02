@@ -16,7 +16,14 @@ endif
 LOCAL_MODULE := VisageVision
 LOCAL_SRC_FILES := $(VISAGE_LIBS)/libVisageVision.so
 include $(PREBUILT_SHARED_LIBRARY)
-     
+
+########################
+# prepare VisageAnalyser
+LOCAL_MODULE    := VisageAnalyser
+LOCAL_SRC_FILES := $(VISAGE_LIBS)/libVisageAnalyser.so
+include $(LOCAL_SHARED_LIBRARIES)
+########################  
+
 include $(CLEAR_VARS)
  
 VISAGE_HEADERS  := ../../../include
@@ -40,11 +47,12 @@ LOCAL_SRC_FILES := \
 	AndroidCameraCapture.cpp
 
 LOCAL_SHARED_LIBRARIES := VisageVision	
-LOCAL_LDLIBS +=  -L$(VISAGE_LIBS) -L$(/jni) -lVisageVision -lGLESv1_CM -llog -ldl -Wl,--gc-sections,-rpath,.
+LOCAL_LDLIBS +=  -L$(VISAGE_LIBS) -L$(/jni) -lVisageVision -lVisageAnalyser -lGLESv1_CM -llog -ldl -Wl,--gc-sections,-rpath,.
 
 LOCAL_CFLAGS := -DANDROID_NDK \
 				-DDISABLE_IMPORTGL \
 				-DANDROID \
+				-std=c++11\
 				-D_CRT_SECURE_NO_WARNINGS \
 				-DVISAGE_STATIC \
 				-ffast-math -O2 -funroll-loops -Wno-write-strings				

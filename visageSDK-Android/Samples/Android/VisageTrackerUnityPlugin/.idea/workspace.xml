@@ -15,8 +15,8 @@
       <file leaf-file-name="Android.mk" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jni/Android.mk">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="885">
+              <caret line="59" column="30" lean-forward="false" selection-start-line="59" selection-start-column="10" selection-end-line="59" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -27,16 +27,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
               <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AndroidCameraCapture.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="945">
-              <caret line="63" column="24" lean-forward="false" selection-start-line="63" selection-start-column="9" selection-end-line="63" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -55,9 +45,86 @@
       <file leaf-file-name="VisageTrackerUnityPlugin.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="70">
-              <caret line="413" column="70" lean-forward="false" selection-start-line="413" selection-start-column="70" selection-end-line="413" selection-end-column="70" />
+            <state relative-caret-position="310">
+              <caret line="330" column="9" lean-forward="false" selection-start-line="330" selection-start-column="9" selection-end-line="330" selection-end-column="9" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="misc.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="modules.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.idea/modules.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="VisageTrackerUnityPlugin.iml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.idea/VisageTrackerUnityPlugin.iml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="workspace.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3525">
+              <caret line="235" column="58" lean-forward="false" selection-start-line="235" selection-start-column="58" selection-end-line="235" selection-end-column="58" />
+              <folding>
+                <marker date="1512200292000" expanded="true" signature="61769:61811" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="61769:61829" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="61769:61842" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="61769:61857" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="61892:64059" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="61905:64044" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="61959:62254" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="61978:62239" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62041:62219" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62081:62185" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62102:62163" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62304:62631" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62323:62616" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62418:62596" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62458:62562" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62479:62540" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62682:62947" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62701:62932" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62734:62912" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62774:62878" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62795:62856" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="62990:63296" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63009:63281" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63083:63261" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63123:63227" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63144:63205" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63347:63713" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63366:63698" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63461:63678" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63501:63644" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63522:63622" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63765:64030" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63784:64015" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63817:63995" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63857:63961" ph="..." />
+                <marker date="1512200292000" expanded="true" signature="63878:63939" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -75,8 +142,8 @@
       <file leaf-file-name="VisageTrackerUnityPlugin.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="717">
-              <caret line="90" column="28" lean-forward="false" selection-start-line="90" selection-start-column="28" selection-end-line="90" selection-end-column="28" />
+            <state relative-caret-position="405">
+              <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -86,19 +153,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>com_visagetechnologies_visagetrackerunitydemo</find>
-      <find>imagewi</find>
-      <find>LOGI</find>
-      <find>grabr</find>
-      <find>WriteFrameYUV</find>
-      <find>_openCamera</find>
-      <find>writefra</find>
-      <find>bindtext</find>
-      <find>grabframe</find>
-      <find>pixelData</find>
-      <find>track</find>
-      <find>YUV_NV21_TO_RGB</find>
-      <find>_track</find>
       <find>writefram</find>
       <find>_writefram</find>
       <find>_writeFrame(void * pixelData)</find>
@@ -115,7 +169,20 @@
       <find>textureID</find>
       <find>_bindTexture_bindTexture</find>
       <find>renderfra</find>
+      <find>licens</find>
       <find>_bindTexture</find>
+      <find>pixeldata</find>
+      <find>_init</find>
+      <find>visagetracker</find>
+      <find>VisageTracker</find>
+      <find>VisageTracker.</find>
+      <find>VisageTracker.h</find>
+      <find>m_Tracker</find>
+      <find>m_Frame</find>
+      <find>trac</find>
+      <find>thread</find>
+      <find>m_FaceAnalizer</find>
+      <find>updateAnalyserEstimations</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -128,12 +195,13 @@
       <list>
         <option value="$PROJECT_DIR$/buildLib.sh" />
         <option value="$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h" />
+        <option value="$PROJECT_DIR$/jni/Android.mk" />
         <option value="$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="694" />
+    <option name="x" value="638" />
     <option name="y" value="23" />
     <option name="width" value="1282" />
     <option name="height" value="982" />
@@ -153,8 +221,10 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
+      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -181,10 +251,22 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="VisageTrackerUnityPlugin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="VisageTrackerUnityPlugin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value=".idea" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -193,7 +275,8 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -275,7 +358,7 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511823612912" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1512208232224" />
       </method>
     </configuration>
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
@@ -323,7 +406,7 @@
       </Profilers>
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1511823612912" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1512208232224" />
       </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -496,23 +579,24 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="694" y="23" width="1282" height="982" extended-state="0" />
+    <frame x="638" y="23" width="1282" height="982" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27279937" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24945612" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -532,6 +616,123 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2280">
+          <caret line="152" column="5" lean-forward="true" selection-start-line="152" selection-start-column="5" selection-end-line="152" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/Android.mk">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/Application.mk">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1635">
+          <caret line="109" column="4" lean-forward="false" selection-start-line="109" selection-start-column="4" selection-end-line="109" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2250">
+          <caret line="150" column="23" lean-forward="false" selection-start-line="150" selection-start-column="23" selection-end-line="150" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/modules.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/VisageTrackerUnityPlugin.iml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3525">
+          <caret line="235" column="58" lean-forward="false" selection-start-line="235" selection-start-column="58" selection-end-line="235" selection-end-column="58" />
+          <folding>
+            <marker date="1512200292000" expanded="true" signature="61769:61811" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61769:61829" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61769:61842" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61769:61857" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61892:64059" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61905:64044" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61959:62254" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61978:62239" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62041:62219" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62081:62185" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62102:62163" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62304:62631" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62323:62616" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62418:62596" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62458:62562" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62479:62540" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62682:62947" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62701:62932" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62734:62912" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62774:62878" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62795:62856" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62990:63296" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63009:63281" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63083:63261" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63123:63227" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63144:63205" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63347:63713" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63366:63698" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63461:63678" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63501:63644" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63522:63622" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63765:64030" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63784:64015" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63817:63995" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63857:63961" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63878:63939" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/buildLib.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="208" lean-forward="false" selection-start-line="3" selection-start-column="208" selection-end-line="3" selection-end-column="208" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/jni/Android.mk">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -552,7 +753,61 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="945">
           <caret line="63" column="24" lean-forward="false" selection-start-line="63" selection-start-column="9" selection-end-line="63" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1635">
+          <caret line="109" column="4" lean-forward="false" selection-start-line="109" selection-start-column="4" selection-end-line="109" selection-end-column="41" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6195">
+          <caret line="413" column="70" lean-forward="false" selection-start-line="413" selection-start-column="70" selection-end-line="413" selection-end-column="70" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/buildLib.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="208" lean-forward="false" selection-start-line="3" selection-start-column="208" selection-end-line="3" selection-end-column="208" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1350">
+          <caret line="90" column="28" lean-forward="false" selection-start-line="90" selection-start-column="28" selection-end-line="90" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/Android.mk">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/Application.mk">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="945">
+          <caret line="63" column="24" lean-forward="false" selection-start-line="63" selection-start-column="9" selection-end-line="63" selection-end-column="24" />
         </state>
       </provider>
     </entry>
@@ -600,7 +855,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="945">
           <caret line="63" column="24" lean-forward="false" selection-start-line="63" selection-start-column="9" selection-end-line="63" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -640,7 +894,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="945">
           <caret line="63" column="24" lean-forward="false" selection-start-line="63" selection-start-column="9" selection-end-line="63" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -688,7 +941,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -716,26 +968,94 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jni/Android.mk">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jni/Application.mk">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="945">
           <caret line="63" column="24" lean-forward="false" selection-start-line="63" selection-start-column="9" selection-end-line="63" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/buildLib.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="208" lean-forward="false" selection-start-line="3" selection-start-column="208" selection-end-line="3" selection-end-column="208" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/modules.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/VisageTrackerUnityPlugin.iml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3525">
+          <caret line="235" column="58" lean-forward="false" selection-start-line="235" selection-start-column="58" selection-end-line="235" selection-end-column="58" />
+          <folding>
+            <marker date="1512200292000" expanded="true" signature="61769:61811" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61769:61829" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61769:61842" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61769:61857" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61892:64059" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61905:64044" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61959:62254" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="61978:62239" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62041:62219" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62081:62185" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62102:62163" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62304:62631" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62323:62616" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62418:62596" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62458:62562" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62479:62540" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62682:62947" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62701:62932" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62734:62912" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62774:62878" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62795:62856" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="62990:63296" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63009:63281" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63083:63261" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63123:63227" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63144:63205" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63347:63713" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63366:63698" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63461:63678" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63501:63644" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63522:63622" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63765:64030" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63784:64015" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63817:63995" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63857:63961" ph="..." />
+            <marker date="1512200292000" expanded="true" signature="63878:63939" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/Android.mk">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="885">
+          <caret line="59" column="30" lean-forward="false" selection-start-line="59" selection-start-column="10" selection-end-line="59" selection-end-column="30" />
           <folding />
         </state>
       </provider>
@@ -748,26 +1068,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/buildLib.sh">
+    <entry file="file://$PROJECT_DIR$/jni/Application.mk">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="208" lean-forward="false" selection-start-line="3" selection-start-column="208" selection-end-line="3" selection-end-column="208" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="717">
-          <caret line="90" column="28" lean-forward="false" selection-start-line="90" selection-start-column="28" selection-end-line="90" selection-end-column="28" />
+        <state relative-caret-position="405">
+          <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="70">
-          <caret line="413" column="70" lean-forward="false" selection-start-line="413" selection-start-column="70" selection-end-line="413" selection-end-column="70" />
+        <state relative-caret-position="310">
+          <caret line="330" column="9" lean-forward="false" selection-start-line="330" selection-start-column="9" selection-end-line="330" selection-end-column="9" />
           <folding />
         </state>
       </provider>

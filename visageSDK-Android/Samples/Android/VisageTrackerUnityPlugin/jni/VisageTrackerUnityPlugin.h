@@ -23,6 +23,12 @@ extern "C" {
 	/** Initialises the tracker.
 	 */
 	void _initTracker(char* configuration, char* license);
+
+    void _initFaceAnalyser(char* config, char* license);
+
+    void _refreshAgeEstimate();
+    int _estimateAge();
+    int _estimateGender();
 	
 	/** Releases memory allocated by the tracker in the initTracker function.
 	*/

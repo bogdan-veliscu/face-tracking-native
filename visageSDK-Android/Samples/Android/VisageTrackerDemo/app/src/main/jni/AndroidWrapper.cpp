@@ -53,6 +53,9 @@ extern "C" {
 const int MAX_FACES = 4;
 
 static VisageTracker *m_Tracker = 0;
+static VisageFaceAnalyser* m_FaceAnalizer = 0;
+static VsImage *m_Frame = 0;
+
 static FaceData trackingData[MAX_FACES];
 static FaceData drawTrackingData[MAX_FACES];
 static FaceData copyTrackingData[MAX_FACES];
@@ -201,6 +204,15 @@ void Java_com_visagetechnologies_visagetrackerdemo_TrackerActivity_TrackerInit(J
 
 	a_cap_image = 0;
 	m_Tracker = new VisageTracker(_configFilename);
+    m_Frame = vsCreateImage(vsSize(camWidth, camHeight), 8, 3);
+    if (m_FaceAnalizer){
+         delete m_FaceAnalizer;
+      }
+     m_FaceAnalizer = new VisageFaceAnalyser();
+
+            LOGI("@@ VisageFaceAnalyser init with config: %s\n", config);
+            int ret = m_FaceAnalizer->init("/data/data/com.visagetechnologies.visagetrackerdemo/files/bdtsdata");
+            LOGI("### VisageFaceAnalyser _initFaceAnalyser :%d", ret);
 
 	LOGI("%s", _configFilename);
 	env->ReleaseStringUTFChars(configFilename, _configFilename);
@@ -287,6 +299,13 @@ void Java_com_visagetechnologies_visagetrackerdemo_TrackerActivity_TrackFromCam(
                 trackingStatus = m_Tracker->track(camWidth, camHeight, pixelData->imageData, trackingData, VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1, MAX_FACES);
             long endTime = getTimeNsec();
             trackingTime = (int)endTime - startTime;
+            LOGI("#### ageRefreshRequested - before");
+
+            //memcpy(m_Frame->imageData, pixelData, (frameSize)*sizeof(char));
+             int   detectedAge = m_FaceAnalizer->estimateAge(m_Frame, trackingData);
+             int   detectedGender = m_FaceAnalizer->estimateGender(m_Frame, trackingData);
+
+            LOGI("#### ageRefreshRequested - after");
 
 			pthread_mutex_unlock(&guardFrame_mutex);
 			pthread_mutex_lock(&displayRes_mutex);

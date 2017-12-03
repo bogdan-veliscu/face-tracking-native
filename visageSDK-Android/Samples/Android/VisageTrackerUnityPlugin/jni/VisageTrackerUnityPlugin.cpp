@@ -7,6 +7,8 @@
 #include "VisageTrackerUnityPlugin.h"
 #include "VisageTracker.h"
 #include "VisageFaceAnalyser.h"
+#include "Common.h"
+#include "WrapperOpenCV.h"
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #include "AndroidCameraCapture.h"
@@ -148,20 +150,31 @@ extern "C" {
 	{
 		delete m_Tracker;
 		delete m_FaceAnalizer;
-		delete m_Frame;
+
+        vsReleaseImage(&m_Frame);
 		m_Tracker = 0;
 	}
 
 	void _initFaceAnalyser(char* config, char* license){
+            jni_env = 0;
+            _vm->AttachCurrentThread(&jni_env, 0);
+            jclass unity = jni_env->FindClass("com/unity3d/player/UnityPlayer");
+            jfieldID fid_Activity	= jni_env->GetStaticFieldID(unity, "currentActivity", "Landroid/app/Activity;");
+            obj_Activity	= jni_env->GetStaticObjectField(unity, fid_Activity);
 
-            printf("@@ VisageFaceAnalyser _initFaceAnalyser");
+            m_Frame = vsCreateImage(vsSize(camWidth, camHeight), 8, 3);
+
+            LOGI("@@ VisageFaceAnalyser _initFaceAnalyser: %s\n", config);
+            initializeLicenseManager(jni_env, obj_Activity, license, AlertCallback);
+
             if (m_FaceAnalizer){
                 delete m_FaceAnalizer;
             }
+            LOGI("@@ VisageFaceAnalyser _initFaceAnalyser 222 ");
             m_FaceAnalizer = new VisageFaceAnalyser();
-            printf("@@ VisageFaceAnalyser init with config: %s\n", config);
+            LOGI("@@ VisageFaceAnalyser init with config: %s\n", config);
             int ret = m_FaceAnalizer->init(config);
-            printf("### VisageFaceAnalyser _initFaceAnalyser :%d", ret);
+            LOGI("### VisageFaceAnalyser _initFaceAnalyser :%d", ret);
         }
 
         void _refreshAgeEstimate(){
@@ -326,10 +339,13 @@ extern "C" {
 		pthread_mutex_unlock(&grabFrame_mutex);
 	}
 	void updateAnalyserEstimations(){
-       printf("#### updateAnalyserEstimations ");
-       //detectedAge = m_FaceAnalizer->estimateAge(m_Frame, &trackingData[0]);
-       //detectedGender = m_FaceAnalizer->estimateGender(m_Frame, &trackingData[0]);
-       printf("#### Detected age:%d and gender: %d", detectedAge, detectedGender);
+
+    LOGI("#### updateAnalyserEstimations ");
+    pthread_mutex_lock(&grabFrame_mutex);
+    detectedAge = m_FaceAnalizer->estimateAge(m_Frame, trackingData);
+    detectedGender = m_FaceAnalizer->estimateGender(m_Frame, trackingData);
+    pthread_mutex_unlock(&grabFrame_mutex);
+    LOGI("#### Detected age:%d and gender: %d", detectedAge, detectedGender);
     }
 
 	int _track()
@@ -344,18 +360,23 @@ extern "C" {
 		if (trackingStatus[0] == TRACK_STAT_OFF)
 			pixelData = 0;
 
-        if(ageRefreshRequested && m_FaceAnalizer && pixelData[0] > 0){
+        if(ageRefreshRequested && m_FaceAnalizer && trackingStatus[0] == TRACK_STAT_OK){
             ageRefreshRequested =0;
-            printf("#### ageRefreshRequested ");
-            //memcpy(m_Frame->imageData, pixelData, m_Frame->imageSize);
+            LOGI("#### ageRefreshRequested v.3 ");
+            int frameSize = camHeight * camWidth * 3;
+            if (pixelData[0] > 0){
+                memcpy(m_Frame->imageData, pixelData, (frameSize)*sizeof(char));
+             }
+            LOGI("#### ageRefreshRequested - after mem set");
 
-            printf("#### ageRefreshRequested - after mem set");
             m_Frame->width = camWidth;
             m_Frame->height = camHeight;
 
-            printf("#### ageRefreshRequested - before thread");
-            std::thread bgCheck(updateAnalyserEstimations);
-            printf("#### ageRefreshRequested - after thread");
+            LOGI("#### ageRefreshRequested - before thread");
+            //updateAnalyserEstimations();
+            //std::thread bgCheck(updateAnalyserEstimations);
+            //bgCheck.detach();
+            LOGI("#### ageRefreshRequested - after thread");
         }
 
 		//LOGI("# Native _track:%d", trackingStatus[0]);

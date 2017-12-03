@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include "VisageDrawing.h"
 #include "VisageFeaturesDetector.h"
-#include "Common.h"
 #include "WrapperOpenCV.h"
 #include "cv.h"
+#include "Common.h"
 #include "highgui.h"
 #include "VisageFaceRecognition.h"
 #include "VisageFaceAnalyser.h"

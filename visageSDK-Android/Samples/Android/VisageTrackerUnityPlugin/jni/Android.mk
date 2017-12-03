@@ -22,10 +22,15 @@ include $(PREBUILT_SHARED_LIBRARY)
 LOCAL_MODULE    := VisageAnalyser
 LOCAL_SRC_FILES := $(VISAGE_LIBS)/libVisageAnalyser.so
 include $(LOCAL_SHARED_LIBRARIES)
-########################  
+########################
 
 include $(CLEAR_VARS)
- 
+# OPENCV_LIB_TYPE := STATIC
+
+ OPENCV_MK_PATH:=../../../../dependencies/OpenCV-2.4.11-Android/jni/OpenCV.mk
+# include $(OPENCV_MK_PATH)
+$(warning "#######" + $(OPENCV_MK_PATH))
+
 VISAGE_HEADERS  := ../../../include
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 VISAGE_LIBS := ../../../lib/armeabi-v7a
@@ -52,7 +57,7 @@ LOCAL_LDLIBS +=  -L$(VISAGE_LIBS) -L$(/jni) -lVisageVision -lVisageAnalyser -lGL
 LOCAL_CFLAGS := -DANDROID_NDK \
 				-DDISABLE_IMPORTGL \
 				-DANDROID \
-				-std=c++11\
+				-std=c++11 \
 				-D_CRT_SECURE_NO_WARNINGS \
 				-DVISAGE_STATIC \
 				-ffast-math -O2 -funroll-loops -Wno-write-strings				

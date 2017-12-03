@@ -22,7 +22,8 @@
   /Users/bogdan/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/fstream \
   ../../../include/TrackerGazeCalibrator.h \
   ../../../include/SmoothingFilter.h \
-  ../../../include/VisageFaceAnalyser.h jni/AndroidCameraCapture.h \
+  ../../../include/VisageFaceAnalyser.h ../../../include/Common.h \
+  jni/AndroidCameraCapture.h \
   /Users/bogdan/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/cerrno \
   /Users/bogdan/Library/Android/sdk/ndk-bundle/sources/cxx-stl/gnu-libstdc++/4.9/include/thread
 
@@ -85,6 +86,8 @@ jni/VisageTrackerUnityPlugin.h:
 ../../../include/SmoothingFilter.h:
 
 ../../../include/VisageFaceAnalyser.h:
+
+../../../include/Common.h:
 
 jni/AndroidCameraCapture.h:
 

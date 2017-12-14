@@ -30,7 +30,7 @@
     [SFSpeechRecognizer requestAuthorization:^(SFSpeechRecognizerAuthorizationStatus status) {
         switch (status) {
             case SFSpeechRecognizerAuthorizationStatusAuthorized:
-                NSLog(@"#SpechRecognition: Authorized :SFSpeechRecognizerAuthorizationStatusAuthorized");
+                NSLog(@"#SpechRecognition v3: Authorized :SFSpeechRecognizerAuthorizationStatusAuthorized");
                 break;
             case SFSpeechRecognizerAuthorizationStatusDenied:
                 NSLog(@"#SpechRecognition: Denied");
@@ -51,16 +51,9 @@
 
 - (void)startListening {
     
+    NSLog(@"## startListening");
     // Initialize the AVAudioEngine
     audioEngine = [[AVAudioEngine alloc] init];
-    
-    // Make sure there's not a recognition task already running
-    if (recognitionTask) {
-        
-        NSLog(@"#SpechRecognition an older recognitionTask isRunning !");
-        [recognitionTask cancel];
-        recognitionTask = nil;
-    }
     
     // Starts an AVAudio Session
     NSError *error;
@@ -76,16 +69,12 @@
     recognitionTask = [speechRecognizer recognitionTaskWithRequest:recognitionRequest resultHandler:^(SFSpeechRecognitionResult * _Nullable result, NSError * _Nullable error) {
         BOOL isFinal = NO;
         if (result) {
-            // Whatever you say in the mic after pressing the button should be being logged
-            // in the console.
-            NSLog(@"#SpechRecognition RESULT: %@",result.bestTranscription.formattedString);
             
             [self setRecognizedText: [NSString stringWithString: result.bestTranscription.formattedString]];
             
-            //([result.bestTranscription.formattedString UTF8String]);
             isFinal = !result.isFinal;
         }
-        if (error) {
+        if (error && !recognitionTask.isCancelled) {
             NSLog(@"#SpechRecognitionError: %@ %@", error, [error userInfo]);
             [audioEngine stop];
             [inputNode removeTapOnBus:0];
@@ -109,26 +98,27 @@
 
 - (void)restartRecognition {
     
+    NSLog(@"## restartRecognition");
     [self setRecognizedText: @"Initializing"];
     if (audioEngine.isRunning) {
-        [recognitionRequest endAudio];
-        [audioEngine stop];
+        [self stopListening];
     }
     [self performSelector:@selector(startListening) withObject:nil afterDelay:0.3];
 }
 
 - (void) stopListening{
-    NSLog(@"StopListening");
-    if (audioEngine.isRunning) {
-        [recognitionRequest endAudio];
-        [audioEngine stop];
-    }
+    NSLog(@"StopListening v2");
+
     // Make sure there's not a recognition task already running
     if (recognitionTask) {
         
-        NSLog(@"#SpechRecognition an older recognitionTask isRunning !");
+        NSLog(@"### SpechRecognition an older recognitionTask isRunning !");
         [recognitionTask cancel];
         recognitionTask = nil;
+    }
+    if (audioEngine.isRunning) {
+        [audioEngine stop];
+        [recognitionRequest endAudio];
     }
 }
 

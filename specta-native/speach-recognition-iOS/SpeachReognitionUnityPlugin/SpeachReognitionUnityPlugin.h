@@ -21,8 +21,6 @@
 
 }
 
-@property (nonatomic, copy) NSString* lastRecognizedText;
-
 @end
 
 extern "C" {

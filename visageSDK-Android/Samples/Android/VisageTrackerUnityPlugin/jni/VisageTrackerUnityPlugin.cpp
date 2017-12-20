@@ -33,7 +33,7 @@ static int detectedGender = -2;
 static int ageRefreshRequested = 1;
 
 int format = VISAGE_FRAMEGRABBER_FMT_LUMINANCE;
-static VsImage *m_Frame = 0;
+static VsImage *pixelData = 0;
 
 static AndroidCameraCapture *imageCapture = 0;
 
@@ -86,7 +86,6 @@ extern "C" {
 	static float yTexScale;
 	//
 	static bool parametersChanged;
-	static char *pixelData = 0;
 	pthread_mutex_t writeFrame_mutex;
 	pthread_mutex_t grabFrame_mutex;
 	
@@ -154,7 +153,6 @@ extern "C" {
 		delete m_Tracker;
 		delete m_FaceAnalizer;
 
-        vsReleaseImage(&m_Frame);
 		m_Tracker = 0;
 	}
 
@@ -166,15 +164,11 @@ extern "C" {
              "Landroid/app/Activity;");
             obj_Activity	= jni_env->GetStaticObjectField(unity, fid_Activity);
 
-            m_Frame = vsCreateImage(vsSize(camWidth, camHeight), 8, 3);
-
-            LOGI("@@ VisageFaceAnalyser _initFaceAnalyser: %s\n", config);
             initializeLicenseManager(jni_env, obj_Activity, license, AlertCallback);
 
             if (m_FaceAnalizer){
                 delete m_FaceAnalizer;
             }
-            LOGI("@@ VisageFaceAnalyser _initFaceAnalyser 222 ");
             m_FaceAnalizer = new VisageFaceAnalyser();
             LOGI("@@ VisageFaceAnalyser init with config: %s\n", config);
             int ret = m_FaceAnalizer->init(config);
@@ -186,9 +180,7 @@ extern "C" {
         }
 
         int _estimateAge(){
-
             return detectedAge;
-
         }
         int _estimateGender(){
             return detectedGender;
@@ -335,52 +327,50 @@ extern "C" {
 			return;
 		pthread_mutex_lock(&grabFrame_mutex);
 		long ts;
-		pixelData = (char*)imageCapture->GrabFrame(ts);
+		pixelData = imageCapture->GrabFrame(ts);
 
 		pthread_mutex_unlock(&grabFrame_mutex);
 	}
 	void updateAnalyserEstimations(){
 
-    LOGI("#### updateAnalyserEstimations ");
-    pthread_mutex_lock(&grabFrame_mutex);
-    detectedAge = m_FaceAnalizer->estimateAge(m_Frame, trackingData);
-    detectedGender = m_FaceAnalizer->estimateGender(m_Frame, trackingData);
-    pthread_mutex_unlock(&grabFrame_mutex);
-    LOGI("#### Detected age:%d and gender: %d", detectedAge, detectedGender);
+        pthread_mutex_lock(&grabFrame_mutex);
+        detectedAge = m_FaceAnalizer->estimateAge(pixelData, trackingData);
+        detectedGender = m_FaceAnalizer->estimateGender(pixelData, trackingData);
+        pthread_mutex_unlock(&grabFrame_mutex);
+        LOGI("#### updateAnalyserEstimations Detected age:%d and gender: %d", detectedAge, detectedGender);
     }
 
 	int _track()
 	{
 		pthread_mutex_lock(&grabFrame_mutex);
 
-		if (camOrientation == 90 || camOrientation == 270)
-			trackingStatus = m_Tracker->track(camHeight, camWidth, pixelData, trackingData,
-			VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
-		else
-			trackingStatus = m_Tracker->track(camWidth, camHeight, pixelData, trackingData,
-			VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
-		
-		if (trackingStatus[0] == TRACK_STAT_OFF)
-			pixelData = 0;
+	    if (pixelData != 0){
+	        //LOGI("#### Camera frame ready v2!");
 
-        if(ageRefreshRequested && m_FaceAnalizer && trackingStatus[0] == TRACK_STAT_OK){
-            ageRefreshRequested =0;
-            LOGI("#### ageRefreshRequested v.3 ");
-            int frameSize = camHeight * camWidth * 3;
-            if (pixelData[0] > 0){
-                memcpy(m_Frame->imageData, pixelData, (frameSize)*sizeof(char));
-             }
-            LOGI("#### ageRefreshRequested - after mem set");
+            if (camOrientation == 90 || camOrientation == 270)
+                trackingStatus = m_Tracker->track(camHeight, camWidth, (const char*) pixelData->imageData, trackingData,
+                VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
+            else
+                trackingStatus = m_Tracker->track(camWidth, camHeight, (const char*) pixelData->imageData, trackingData,
+                VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
 
-            m_Frame->width = camWidth;
-            m_Frame->height = camHeight;
+	        //LOGI("#### Tracking ended with status: %d" , trackingStatus[0]);
+            if (trackingStatus[0] == TRACK_STAT_OFF)
+                pixelData = 0;
 
-            LOGI("#### ageRefreshRequested - before thread");
-            //updateAnalyserEstimations();
-            //std::thread bgCheck(updateAnalyserEstimations);
-            //bgCheck.detach();
-            LOGI("#### ageRefreshRequested - after thread");
-        }
+            if(ageRefreshRequested && m_FaceAnalizer && trackingStatus[0] == TRACK_STAT_OK){
+                ageRefreshRequested =0;
+                int frameSize = camHeight * camWidth * 3;
+
+                std::thread bgCheck(updateAnalyserEstimations);
+                bgCheck.detach();
+            }
+        } else {
+            int res[] = {TRACK_STAT_OFF};
+
+            trackingStatus = &res[0];
+	        LOGI("#### Camera frame not yet ready v2 :%d!", trackingStatus[0]);
+	    }
 
 		//LOGI("# Native _track:%d", trackingStatus[0]);
 		pthread_mutex_unlock(&grabFrame_mutex);
@@ -439,10 +429,10 @@ extern "C" {
         			glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureID);
         			if (camOrientation == 90 || camOrientation == 270)
         				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camHeight, camWidth, GL_RGB,
-        				 GL_UNSIGNED_BYTE, pixelData);
+        				 GL_UNSIGNED_BYTE, pixelData->imageData);
         			else
         				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB,
-        				GL_UNSIGNED_BYTE, pixelData);
+        				GL_UNSIGNED_BYTE, pixelData->imageData);
 
 		        // Bind screen buffer into use.
                 //glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -490,8 +480,8 @@ extern "C" {
                     *width  = camWidth;
         		}
         		int frameSize = camHeight * camWidth * 3;
-        		if (pixelData[0] > 0){
-        		    memcpy(rawData, pixelData, (frameSize)*sizeof(char));
+        		if (pixelData != 0){
+        		    memcpy(rawData, pixelData->imageData, (frameSize)*sizeof(char));
         		}
 
         		pthread_mutex_unlock(&grabFrame_mutex);

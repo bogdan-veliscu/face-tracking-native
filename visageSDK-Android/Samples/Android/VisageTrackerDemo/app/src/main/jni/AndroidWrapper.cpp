@@ -298,7 +298,12 @@ void Java_com_visagetechnologies_visagetrackerdemo_TrackerActivity_TrackFromCam(
             {
                 pthread_mutex_unlock(&guardFrame_mutex);
                 return;
-            }
+            }age
+             int res[] = {TRACK_STAT_OFF};
+
+                        trackingStatus = &res[0];
+            	        LOGI("#### Camera frame not yet ready v2 :%d!", trackingStatus[0]);
+
             long startTime = getTimeNsec();
             if (camOrientation == 90 || camOrientation == 270)
                 trackingStatus = m_Tracker->track(camHeight, camWidth, pixelData->imageData, trackingData, VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1, MAX_FACES);
@@ -309,8 +314,8 @@ void Java_com_visagetechnologies_visagetrackerdemo_TrackerActivity_TrackFromCam(
             LOGI("#### ageRefreshRequested - before");
 
             //memcpy(m_Frame->imageData, pixelData, (frameSize)*sizeof(char));
-             int   detectedAge = m_FaceAnalizer->estimateAge(m_Frame, trackingData);
-             int   detectedGender = m_FaceAnalizer->estimateGender(m_Frame, trackingData);
+             int   detectedAge = m_FaceAnalizer->estimateAge(pixelData, trackingData);
+             int   detectedGender = m_FaceAnalizer->estimateGender(pixelData, trackingData);
 
             LOGI("#### ageRefreshRequested - after : %d --> %d", detectedAge, detectedGender);
 

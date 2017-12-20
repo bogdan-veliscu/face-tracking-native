@@ -19,9 +19,10 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 ########################
 # prepare VisageAnalyser
+include $(CLEAR_VARS)
 LOCAL_MODULE    := VisageAnalyser
 LOCAL_SRC_FILES := $(VISAGE_LIBS)/libVisageAnalyser.so
-include $(LOCAL_SHARED_LIBRARIES)
+include $(PREBUILT_SHARED_LIBRARY)
 ########################
 
 include $(CLEAR_VARS)
@@ -51,7 +52,7 @@ LOCAL_SRC_FILES := \
 	VisageTrackerUnityPlugin.cpp \
 	AndroidCameraCapture.cpp
 
-LOCAL_SHARED_LIBRARIES := VisageVision	
+LOCAL_SHARED_LIBRARIES := VisageVision VisageAnalyser
 LOCAL_LDLIBS +=  -L$(VISAGE_LIBS) -L$(/jni) -lVisageVision -lVisageAnalyser -lGLESv1_CM -llog -ldl -Wl,--gc-sections,-rpath,.
 
 LOCAL_CFLAGS := -DANDROID_NDK \

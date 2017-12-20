@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "VisageTracker.h"
+#include "VisageFaceAnalyser.h"
 #include "VisageRendering.h"
 #include "AndroidImageCapture.h"
 #include "AndroidCameraCapture.h"
@@ -176,7 +177,7 @@ IplImage* loadLogo(std::string logoPath)
  *
  * This method creates a new VisageTracker objects and initializes the tracker.
  */
-void Java_com_visagetechnologies_visagetrackerdemo_TrackerActivity_TrackerInit(JNIEnv *env, jobject obj, jstring configFilename)
+void Java_com_visagetechnologies_visagetrackerdemo_TrackerActivity_TrackerInit(JNIEnv *env, jobject obj, jstring configFilename, jstring appPath)
 {
 	_env = env;
 	_obj = obj;
@@ -210,9 +211,15 @@ void Java_com_visagetechnologies_visagetrackerdemo_TrackerActivity_TrackerInit(J
       }
      m_FaceAnalizer = new VisageFaceAnalyser();
 
-            LOGI("@@ VisageFaceAnalyser init with config: %s\n", config);
-            int ret = m_FaceAnalizer->init("/data/data/com.visagetechnologies.visagetrackerdemo/files/bdtsdata");
-            LOGI("### VisageFaceAnalyser _initFaceAnalyser :%d", ret);
+        const char *_appPath = env->GetStringUTFChars(appPath, 0);
+        std::string path(_appPath);
+        path.append("/bdtsdata/LBF/vfadata");
+
+        //       /data/user/0/com.visagetechnologies.visagetrackerdemo/files/bdtsdata/
+        //       /data/user/0/com.visagetechnologies.visagetrackerdemo/files/bdtsdata
+
+    int ret = m_FaceAnalizer->init(path.c_str());
+    LOGI("### VisageFaceAnalyser _initFaceAnalyser :%d -> %s", ret, path.c_str());
 
 	LOGI("%s", _configFilename);
 	env->ReleaseStringUTFChars(configFilename, _configFilename);
@@ -305,7 +312,7 @@ void Java_com_visagetechnologies_visagetrackerdemo_TrackerActivity_TrackFromCam(
              int   detectedAge = m_FaceAnalizer->estimateAge(m_Frame, trackingData);
              int   detectedGender = m_FaceAnalizer->estimateGender(m_Frame, trackingData);
 
-            LOGI("#### ageRefreshRequested - after");
+            LOGI("#### ageRefreshRequested - after : %d --> %d", detectedAge, detectedGender);
 
 			pthread_mutex_unlock(&guardFrame_mutex);
 			pthread_mutex_lock(&displayRes_mutex);

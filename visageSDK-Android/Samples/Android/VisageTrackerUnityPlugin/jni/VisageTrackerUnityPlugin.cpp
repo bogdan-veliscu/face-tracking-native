@@ -66,7 +66,8 @@ static unsigned int GetNearestPow2(unsigned int num)
 
 namespace VisageSDK
 {
-	   void initializeLicenseManager(JNIEnv* env, jobject obj, const char *licenseKeyFileName, void (*alertFunction)(const char*) = 0);
+	   void initializeLicenseManager(JNIEnv* env, jobject obj, const char *licenseKeyFileName,
+	   void (*alertFunction)(const char*) = 0);
 }
 
 
@@ -103,7 +104,8 @@ extern "C" {
 		if (dataClass != NULL)
 		{
 			jclass javaClassRef = (jclass) jni_env->NewGlobalRef(dataClass);
-			jmethodID javaMethodRef = jni_env->GetMethodID(javaClassRef, "AlertDialogFunction", "(Ljava/lang/String;)V");
+			jmethodID javaMethodRef = jni_env->GetMethodID(javaClassRef, "AlertDialogFunction",
+			"(Ljava/lang/String;)V");
 			if (jni_env->ExceptionCheck())
 				jni_env->ExceptionClear();
 			jstring message = jni_env->NewStringUTF(warningMessage);
@@ -131,7 +133,8 @@ extern "C" {
 		jni_env = 0;
 		_vm->AttachCurrentThread(&jni_env, 0);
 		jclass unity = jni_env->FindClass("com/unity3d/player/UnityPlayer");
-		jfieldID fid_Activity	= jni_env->GetStaticFieldID(unity, "currentActivity", "Landroid/app/Activity;");
+		jfieldID fid_Activity	= jni_env->GetStaticFieldID(unity, "currentActivity",
+		 "Landroid/app/Activity;");
 		obj_Activity	= jni_env->GetStaticObjectField(unity, fid_Activity);
 
 		LOGI("_initTracker with license: %s", license);
@@ -159,7 +162,8 @@ extern "C" {
             jni_env = 0;
             _vm->AttachCurrentThread(&jni_env, 0);
             jclass unity = jni_env->FindClass("com/unity3d/player/UnityPlayer");
-            jfieldID fid_Activity	= jni_env->GetStaticFieldID(unity, "currentActivity", "Landroid/app/Activity;");
+            jfieldID fid_Activity	= jni_env->GetStaticFieldID(unity, "currentActivity",
+             "Landroid/app/Activity;");
             obj_Activity	= jni_env->GetStaticObjectField(unity, fid_Activity);
 
             m_Frame = vsCreateImage(vsSize(camWidth, camHeight), 8, 3);
@@ -197,7 +201,6 @@ extern "C" {
 		pthread_mutex_lock(&writeFrame_mutex);
 		if (!parametersChanged){
 			jbyte *pixelData = env->GetByteArrayElements(frame, 0);
-			//LOGI("Java_app_specta_inc_CameraActivity_WriteFrame: %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
 
 			imageCapture->WriteFrameYUV((unsigned char*)pixelData);
 			env->ReleaseByteArrayElements(frame, pixelData, 0);
@@ -224,7 +227,8 @@ extern "C" {
     	renderFrame();
     }
 
-	void Java_app_specta_inc_CameraActivity_setParameters(JNIEnv *env, jobject obj, jint orientation, jint width, jint height, jint flip)
+	void Java_app_specta_inc_CameraActivity_setParameters(JNIEnv *env, jobject obj, jint orientation,
+	jint width, jint height, jint flip)
 	{
 		pthread_mutex_lock(&grabFrame_mutex);
 		pthread_mutex_lock(&writeFrame_mutex);
@@ -259,14 +263,13 @@ extern "C" {
         LOGI("Java_app_specta_inc_CameraActivity_setParameters");
 	}
 
-	void Java_com_visagetechnologies_facialanimationdemo_CameraActivity_WriteFrame(JNIEnv *env, jobject obj, jbyteArray frame) 
+	void Java_com_visagetechnologies_facialanimationdemo_CameraActivity_WriteFrame(JNIEnv *env,
+	jobject obj, jbyteArray frame)
 	{
 		LOGI("Java_com_visagetechnologies_facialanimationdemo_CameraActivity_WriteFrame - called");
 		pthread_mutex_lock(&writeFrame_mutex);
 		if (!parametersChanged){
 			jbyte *pixelData = env->GetByteArrayElements(frame, 0);
-
-		    //LOGI("Java_com_visagetechnologies_facialanimationdemo_CameraActivity_WriteFrame: %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
 
 			imageCapture->WriteFrameYUV((unsigned char*)pixelData);
 			env->ReleaseByteArrayElements(frame, pixelData, 0);
@@ -277,7 +280,8 @@ extern "C" {
 
 	}
 
-	void Java_com_visagetechnologies_facialanimationdemo_CameraActivity_setParameters(JNIEnv *env, jobject obj, jint orientation, jint width, jint height, jint flip) 
+	void Java_com_visagetechnologies_facialanimationdemo_CameraActivity_setParameters(JNIEnv *env,
+	jobject obj, jint orientation, jint width, jint height, jint flip)
 	{
 		pthread_mutex_lock(&grabFrame_mutex);
 		pthread_mutex_lock(&writeFrame_mutex);
@@ -289,8 +293,6 @@ extern "C" {
 			camOrientation = orientation;
 		if (flip !=-1)
 			camFlip = flip;
-		
-		
 
 		delete imageCapture;
 		imageCapture = new AndroidCameraCapture(camWidth, camHeight, camOrientation, camFlip);
@@ -335,7 +337,6 @@ extern "C" {
 		long ts;
 		pixelData = (char*)imageCapture->GrabFrame(ts);
 
-        //LOGI("_grabFrame: %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
 		pthread_mutex_unlock(&grabFrame_mutex);
 	}
 	void updateAnalyserEstimations(){
@@ -353,9 +354,11 @@ extern "C" {
 		pthread_mutex_lock(&grabFrame_mutex);
 
 		if (camOrientation == 90 || camOrientation == 270)
-			trackingStatus = m_Tracker->track(camHeight, camWidth, pixelData, trackingData, VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
+			trackingStatus = m_Tracker->track(camHeight, camWidth, pixelData, trackingData,
+			VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
 		else
-			trackingStatus = m_Tracker->track(camWidth, camHeight, pixelData, trackingData, VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
+			trackingStatus = m_Tracker->track(camWidth, camHeight, pixelData, trackingData,
+			VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
 		
 		if (trackingStatus[0] == TRACK_STAT_OFF)
 			pixelData = 0;
@@ -422,15 +425,6 @@ extern "C" {
 				break;
 		}
 		char message[256];
-		sprintf(message, " %4.1f FPS  Status: %s\n Head position %+5.1f %+5.1f %+5.1f \n Rotation (deg) %+5.1f %+5.1f %+5.1f \n\n",
-				trackingData[0].frameRate,
-				tstatus,
-				trackingData[0].faceTranslation[0],
-				trackingData[0].faceTranslation[1],
-				trackingData[0].faceTranslation[2],
-				trackingData[0].faceRotation[0],
-				trackingData[0].faceRotation[1],
-				trackingData[0].faceRotation[2]);
 		
 		return MakeStringCopy(message);
 	}
@@ -444,12 +438,11 @@ extern "C" {
         			//glBindTexture(GL_TEXTURE_2D, textureID);
         			glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureID);
         			if (camOrientation == 90 || camOrientation == 270)
-        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camHeight, camWidth, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camHeight, camWidth, GL_RGB,
+        				 GL_UNSIGNED_BYTE, pixelData);
         			else
-        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
-
-        			//LOGI("_bindTexture : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
-
+        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB,
+        				GL_UNSIGNED_BYTE, pixelData);
 
 		        // Bind screen buffer into use.
                 //glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -485,23 +478,6 @@ extern "C" {
     void renderFrame()
     {
     	glClear(GL_COLOR_BUFFER_BIT);
-    	/*
-    	if (textureID != -1 && pixelData != 0)
-        		{
-        	    	glActiveTexture(GL_TEXTURE0);
-        			//glBindTexture(GL_TEXTURE_2D, textureID);
-        			glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureID);
-        			if (camOrientation == 90 || camOrientation == 270)
-        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camHeight, camWidth, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
-        			else
-        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
-
-        			//LOGI("_bindTexture : %d | %d | %d | %d" , pixelData[11],pixelData[22],pixelData[33],pixelData[44]);
-
-                glViewport(0, 0, camWidth, camHeight);
-
-        		}
-        		*/
     }
 
     void _getRawFrame(int* height, int *width, char *rawData){
@@ -518,7 +494,6 @@ extern "C" {
         		    memcpy(rawData, pixelData, (frameSize)*sizeof(char));
         		}
 
-                //LOGI("_getRawFrame : %d | %d | %d | %d" , rawData[11],rawData[22],rawData[33],rawData[44]);
         		pthread_mutex_unlock(&grabFrame_mutex);
     }
 
@@ -676,7 +651,4 @@ extern "C" {
 
 		return true;
 	}
-
-
-	
 }

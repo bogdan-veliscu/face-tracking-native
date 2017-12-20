@@ -158,6 +158,8 @@ public class StartupActivity extends Activity
 				
 				in.close();
 				in = null;
+				Log.w("VisageTrackerDemo", "##  File available at: " + newFileName);
+
 			}
 		} catch (Exception e) {
 			Log.e("VisageTrackerDemo", e.getMessage());

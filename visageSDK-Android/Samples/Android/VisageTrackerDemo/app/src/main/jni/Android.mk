@@ -11,10 +11,20 @@ endif
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 VISAGE_LIBS := ../../../../../../../lib/arm64-v8a
 endif
+
+include $(CLEAR_VARS)
 LOCAL_MODULE := VisageVision
 LOCAL_SRC_FILES := $(VISAGE_LIBS)/libVisageVision.so
 include $(PREBUILT_SHARED_LIBRARY)
-     
+
+     ########################
+     # prepare VisageAnalyser
+     include $(CLEAR_VARS)
+     LOCAL_MODULE    := VisageAnalyser
+     LOCAL_SRC_FILES := $(VISAGE_LIBS)/libVisageAnalyser.so
+     include $(PREBUILT_SHARED_LIBRARY)
+     ########################
+
 include $(CLEAR_VARS)
 
 OPENCV_LIB_TYPE := STATIC
@@ -43,8 +53,8 @@ LOCAL_SRC_FILES := \
 	AndroidCameraCapture.cpp \
 	VisageRendering.cpp
 
-LOCAL_SHARED_LIBRARIES := VisageVision	
-LOCAL_LDLIBS +=  -L$(VISAGE_LIBS) -L$(/jni) -lVisageVision -lGLESv1_CM -llog -ldl -Wl,--gc-sections  
+LOCAL_SHARED_LIBRARIES := VisageVision VisageAnalyser
+LOCAL_LDLIBS +=  -L$(VISAGE_LIBS) -L$(/jni) -lVisageVision -lVisageAnalyser -lGLESv1_CM -llog -ldl -Wl,--gc-sections
 
 LOCAL_CFLAGS := -DANDROID_NDK \
 				-DDISABLE_IMPORTGL \

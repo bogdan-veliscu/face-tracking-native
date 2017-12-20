@@ -12,6 +12,8 @@
 @implementation SpeachReognitionDelegate
 //@synthesize lastRecognizedText;
 
+float *const *sampleData;
+int channelCount = 1;
 - (id)init
 {
     self = [super init];
@@ -30,7 +32,7 @@
     [SFSpeechRecognizer requestAuthorization:^(SFSpeechRecognizerAuthorizationStatus status) {
         switch (status) {
             case SFSpeechRecognizerAuthorizationStatusAuthorized:
-                NSLog(@"#SpechRecognition v3: Authorized :SFSpeechRecognizerAuthorizationStatusAuthorized");
+                NSLog(@"#SpechRecognition v4: Authorized :SFSpeechRecognizerAuthorizationStatusAuthorized");
                 break;
             case SFSpeechRecognizerAuthorizationStatusDenied:
                 NSLog(@"#SpechRecognition: Denied");
@@ -85,19 +87,22 @@
     
     // Sets the recording format
     AVAudioFormat *recordingFormat = [inputNode outputFormatForBus:0];
+    channelCount = [recordingFormat channelCount];
+    
     [inputNode installTapOnBus:0 bufferSize:1024 format:recordingFormat block:^(AVAudioPCMBuffer * _Nonnull buffer, AVAudioTime * _Nonnull when) {
         [recognitionRequest appendAudioPCMBuffer:buffer];
+        sampleData = buffer.floatChannelData;
     }];
     
     // Starts the audio engine, i.e. it starts listening.
     [audioEngine prepare];
     [audioEngine startAndReturnError:&error];
-    NSLog(@"Say Something, I'm listening");
+    NSLog(@"Say Something, I'm listening on chanel:%d", [recordingFormat channelCount]);
     
 }
 
 - (void)restartRecognition {
-    
+    sampleData = nil;
     NSLog(@"## restartRecognition");
     [self setRecognizedText: @"Initializing"];
     if (audioEngine.isRunning) {
@@ -167,6 +172,15 @@ extern "C" {
         [delegateObject restartRecognition];
     }
     
+    void _getAudioSamples (float *samples, float *size){
+        //NSLog(@"#SpechRecognition restartRecognition: %d",  channelCount);
+        *size = 1024;
+        if (sampleData != nil){
+            for (int i = 0; i < 1024 ; i ++) {
+                samples[i] = sampleData[0][i];
+            }
+        }
+    }
 
     const char* _recognize(){
         //NSLog(@"#SpechRecognition _recognized: %@", [delegateObject getRecognizedText] );
@@ -176,7 +190,7 @@ extern "C" {
     void _release(){
         
         NSLog(@"#SpechRecognition _release !");
-        
+        sampleData = nil;
         [delegateObject stopListening];
     }
     

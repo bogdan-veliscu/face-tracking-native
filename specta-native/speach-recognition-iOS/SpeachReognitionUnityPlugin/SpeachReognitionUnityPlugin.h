@@ -32,6 +32,8 @@ extern "C" {
     
     EXPORT_API const char* _recognize();
     
-    EXPORT_API void _release();    
+    EXPORT_API void _release();
+    
+    EXPORT_API void _getAudioSamples (float *samples, float *size);
     
 }

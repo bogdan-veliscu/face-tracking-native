@@ -197,7 +197,7 @@ public class TrackerActivity extends Activity
 	 * Starts tracking from camera and initializes surface for displaying tracking results.
 	 */
 	public void StartCam(){		
-		TrackerInit(getFilesDir().getAbsolutePath() + "/Facial Features Tracker - High.cfg");
+		TrackerInit(getFilesDir().getAbsolutePath() + "/Facial Features Tracker - High.cfg", getFilesDir().getAbsolutePath());
 		cameraId = getCameraId();
 		cpreview = new JavaCamTrackerView(this, this, cameraId);
     	RelativeLayout layout = new RelativeLayout(this);
@@ -258,7 +258,7 @@ public class TrackerActivity extends Activity
      */
     public void StartImage(String path)
     {
-    	TrackerInit(getFilesDir().getAbsolutePath() + "/Facial Features Tracker - High.cfg");
+    	TrackerInit(getFilesDir().getAbsolutePath() + "/Facial Features Tracker - High.cfg", getFilesDir().getAbsolutePath());
 		ipreview = new ImageTrackerView(this, path, this);
 		RelativeLayout layout = new RelativeLayout(this);
 
@@ -323,7 +323,7 @@ public class TrackerActivity extends Activity
 	 * 
 	 * @param configFilename absolute path to tracker configuration file. 
 	 */
-	public native void TrackerInit(String configFilename);
+	public native void TrackerInit(String configFilename, String appPath);
 
     /** Interface to native method called to start tracking from image.
 	 * 

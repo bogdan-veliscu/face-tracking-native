@@ -10,6 +10,7 @@
 
 @synthesize captureSession = _captureSession;
 @synthesize videoConnection = _videoConnection;
+@synthesize defaultDevice;
 @synthesize preset = _preset;
 @synthesize imageView = _imageView;
 @synthesize prevLayer = _prevLayer;
@@ -146,21 +147,21 @@ int height;
 
 	
 	// Find a suitable AVCaptureDevice
-	AVCaptureDevice *device = captureInput.device;//[captureInput device];
+	defaultDevice = captureInput.device;//[captureInput device];
 	
 	NSError *error2;
-	[device lockForConfiguration:&error2];
+	[defaultDevice lockForConfiguration:&error2];
 	if (error2 == nil) {
-		if (device.activeFormat.videoSupportedFrameRateRanges){
-			[device setActiveVideoMinFrameDuration:CMTimeMake(1, _fps)];
-			[device setActiveVideoMaxFrameDuration:CMTimeMake(1, _fps)];
+		if (defaultDevice.activeFormat.videoSupportedFrameRateRanges){
+			[defaultDevice setActiveVideoMinFrameDuration:CMTimeMake(1, _fps)];
+			[defaultDevice setActiveVideoMaxFrameDuration:CMTimeMake(1, _fps)];
 		}else{
 			//handle condition
 		}
 	}else{
 		// handle error2
 	}
-	[device unlockForConfiguration];
+	[defaultDevice unlockForConfiguration];
 
 
 	//We add the preview layer
@@ -534,5 +535,99 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	pthread_cond_destroy(&cond);
 }
 
+-(void) toggleTorch
+{
+    NSError *error = nil;
+    
+    [defaultDevice lockForConfiguration:&error];
+    
+    if (error == nil) {
+        AVCaptureTorchMode mode = defaultDevice.torchMode;
+        
+        defaultDevice.torchMode = mode == AVCaptureTorchModeOn ? AVCaptureTorchModeOff : AVCaptureTorchModeOn;
+    }
+    
+    [defaultDevice unlockForConfiguration];
+}
+
+-(void) initScanner{
+    
+    NSLog(@"###  initScanner ...");
+    _metadataOutput = [[AVCaptureMetadataOutput alloc] init];
+    
+    [_captureSession addOutput:_metadataOutput];
+    
+    [_metadataOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
+    NSMutableSet *available = [NSMutableSet setWithArray:[_metadataOutput availableMetadataObjectTypes]];
+    NSSet *desired = [NSSet setWithArray:_metadataObjectTypes];
+    [available intersectSet:desired];
+    [_metadataOutput setMetadataObjectTypes:available.allObjects];
+    NSLog(@"###  initScanner - completed");
+}
+
+- (void)startScanning
+{
+    NSLog(@"###  startScanning");
+    if (![self.captureSession isRunning]) {
+        [self.captureSession startRunning];
+    }
+}
+
+- (void)stopScanning
+{
+    NSLog(@"###  stopScanning");
+    if ([self.captureSession isRunning]) {
+        [self.captureSession stopRunning];
+    }
+}
+
+- (BOOL)running {
+    return self.captureSession.running;
+}
+
+
+#pragma mark - Managing the Block
+
+- (void)setCompletionWithBlock:(void (^) (NSString *resultAsString))completionBlock
+{
+    
+    NSLog(@"###  setCompletionWithBlock");
+    self.completionBlock = completionBlock;
+}
+
+#pragma mark - Managing the Orientation
+
++ (AVCaptureVideoOrientation)videoOrientationFromInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    switch (interfaceOrientation) {
+        case UIInterfaceOrientationLandscapeLeft:
+            return AVCaptureVideoOrientationLandscapeLeft;
+        case UIInterfaceOrientationLandscapeRight:
+            return AVCaptureVideoOrientationLandscapeRight;
+        case UIInterfaceOrientationPortrait:
+            return AVCaptureVideoOrientationPortrait;
+        default:
+            return AVCaptureVideoOrientationPortraitUpsideDown;
+    }
+}
+
+#pragma mark - AVCaptureMetadataOutputObjects Delegate Methods
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
+{
+    for (AVMetadataObject *current in metadataObjects) {
+        if ([current isKindOfClass:[AVMetadataMachineReadableCodeObject class]]
+            && [_metadataObjectTypes containsObject:current.type]) {
+            NSString *scannedResult = [(AVMetadataMachineReadableCodeObject *)current stringValue];
+            
+            NSLog(@"###  onScan: %@", scannedResult);
+            if (_completionBlock) {
+                _completionBlock(scannedResult);
+            }
+            
+            break;
+        }
+    }
+}
 
 @end

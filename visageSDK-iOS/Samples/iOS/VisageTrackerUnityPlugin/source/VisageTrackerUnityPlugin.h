@@ -116,5 +116,18 @@ extern "C" {
 	*/
 	EXPORT_API bool _getFeaturePoints3DRel(int number, int* groups, int* indices, float* positions);
 	
+    
+    /// -------------- QR scanner new methods
+
+    typedef void (*callbackFunc)(const char *);
+    
+    EXPORT_API void _initScanner(callbackFunc callback);
+    
+    /** Releases memory allocated by the scanner in the initScanner function.
+     */
+    EXPORT_API void _releaseScanner();
+    
+    EXPORT_API void _toggleTorch(int on);
+
 }
 

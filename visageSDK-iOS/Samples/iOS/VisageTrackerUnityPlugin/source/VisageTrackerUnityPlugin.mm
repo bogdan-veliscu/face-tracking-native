@@ -16,6 +16,8 @@
 
 using namespace VisageSDK;
 
+static callbackFunc scanCallback;
+
 static VisageTracker* m_Tracker = 0;
 static CameraGrabber *cameraGrabber = 0;
 
@@ -576,5 +578,36 @@ extern "C" {
 			}
 		}
 	}
-	
+    
+    void _initScanner(callbackFunc callback){
+         NSLog(@"### VisageFaceAnalyser _initScanner");
+        if (cameraGrabber){
+            [cameraGrabber initScanner];
+            
+            [cameraGrabber setCompletionWithBlock:^(NSString *resultAsString) {
+                
+                NSLog(@"### VisageFaceAnalyser onScan: %@", resultAsString);
+                if (scanCallback != NULL){
+                    scanCallback([resultAsString UTF8String]);
+                }
+            }];
+            
+            [cameraGrabber startScanning];
+            NSLog(@"### VisageFaceAnalyser _initScanner : completed!");
+        }
+    }
+    
+    /** Releases memory allocated by the scanner in the initScanner function.
+     */
+    void _releaseScanner(){
+        
+        NSLog(@"### VisageFaceAnalyser _releaseScanner");
+        [cameraGrabber stopScanning];
+        _closeCamera();
+    }
+    
+    void _toggleTorch(int on){
+        [cameraGrabber toggleTorch];
+    }
+    
 }

@@ -42,7 +42,6 @@ typedef void VsImage;
 
 @property (nonatomic, retain) AVCaptureConnection *videoConnection;
 @property (strong, nonatomic) AVCaptureDevice     *defaultDevice;
-@property (strong, nonatomic, readonly) NSArray * _Nonnull metadataObjectTypes;
 
 /**
  * @abstract Accessing to the `AVCaptureMetadataOutput` object.

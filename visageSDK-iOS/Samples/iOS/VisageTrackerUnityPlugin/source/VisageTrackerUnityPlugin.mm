@@ -581,6 +581,7 @@ extern "C" {
     
     void _initScanner(callbackFunc callback){
          NSLog(@"### VisageFaceAnalyser _initScanner");
+        scanCallback = callback;
         if (cameraGrabber){
             [cameraGrabber initScanner];
             
@@ -603,7 +604,6 @@ extern "C" {
         
         NSLog(@"### VisageFaceAnalyser _releaseScanner");
         [cameraGrabber stopScanning];
-        _closeCamera();
     }
     
     void _toggleTorch(int on){

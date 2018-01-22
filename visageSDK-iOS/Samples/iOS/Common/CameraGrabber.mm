@@ -558,10 +558,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [_captureSession addOutput:_metadataOutput];
     
     [_metadataOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
-    NSMutableSet *available = [NSMutableSet setWithArray:[_metadataOutput availableMetadataObjectTypes]];
-    NSSet *desired = [NSSet setWithArray:_metadataObjectTypes];
-    [available intersectSet:desired];
-    [_metadataOutput setMetadataObjectTypes:available.allObjects];
+    [_metadataOutput setMetadataObjectTypes:[NSArray arrayWithObject:AVMetadataObjectTypeQRCode]];
     NSLog(@"###  initScanner - completed");
 }
 
@@ -616,8 +613,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
 {
     for (AVMetadataObject *current in metadataObjects) {
-        if ([current isKindOfClass:[AVMetadataMachineReadableCodeObject class]]
-            && [_metadataObjectTypes containsObject:current.type]) {
+        if ([current isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
             NSString *scannedResult = [(AVMetadataMachineReadableCodeObject *)current stringValue];
             
             NSLog(@"###  onScan: %@", scannedResult);

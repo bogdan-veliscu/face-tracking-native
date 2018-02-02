@@ -553,8 +553,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 -(void) initScanner{
     
     NSLog(@"###  initScanner ...");
+    @autoreleasepool{
     _metadataOutput = [[AVCaptureMetadataOutput alloc] init];
-    
+    }
     [_captureSession addOutput:_metadataOutput];
     
     [_metadataOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];

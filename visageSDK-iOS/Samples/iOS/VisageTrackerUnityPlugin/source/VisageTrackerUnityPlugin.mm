@@ -158,6 +158,7 @@ extern "C" {
 	
 	void _openCamera(int orientation, int device, int width, int height, int isMirrored)
 	{
+
 		NSString* deviceType = [UIDeviceHardware platform];
 		
 		int cam_fps = 30;
@@ -579,31 +580,49 @@ extern "C" {
 		}
 	}
     
-    void _initScanner(callbackFunc callback){
-         NSLog(@"### VisageFaceAnalyser _initScanner");
+    void _initScanner(transitionCallback initCallback, callbackFunc callback){
+         NSLog(@"### QR SCAN _initScanner - ASYNC");
+        
         scanCallback = callback;
-        if (cameraGrabber){
-            [cameraGrabber initScanner];
-            
-            [cameraGrabber setCompletionWithBlock:^(NSString *resultAsString) {
+
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (cameraGrabber){
                 
-                NSLog(@"### VisageFaceAnalyser onScan: %@", resultAsString);
-                if (scanCallback != NULL){
-                    scanCallback([resultAsString UTF8String]);
+                NSLog(@"### QR SCAN _initScanner - actual init start");
+                [cameraGrabber initScanner];
+                
+                [cameraGrabber setCompletionWithBlock:^(NSString *resultAsString) {
+                    
+                    NSLog(@"###  SCAN onScan: %@", resultAsString);
+                    if (scanCallback != NULL){
+                        scanCallback([resultAsString UTF8String]);
+                    }
+                }];
+                
+                [cameraGrabber startScanning];
+                NSLog(@"### VisageFaceAnalyser _initScanner : completed!");
+                
+                NSLog(@"### QR SCAN _initScanner - ASYNC - returned");
+                if (initCallback != NULL){
+                    initCallback();
                 }
-            }];
-            
-            [cameraGrabber startScanning];
-            NSLog(@"### VisageFaceAnalyser _initScanner : completed!");
-        }
+            }
+        });
     }
     
     /** Releases memory allocated by the scanner in the initScanner function.
      */
-    void _releaseScanner(){
-        
-        NSLog(@"### VisageFaceAnalyser _releaseScanner");
-        [cameraGrabber stopScanning];
+    void _releaseScanner(transitionCallback callback){
+        if (cameraGrabber){
+            
+            NSLog(@"### QR SCAN _releaseScanner - ASYNC - before the actual release");
+            [cameraGrabber stopScanning];
+            
+            NSLog(@"### QR SCAN _releaseScanner - ASYNC - before callback");
+            if (callback != NULL){
+                callback();
+            }
+        }
     }
     
     void _toggleTorch(int on){

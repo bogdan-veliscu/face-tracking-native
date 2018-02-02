@@ -120,12 +120,14 @@ extern "C" {
     /// -------------- QR scanner new methods
 
     typedef void (*callbackFunc)(const char *);
+    typedef void (*transitionCallback)();
     
-    EXPORT_API void _initScanner(callbackFunc callback);
+    
+    EXPORT_API void _initScanner(transitionCallback initCallback, callbackFunc scanCallback);
     
     /** Releases memory allocated by the scanner in the initScanner function.
      */
-    EXPORT_API void _releaseScanner();
+    EXPORT_API void _releaseScanner(transitionCallback callback);
     
     EXPORT_API void _toggleTorch(int on);
 

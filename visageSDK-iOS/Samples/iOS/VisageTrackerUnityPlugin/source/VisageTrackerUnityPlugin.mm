@@ -580,6 +580,16 @@ extern "C" {
 		}
 	}
     
+    static void extracted() {
+        [cameraGrabber setCompletionWithBlock:^(NSString *resultAsString) {
+            
+            NSLog(@"###  SCAN onScan: %@", resultAsString);
+            if (scanCallback != NULL){
+                scanCallback([resultAsString UTF8String]);
+            }
+        }];
+    }
+    
     void _initScanner(transitionCallback initCallback, callbackFunc callback){
          NSLog(@"### QR SCAN _initScanner - ASYNC");
         
@@ -591,13 +601,7 @@ extern "C" {
                 NSLog(@"### QR SCAN _initScanner - actual init start");
                 [cameraGrabber initScanner];
                 
-                [cameraGrabber setCompletionWithBlock:^(NSString *resultAsString) {
-                    
-                    NSLog(@"###  SCAN onScan: %@", resultAsString);
-                    if (scanCallback != NULL){
-                        scanCallback([resultAsString UTF8String]);
-                    }
-                }];
+                extracted();
                 
                 [cameraGrabber startScanning];
                 NSLog(@"### VisageFaceAnalyser _initScanner : completed!");

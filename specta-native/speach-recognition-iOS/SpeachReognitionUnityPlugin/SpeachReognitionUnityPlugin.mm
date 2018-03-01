@@ -11,13 +11,13 @@
 #import "SpeachReognitionUnityPlugin.h"
 @implementation SpeachReognitionDelegate
 //@synthesize lastRecognizedText;
+static callbackFunc recognitionCallback;
 
 float *const *sampleData;
 int channelCount = 1;
 - (id)init
 {
     self = [super init];
-    lastRecognizedText = @"Initializing";
     
     // Initialize the Speech Recognizer with the locale, couldn't find a list of locales
     // but I assume it's standard UTF-8 https://wiki.archlinux.org/index.php/locale
@@ -32,7 +32,7 @@ int channelCount = 1;
     [SFSpeechRecognizer requestAuthorization:^(SFSpeechRecognizerAuthorizationStatus status) {
         switch (status) {
             case SFSpeechRecognizerAuthorizationStatusAuthorized:
-                NSLog(@"#SpechRecognition v4: Authorized :SFSpeechRecognizerAuthorizationStatusAuthorized");
+                NSLog(@"#SpechRecognition v5: Authorized :SFSpeechRecognizerAuthorizationStatusAuthorized");
                 break;
             case SFSpeechRecognizerAuthorizationStatusDenied:
                 NSLog(@"#SpechRecognition: Denied");
@@ -72,7 +72,13 @@ int channelCount = 1;
         BOOL isFinal = NO;
         if (result) {
             
-            [self setRecognizedText: [NSString stringWithString: result.bestTranscription.formattedString]];
+            for (SFTranscription *transcription in result.transcriptions) {
+                
+                NSLog(@"### Recognized CODE: %@", transcription);
+                if (recognitionCallback != NULL){
+                    recognitionCallback([transcription.formattedString UTF8String]);
+                }
+            }
             
             isFinal = !result.isFinal;
         }
@@ -104,15 +110,14 @@ int channelCount = 1;
 - (void)restartRecognition {
     sampleData = nil;
     NSLog(@"## restartRecognition");
-    [self setRecognizedText: @"Initializing"];
     if (audioEngine.isRunning) {
         [self stopListening];
     }
-    [self performSelector:@selector(startListening) withObject:nil afterDelay:0.3];
+    [self performSelector:@selector(startListening) withObject:nil afterDelay:1];
 }
 
 - (void) stopListening{
-    NSLog(@"StopListening v2");
+    NSLog(@"StopListening");
 
     // Make sure there's not a recognition task already running
     if (recognitionTask) {
@@ -125,17 +130,6 @@ int channelCount = 1;
         [audioEngine stop];
         [recognitionRequest endAudio];
     }
-}
-
-- (NSString *)getRecognizedText
-{
-    return lastRecognizedText;
-}
-
-- (void)setRecognizedText : (NSString*) newText;
-{
-    //NSLog(@"### setRecognizedText : %@", newText);
-    lastRecognizedText = newText;
 }
 
 #pragma mark - SFSpeechRecognizerDelegate Delegate Methods
@@ -167,8 +161,9 @@ extern "C" {
         }
     }
     
-    void _listen(){
-        NSLog(@"#SpechRecognition restartRecognition");
+    void _listen(callbackFunc callback){
+        recognitionCallback = callback;
+        NSLog(@"#SpechRecognition restartRecognition v5");
         [delegateObject restartRecognition];
     }
     
@@ -180,11 +175,6 @@ extern "C" {
                 samples[i] = sampleData[0][i];
             }
         }
-    }
-
-    const char* _recognize(){
-        //NSLog(@"#SpechRecognition _recognized: %@", [delegateObject getRecognizedText] );
-        return MakeStringCopy([[delegateObject getRecognizedText] UTF8String]);
     }
     
     void _release(){

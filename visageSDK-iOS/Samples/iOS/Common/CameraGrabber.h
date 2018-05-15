@@ -33,6 +33,8 @@ typedef void VsImage;
 	BOOL _newFrame;
 	int _fps;
     int _device;
+    
+    CGRect *_qrFrame;
 }
 
 /*!
@@ -52,6 +54,8 @@ typedef void VsImage;
 @property (readonly) AVCaptureMetadataOutput * _Nonnull metadataOutput;
 
 @property (nonatomic, retain) const NSString *preset;
+@property (nonatomic) CGRect *qrFrame;
+
 /*!
  @brief	The UIImageView we use to display the image generated from the imageBuffer
  */

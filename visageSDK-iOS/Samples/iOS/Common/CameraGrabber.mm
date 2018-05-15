@@ -4,7 +4,7 @@
 #import <sys/time.h>
 
 #define FRAME_BGRA 0
-#define PREVLAYER 0
+#define PREVLAYER 1
 
 @implementation CameraGrabber
 
@@ -18,6 +18,7 @@
 @synthesize rb = _rb;
 @synthesize ub = _ub;
 @synthesize newFrame = _newFrame;
+@synthesize qrFrame = _qrFrame;
 
 int width;
 int height;
@@ -552,7 +553,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 -(void) initScanner{
     
-    NSLog(@"###  initScanner ...");
+    NSLog(@"###  initScanner ... v.3.");
     @autoreleasepool{
     _metadataOutput = [[AVCaptureMetadataOutput alloc] init];
     }
@@ -616,12 +617,19 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for (AVMetadataObject *current in metadataObjects) {
         if ([current isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
             NSString *scannedResult = [(AVMetadataMachineReadableCodeObject *)current stringValue];
+   
+            NSLog(@"###  onScan 1a : %@", NSStringFromCGRect([_prevLayer transformedMetadataObjectForMetadataObject:current
+                                                              ].bounds));
+            self.qrFrame = new CGRect(
             
-            NSLog(@"###  onScan: %@", scannedResult);
+            [_prevLayer transformedMetadataObjectForMetadataObject:current
+                                   ].bounds);
+            NSLog(@"###  onScan 2");
+            NSLog(@"###  onScan v3: %@ with frame: %@", scannedResult, NSStringFromCGRect(*self.qrFrame));
+            
             if (_completionBlock) {
                 _completionBlock(scannedResult);
             }
-            
             break;
         }
     }

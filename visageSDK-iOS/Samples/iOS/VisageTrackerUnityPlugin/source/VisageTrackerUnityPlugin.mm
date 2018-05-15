@@ -580,18 +580,29 @@ extern "C" {
 		}
 	}
     
-    static void extracted() {
+    static void SetCallback() {
         [cameraGrabber setCompletionWithBlock:^(NSString *resultAsString) {
+            NSLog(@"###  SetCallback 1");
+            CGRect *rect = cameraGrabber.qrFrame;
+            NSLog(@"###  SetCallback 2");
             
-            NSLog(@"###  SCAN onScan: %@", resultAsString);
+            NSLog(@"###  SCAN onScan: %@ , at frame: %@", resultAsString, NSStringFromCGRect(*rect));
             if (scanCallback != NULL){
-                scanCallback([resultAsString UTF8String]);
+                NSLog(@"###  SetCallback 3");
+                Rect *myRect = new Rect{(short)rect->origin.x,(short)rect->origin.y,
+                    (short)rect->size.width,(short)rect->size.height};
+                NSLog(@"### QR rect bounds: %d, %d | %d, %d", myRect->top, myRect->left,
+                      myRect->bottom, myRect->right );
+                scanCallback([resultAsString UTF8String],
+                             rect->origin.y, rect->origin.x, rect->size.height, rect->size.width );
+                
+                NSLog(@"###  SetCallback 4");
             }
         }];
     }
     
     void _initScanner(transitionCallback initCallback, callbackFunc callback){
-         NSLog(@"### QR SCAN _initScanner - ASYNC");
+         NSLog(@"### QR SCAN _initScanner - ASYNC --- v2.0");
         
         scanCallback = callback;
 
@@ -601,7 +612,7 @@ extern "C" {
                 NSLog(@"### QR SCAN _initScanner - actual init start");
                 [cameraGrabber initScanner];
                 
-                extracted();
+                SetCallback();
                 
                 [cameraGrabber startScanning];
                 NSLog(@"### VisageFaceAnalyser _initScanner : completed!");

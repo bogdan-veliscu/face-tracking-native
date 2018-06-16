@@ -1,4 +1,4 @@
-package app.specta.inc;
+package app.specta.inc.camera;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.SurfaceHolder;

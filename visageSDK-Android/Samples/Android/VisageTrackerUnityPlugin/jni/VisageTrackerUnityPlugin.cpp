@@ -25,6 +25,8 @@
 
 using namespace VisageSDK;
 
+static callbackFunc scanCallback;
+
 static VisageTracker* m_Tracker = 0;
 static VisageFaceAnalyser* m_FaceAnalizer = 0;
 
@@ -43,7 +45,7 @@ static char* MakeStringCopy (const char* val)
 {
 	if (val == NULL)
 		return NULL;
-	
+
 	char* res = (char*)malloc(strlen(val) + 1);
 	strcpy(res, val);
 	return res;
@@ -52,14 +54,14 @@ static char* MakeStringCopy (const char* val)
 static unsigned int GetNearestPow2(unsigned int num)
 {
 	unsigned int n = num > 0 ? num - 1 : 0;
-	
+
 	n |= n >> 1;
 	n |= n >> 2;
 	n |= n >> 4;
 	n |= n >> 8;
 	n |= n >> 16;
 	n++;
-	
+
 	return n;
 }
 
@@ -74,7 +76,7 @@ namespace VisageSDK
 // When native code plugin is implemented in .mm / .cpp file, then functions
 // should be surrounded with extern "C" block to conform C function naming rules
 extern "C" {
-	
+
 	static FaceData trackingData[10];
 	static int *trackingStatus = TRACK_STAT_OFF;
 	//
@@ -88,8 +90,8 @@ extern "C" {
 	static bool parametersChanged;
 	pthread_mutex_t writeFrame_mutex;
 	pthread_mutex_t grabFrame_mutex;
-	
-	JavaVM* _vm = 0; 
+
+	JavaVM* _vm = 0;
 	JNIEnv* jni_env = 0;
 	jobject obj_Activity;
 
@@ -112,23 +114,23 @@ extern "C" {
 			{
 				jni_env->CallVoidMethod(obj_Activity, javaMethodRef, message);
 			}
-				
+
 			jni_env->DeleteGlobalRef(javaClassRef);
 			jni_env->DeleteLocalRef(message);
 		}
 	}
-	
+
 	//Example how to obtain JNI environment and activity of this Unity sample required for license check.
 	jint JNI_OnLoad(JavaVM* vm, void* reserved)
 	{
 		_vm = vm;
-		
-		return JNI_VERSION_1_6;	
+
+		return JNI_VERSION_1_6;
 	}
 
-	
+
 	void _initTracker (char* configuration, char* license)
-	{		
+	{
 		jni_env = 0;
 		_vm->AttachCurrentThread(&jni_env, 0);
 		jclass unity = jni_env->FindClass("com/unity3d/player/UnityPlayer");
@@ -138,16 +140,16 @@ extern "C" {
 
 		LOGI("_initTracker with license: %s", license);
 		initializeLicenseManager(jni_env, obj_Activity, license, AlertCallback);
-		
+
 		if (m_Tracker)
 			_releaseTracker();
-		
+
 		m_Tracker = new VisageTracker(configuration);
 		pthread_mutex_init(&writeFrame_mutex, NULL);
 		pthread_mutex_init(&grabFrame_mutex, NULL);
-		
+
 	}
-	
+
 	void _releaseTracker()
 	{
 		delete m_Tracker;
@@ -187,9 +189,9 @@ extern "C" {
         }
 
 
-	void Java_app_specta_inc_CameraActivity_WriteFrame(JNIEnv *env, jobject obj, jbyteArray frame)
+	void Java_app_specta_inc_camera_CameraActivity_WriteFrame(JNIEnv *env, jobject obj, jbyteArray frame)
 	{
-		//LOGI("Java_app_specta_inc_CameraActivity_WriteFrame - called");
+		//LOGI("Java_app_specta_inc_camera_CameraActivity_WriteFrame - called");
 		pthread_mutex_lock(&writeFrame_mutex);
 		if (!parametersChanged){
 			jbyte *pixelData = env->GetByteArrayElements(frame, 0);
@@ -198,28 +200,28 @@ extern "C" {
 			env->ReleaseByteArrayElements(frame, pixelData, 0);
 		}
 		parametersChanged = false;
-		//LOGI("Java_app_specta_inc_CameraActivity_WriteFrame - END");
+		//LOGI("Java_app_specta_inc_camera_CameraActivity_WriteFrame - END");
 		pthread_mutex_unlock(&writeFrame_mutex);
 	}
 
-    void Java_app_specta_inc_CameraActivity_init(JNIEnv*)
+    void Java_app_specta_inc_camera_CameraActivity_init(JNIEnv*)
     {
-        LOGI("Java_app_specta_inc_CameraActivity_init - START");
+        LOGI("Java_app_specta_inc_camera_CameraActivity_init - START");
     	initializeOpenGL();
-    	LOGI("Java_app_specta_inc_CameraActivity_init - END");
+    	LOGI("Java_app_specta_inc_camera_CameraActivity_init - END");
     }
-    void Java_app_specta_inc_CameraActivity_resize(JNIEnv*, jint width, jint height)
+    void Java_app_specta_inc_camera_CameraActivity_resize(JNIEnv*, jint width, jint height)
     {
-        LOGI("Java_app_specta_inc_CameraActivity_resize - START");
+        LOGI("Java_app_specta_inc_camera_CameraActivity_resize - START");
     	resizeViewport(width, height);
-    	LOGI("Java_app_specta_inc_CameraActivity_resize - START");
+    	LOGI("Java_app_specta_inc_camera_CameraActivity_resize - START");
     }
-    void Java_app_specta_inc_CameraActivity_render(JNIEnv*)
+    void Java_app_specta_inc_camera_CameraActivity_render(JNIEnv*)
     {
     	renderFrame();
     }
 
-	void Java_app_specta_inc_CameraActivity_setParameters(JNIEnv *env, jobject obj, jint orientation,
+	void Java_app_specta_inc_camera_CameraActivity_setParameters(JNIEnv *env, jobject obj, jint orientation,
 	jint width, jint height, jint flip)
 	{
 		pthread_mutex_lock(&grabFrame_mutex);
@@ -235,8 +237,8 @@ extern "C" {
 
 		delete imageCapture;
 		imageCapture = new AndroidCameraCapture(camWidth, camHeight, camOrientation, camFlip);
-		
-		
+
+
 		if (camOrientation == 90 || camOrientation == 270)
 		{
 			xTexScale =  camHeight / (float) GetNearestPow2(camHeight);
@@ -247,12 +249,12 @@ extern "C" {
 			xTexScale =  camWidth / (float) GetNearestPow2(camWidth);
 			yTexScale = camHeight / (float) GetNearestPow2(camHeight);
 		}
-		
-		parametersChanged = true;	
+
+		parametersChanged = true;
 		pthread_mutex_unlock(&writeFrame_mutex);
 		pthread_mutex_unlock(&grabFrame_mutex);
 
-        LOGI("Java_app_specta_inc_CameraActivity_setParameters");
+        LOGI("Java_app_specta_inc_camera_CameraActivity_setParameters");
 	}
 
 	void Java_com_visagetechnologies_facialanimationdemo_CameraActivity_WriteFrame(JNIEnv *env,
@@ -288,8 +290,8 @@ extern "C" {
 
 		delete imageCapture;
 		imageCapture = new AndroidCameraCapture(camWidth, camHeight, camOrientation, camFlip);
-		
-		
+
+
 		if (camOrientation == 90 || camOrientation == 270)
 		{
 			xTexScale =  camHeight / (float) GetNearestPow2(camHeight);
@@ -300,12 +302,12 @@ extern "C" {
 			xTexScale =  camWidth / (float) GetNearestPow2(camWidth);
 			yTexScale = camHeight / (float) GetNearestPow2(camHeight);
 		}
-		
-		parametersChanged = true;	
+
+		parametersChanged = true;
 		pthread_mutex_unlock(&writeFrame_mutex);
 		pthread_mutex_unlock(&grabFrame_mutex);
 	}
-	
+
 	void _getCameraInfo(float *focus, int *ImageWidth, int *ImageHeight)
 	{
 		*focus = trackingData[0].cameraFocus;
@@ -314,13 +316,13 @@ extern "C" {
 			*ImageWidth = camHeight;
 			*ImageHeight = camWidth;
 		}
-		else 
+		else
 		{
 			*ImageWidth = camWidth;
 			*ImageHeight = camHeight;
 		}
-	}	
-	
+	}
+
 	void _grabFrame()
 	{
 		if (imageCapture == 0)
@@ -379,7 +381,7 @@ extern "C" {
 
 
 	const char* _get3DData(float* tx, float* ty, float* tz,float* rx, float* ry, float* rz)
-	{		
+	{
 		if (trackingStatus[0] == TRACK_STAT_OK) {
 			*tx = -trackingData[0].faceTranslation[0];
 			*ty = trackingData[0].faceTranslation[1];
@@ -393,9 +395,9 @@ extern "C" {
 		*rx = trackingData[0].faceRotation[0]*180/3.14f;
 		*ry = -(trackingData[0].faceRotation[1]+3.14f)*180.0f/3.14f;
 		*rz = -trackingData[0].faceRotation[2]*180/3.14f;
-		
-		
-		
+
+
+
 		const char *tstatus;
 		switch (trackingStatus[0]) {
 			case TRACK_STAT_OFF:
@@ -415,7 +417,7 @@ extern "C" {
 				break;
 		}
 		char message[256];
-		
+
 		return MakeStringCopy(message);
 	}
 
@@ -491,23 +493,23 @@ extern "C" {
 	bool _getFaceModel(int* vertexNumber, float* vertices, int* triangleNumber, int* triangles, float* texCoord)
 	{
 		if (trackingStatus[0] == TRACK_STAT_OFF)
-			return false; 
-		
+			return false;
+
 		// get vertex number
 		*vertexNumber = trackingData[0].faceModelVertexCount;
-		
+
 		// get vertices
 		memcpy(vertices, trackingData[0].faceModelVertices, 3*(*vertexNumber)*sizeof(float));
-		
+
 		// get triangle number
 		*triangleNumber = trackingData[0].faceModelTriangleCount;
-		
+
 		// get triangles in reverse order
 		for(int i = 0; i < *triangleNumber * 3; i++)
 		{
 			triangles[*triangleNumber * 3 - 1 - i] = trackingData[0].faceModelTriangles[i];
 		}
-		
+
 		//texture coordinates are normalized to frame
 		//and because frame is only in the part of our texture
 		//we must scale texture coordinates to match
@@ -517,22 +519,22 @@ extern "C" {
 			texCoord[i+0] = (1.0f - trackingData[0].faceModelTextureCoords[i+0]) * xTexScale;
 			texCoord[i+1] = trackingData[0].faceModelTextureCoords[i+1] * yTexScale;
 		}
-		
+
 		return true;
 	}
 
 	int _getActionUnitCount()
 	{
 		if (trackingStatus[0] != TRACK_STAT_OK)
-			return 0; 
+			return 0;
 
 		return trackingData[0].actionUnitCount;
 	}
-	
+
 	void _getActionUnitValues(float* values)
 	{
 		if (trackingStatus[0] != TRACK_STAT_OK)
-			return; 
+			return;
 
 		// get eye au indices
 		int leftIndex = -1;
@@ -552,7 +554,7 @@ extern "C" {
 			if (leftIndex >= 0 && rightIndex >= 0)
 				break;
 		}
-		
+
 		// if action units for eye closure are not used by the tracker, map eye closure values to them
 		if (leftIndex >= 0 && trackingData[0].actionUnitsUsed[leftIndex] == 0) {
 			trackingData[0].actionUnits[leftIndex] = trackingData[0].eyeClosure[0];
@@ -563,28 +565,28 @@ extern "C" {
 
 		memcpy(values, trackingData[0].actionUnits, trackingData[0].actionUnitCount * sizeof(float));
 	}
-	
+
 	const char* _getActionUnitName(int index)
 	{
 		if (trackingStatus[0] != TRACK_STAT_OK)
 			return MakeStringCopy("");
-		
+
 		return trackingData[0].actionUnitsNames[index];
 	}
-	
+
 	bool _getActionUnitUsed(int index)
 	{
 		if (trackingStatus[0] != TRACK_STAT_OK)
-			return false; 
+			return false;
 
 		return trackingData[0].actionUnitsUsed[index] == 1;
 	}
-	
+
 	bool _getGazeDirection(float* direction)
 	{
 		if (trackingStatus[0] != TRACK_STAT_OK)
 			return false;
-		
+
 		memcpy(direction, trackingData[0].gazeDirection, 2 * sizeof(float));
 		return true;
 	}
@@ -605,7 +607,7 @@ extern "C" {
 
 		return true;
 	}
-	
+
 	bool _getFeaturePoints3D(int number, int* groups, int* indices, float* positions)
 	{
 		if (trackingStatus[0] != TRACK_STAT_OK)
@@ -641,4 +643,107 @@ extern "C" {
 
 		return true;
 	}
+
+
+	void Java_app_specta_inc_camera_CameraActivity_onCodeDetected(JNIEnv *env, jobject obj, jstring code){
+	    const char *qrCode = env->GetStringUTFChars(code, NULL);
+	    LOGI("##### Java_app_specta_inc_camera_CameraActivity_onCodeDetected : %s" , qrCode);
+
+	    if(scanCallback != NULL) {
+	        scanCallback(qrCode,  0,0,0,0);
+	    }
+	}
+
+	void _initScanner(transitionCallback initCallback, callbackFunc callback){
+		LOGI("@@ QR _initScanner v01");
+
+		scanCallback = callback;
+
+
+		jni_env = 0;
+		_vm->AttachCurrentThread(&jni_env, 0);
+		jclass unity = jni_env->FindClass("com/unity3d/player/UnityPlayer");
+		jfieldID fid_Activity	= jni_env->GetStaticFieldID(unity, "currentActivity",
+		 "Landroid/app/Activity;");
+
+		obj_Activity	= jni_env->GetStaticObjectField(unity, fid_Activity);
+
+
+		LOGI("@@ QR _initScanner - activity ready to be used");
+
+		jclass dataClass = jni_env->GetObjectClass(obj_Activity);
+        if (jni_env->ExceptionCheck())
+       		jni_env->ExceptionClear();
+       	if (dataClass != NULL)
+   		{
+   		     jclass javaClassRef = (jclass) jni_env->NewGlobalRef(dataClass);
+       		jmethodID javaMethodRef = jni_env->GetMethodID(javaClassRef, "startScanner",  "(I)I");
+
+        	if (jni_env->ExceptionCheck())
+        		jni_env->ExceptionClear();
+      		if (javaMethodRef != 0)
+       		{
+       		    LOGI("@@ QR _initScanner - BEFORE JAVA CALL");
+   				jni_env->CallIntMethod(obj_Activity, javaMethodRef,  (jint) 1);
+   			} else {
+
+   			    LOGI("@@ QR _initScanner - startScanner - Method not found");
+   			}
+
+       		jni_env->DeleteGlobalRef(javaClassRef);
+       	} else {
+
+        	LOGI("@@ QR _initScanner - dataClass is NULL");
+       	}
+
+		if (initCallback != NULL){
+		    initCallback();
+		}
+	}
+
+	    /** Releases memory allocated by the scanner in the initScanner function.
+     */
+    void _releaseScanner(transitionCallback callback){
+
+            LOGI("@@ QR _releaseScanner");
+
+            jni_env = 0;
+            _vm->AttachCurrentThread(&jni_env, 0);
+            jclass unity = jni_env->FindClass("com/unity3d/player/UnityPlayer");
+            jfieldID fid_Activity	= jni_env->GetStaticFieldID(unity, "currentActivity",
+             "Landroid/app/Activity;");
+
+            obj_Activity	= jni_env->GetStaticObjectField(unity, fid_Activity);
+
+
+            LOGI("@@ QR _releaseScanner - activity ready to be used");
+
+            LOGI("@@ QR _releaseScanner NDK");
+            jclass dataClass = jni_env->GetObjectClass(obj_Activity);
+            if (jni_env->ExceptionCheck())
+                jni_env->ExceptionClear();
+            if (dataClass != NULL)
+            {
+                 jclass javaClassRef = (jclass) jni_env->NewGlobalRef(dataClass);
+                jmethodID javaMethodRef = jni_env->GetMethodID(javaClassRef, "releaseScanner",
+                    "(I)I");
+
+                if (jni_env->ExceptionCheck())
+                    jni_env->ExceptionClear();
+                if (javaMethodRef != 0)
+                {
+                    jni_env->CallIntMethod(obj_Activity, javaMethodRef, (jint) 2);
+                }
+
+                jni_env->DeleteGlobalRef(javaClassRef);
+            }
+
+            if (callback != NULL){
+                callback();
+            }
+    }
+
+    void _toggleTorch(int on){
+         LOGI("@@ QR _toggleTorch");
+    }
 }

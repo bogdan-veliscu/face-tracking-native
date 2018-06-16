@@ -95,4 +95,24 @@ extern "C" {
     void renderFrame();
 
     int getTexturePointer();
+
+    /// -------------- QR scanner new methods
+    typedef void (*callbackFunc)(const char *, float top, float left, float bottom, float right);
+    typedef void (*transitionCallback)();
+
+    struct Rect {
+      short               top;
+      short               left;
+      short               bottom;
+      short               right;
+    };
+    typedef struct Rect Rect;
+
+    void _initScanner(transitionCallback initCallback, callbackFunc scanCallback);
+
+    /// ---Releases memory allocated by the scanner in the initScanner function.
+    void _releaseScanner(transitionCallback callback);
+
+    void _toggleTorch(int on);
+
 }

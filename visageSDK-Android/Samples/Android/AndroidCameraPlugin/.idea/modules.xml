@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidCameraPlugin.iml" filepath="$PROJECT_DIR$/AndroidCameraPlugin.iml" />
-      <module fileurl="file://$PROJECT_DIR$/AndroidCameraPlugin.iml" filepath="$PROJECT_DIR$/AndroidCameraPlugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/specta-vision/specta-vision.iml" filepath="$PROJECT_DIR$/specta-vision/specta-vision.iml" />
     </modules>
   </component>
 </project>

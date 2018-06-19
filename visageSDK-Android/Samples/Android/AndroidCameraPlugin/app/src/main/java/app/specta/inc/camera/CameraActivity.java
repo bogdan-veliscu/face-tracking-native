@@ -1,17 +1,10 @@
 package app.specta.inc.camera;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.app.AlertDialog;
 import android.graphics.Canvas;
-import android.media.FaceDetector;
-import android.media.Image;
 import android.opengl.GLSurfaceView;
-import android.view.SurfaceHolder;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -27,9 +20,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.WindowManager;
-import android.widget.Toast;
 
-import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 
 import java.io.IOException;
@@ -57,8 +48,8 @@ import android.support.v4.app.ActivityCompat;
 import java.nio.ByteBuffer;
 
 
-public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener, Runnable {
-    public final String TAG = "SPECTA-CameraPreview";
+public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
+    public final String TAG = "SPECTA-Camera1";
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Camera cam;
     int ImageWidth = -1;
@@ -72,7 +63,6 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
 
     boolean surfaceReady = false;
 
-    CameraSurface cameraSurface;
     // unity texture
     private int nativeTexturePointer = -1;
 
@@ -105,15 +95,6 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
             setParameters((display.getRotation() * 90 + orientation) % 360, -1, -1, -1);
         else if (camInfo.facing == CameraInfo.CAMERA_FACING_BACK)
             setParameters((orientation - display.getRotation() * 90 + 360) % 360, -1, -1, -1);
-    }
-
-
-    @Override
-    public void onCreate(Bundle _savedInstanceState) {
-        super.onCreate(_savedInstanceState);
-        cameraSurface = new CameraSurface(this);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        addContentView(cameraSurface, params);
     }
 
     @Override
@@ -178,7 +159,6 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
             cam = Camera.open(camId);
         } catch (Exception e) {
             Log.e(TAG, "Unable to open camera");
-            //Toast.makeText(getBaseContext(), "Unable to open camera", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -238,55 +218,12 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
         openCam = true;
     }
 
-
-    public void updateTexture() {
-        // check for errors at the beginning
-        checkGlError("begin_updateTexture()");
-
-        Log.d(TAG, "GLES20.glActiveTexture..");
-
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        checkGlError("glActiveTexture");
-        Log.d(TAG, "GLES20.glBindTexture..");
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                nativeTexturePointer);
-        checkGlError("glBindTexture");
-
-        Log.d(TAG, "ThreadID=" + Thread.currentThread().getId());
-        Log.d(TAG, "texture.updateTexImage..");
-
-        tex.updateTexImage();
-        checkGlError("updateTexImage");
-    }
-
     // check for OpenGL errors
     private void checkGlError(String op) {
         int error;
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
             Log.e(TAG, op + ": glError 0x" + Integer.toHexString(error));
         }
-    }
-
-    // create texture here instead by Unity
-    private int createExternalTexture() {
-
-        Log.i(TAG, "createExternalTexture START:");
-        int[] textureIdContainer = new int[1];
-        GLES20.glGenTextures(1, textureIdContainer, 0);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                textureIdContainer[0]);
-
-        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-
-        Log.i(TAG, "createExternalTexture pointer:" + textureIdContainer[0]);
-        return textureIdContainer[0];
     }
 
     public void closeCamera() {
@@ -386,6 +323,7 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
             @Override
             public SparseArray detect(Frame frame) {
 
+                Log.w(TAG, "Frame Detector - ON DETECT --->");
                 int width = frame.getMetadata().getWidth();
                 int height = frame.getMetadata().getHeight();
 
@@ -400,8 +338,8 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
         };
 
         MultiDetector multiDetector = new MultiDetector.Builder()
-                .add(barcodeDetector)
                 .add(frameDetector)
+                .add(barcodeDetector)
                 .build();
 
         cameraSource = new CameraSource.Builder(this, barcodeDetector)
@@ -426,7 +364,6 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
             @Override
             public void release() {
                 Log.w(TAG, "### To prevent memory leaks barcode scanner has been stopped");
-                //Toast.makeText(getApplicationContext(), "To prevent memory leaks barcode scanner has been stopped", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -437,7 +374,6 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
                     String qrCode= barcodes.valueAt(0).displayValue;
 
                     Log.w(TAG, "### JAVA QR scanner detected:" + qrCode);
-                    //Toast.makeText(getApplicationContext(), "QR code= " + qrCode, Toast.LENGTH_SHORT).show();
                     onCodeDetected(qrCode);
 
                 }
@@ -603,31 +539,6 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
     static {
         System.loadLibrary("VisageVision");
         System.loadLibrary("VisageTrackerUnityPlugin");
-    }
-
-
-    /**
-     * Implementation of run method of Runnable interface.
-     * Android requires that all rendering to a surface is done from separate thread than the one which created the View object. Rendering thread is started from surfaceCreated method.
-     * Method calls rendering loop of application.
-     */
-    public void run() {
-        Canvas c = null;
-        boolean isAutoStopped = false;
-        while (cameraSurface != null) {
-            try {
-                //int st = GetStatus();
-                //int count = GetNotifyCount();
-                c = cameraSurface.getHolder().lockCanvas(null);
-                synchronized (this) {
-                    cameraSurface.requestRender();
-                }
-            } finally {
-                if (c != null) {
-                    cameraSurface.getHolder().unlockCanvasAndPost(c);
-                }
-            }
-        }
     }
 
 

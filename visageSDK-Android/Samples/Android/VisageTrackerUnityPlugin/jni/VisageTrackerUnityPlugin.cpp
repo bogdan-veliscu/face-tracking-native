@@ -257,57 +257,6 @@ extern "C" {
         LOGI("Java_app_specta_inc_camera_CameraActivity_setParameters");
 	}
 
-	void Java_com_visagetechnologies_facialanimationdemo_CameraActivity_WriteFrame(JNIEnv *env,
-	jobject obj, jbyteArray frame)
-	{
-		LOGI("Java_com_visagetechnologies_facialanimationdemo_CameraActivity_WriteFrame - called");
-		pthread_mutex_lock(&writeFrame_mutex);
-		if (!parametersChanged){
-			jbyte *pixelData = env->GetByteArrayElements(frame, 0);
-
-			imageCapture->WriteFrameYUV((unsigned char*)pixelData);
-			env->ReleaseByteArrayElements(frame, pixelData, 0);
-		}
-		parametersChanged = false;
-		LOGI("Java_com_visagetechnologies_facialanimationdemo_CameraActivity_WriteFrame - END");
-		pthread_mutex_unlock(&writeFrame_mutex);
-
-	}
-
-	void Java_com_visagetechnologies_facialanimationdemo_CameraActivity_setParameters(JNIEnv *env,
-	jobject obj, jint orientation, jint width, jint height, jint flip)
-	{
-		pthread_mutex_lock(&grabFrame_mutex);
-		pthread_mutex_lock(&writeFrame_mutex);
-		if (width !=-1)
-			camWidth = width;
-		if (height !=-1)
-			camHeight = height;
-		if (orientation !=-1)
-			camOrientation = orientation;
-		if (flip !=-1)
-			camFlip = flip;
-
-		delete imageCapture;
-		imageCapture = new AndroidCameraCapture(camWidth, camHeight, camOrientation, camFlip);
-
-
-		if (camOrientation == 90 || camOrientation == 270)
-		{
-			xTexScale =  camHeight / (float) GetNearestPow2(camHeight);
-			yTexScale = camWidth / (float) GetNearestPow2(camWidth);
-		}
-		else
-		{
-			xTexScale =  camWidth / (float) GetNearestPow2(camWidth);
-			yTexScale = camHeight / (float) GetNearestPow2(camHeight);
-		}
-
-		parametersChanged = true;
-		pthread_mutex_unlock(&writeFrame_mutex);
-		pthread_mutex_unlock(&grabFrame_mutex);
-	}
-
 	void _getCameraInfo(float *focus, int *ImageWidth, int *ImageHeight)
 	{
 		*focus = trackingData[0].cameraFocus;
@@ -646,6 +595,9 @@ extern "C" {
 
 
 	void Java_app_specta_inc_camera_CameraActivity_onCodeDetected(JNIEnv *env, jobject obj, jstring code){
+
+	    LOGI("@@ QR _initScanner v01");
+
 	    const char *qrCode = env->GetStringUTFChars(code, NULL);
 	    LOGI("##### Java_app_specta_inc_camera_CameraActivity_onCodeDetected : %s" , qrCode);
 

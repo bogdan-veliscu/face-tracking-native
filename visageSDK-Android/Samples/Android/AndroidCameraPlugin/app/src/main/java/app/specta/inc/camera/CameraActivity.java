@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.graphics.ImageFormat;
+import android.graphics.YuvImage;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
@@ -49,7 +50,7 @@ import java.nio.ByteBuffer;
 
 
 public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
-    public final String TAG = "SPECTA-Camera1";
+    public final String TAG = "SPECTA-Camera3";
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Camera cam;
     int ImageWidth = -1;
@@ -323,41 +324,37 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
             @Override
             public SparseArray detect(Frame frame) {
 
-                Log.w(TAG, "Frame Detector - ON DETECT --->");
-                int width = frame.getMetadata().getWidth();
-                int height = frame.getMetadata().getHeight();
+                ByteBuffer buffer = frame.getGrayscaleImageData();
+                Log.w(TAG, "Frame Detector - ON DETECT --->" + buffer.remaining());
+                int w = frame.getMetadata().getWidth();
+                int h = frame.getMetadata().getHeight();
 
-                int size     = width * height;
-                ByteBuffer buffer = ByteBuffer.allocate(size);
+                byte[] arr = new byte[buffer.remaining()];
+                buffer.get(arr);
 
-                frame.getBitmap().copyPixelsToBuffer(buffer);
+                YuvImage yuvimage=new YuvImage(arr, ImageFormat.NV21, w, h, null);
 
-                WriteFrame(buffer.array());
+                WriteFrame(yuvimage.getYuvData());
                 return null;
             }
         };
 
-        MultiDetector multiDetector = new MultiDetector.Builder()
-                .add(frameDetector)
-                .add(barcodeDetector)
-                .build();
+        if(frameDetector.isOperational()) {
+            Log.w(TAG, "mobile camera preview frame detector is operational");
+        } else {
+            Log.w(TAG, "mobile camera preview frame detector dependencies are not yet available.");
+        }
+        frameDetector.setProcessor(new Detector.Processor() {
+            @Override
+            public void release() {
 
-        cameraSource = new CameraSource.Builder(this, barcodeDetector)
-                .setRequestedPreviewSize(1920, 1080)
-                .setAutoFocusEnabled(true) //you should add this feature
-                .build();
-
-        try {
-            if (ActivityCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                cameraSource.start();
-            } else {
-                ActivityCompat.requestPermissions(CameraActivity.this, new
-                        String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void receiveDetections(Detector.Detections detections) {
+
+            }
+        });
 
 
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
@@ -379,6 +376,30 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
                 }
             }
         });
+
+        MultiDetector multiDetector = new MultiDetector.Builder()
+                .add(frameDetector)
+                .add(barcodeDetector)
+                .build();
+
+        cameraSource = new CameraSource.Builder(this, multiDetector)
+                .setRequestedPreviewSize(480, 360).setRequestedFps(30)
+                .setAutoFocusEnabled(true) //you should add this feature
+                .build();
+
+        try {
+            if (ActivityCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                cameraSource.start();
+            } else {
+                ActivityCompat.requestPermissions(CameraActivity.this, new
+                        String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         return  1;
     }
 

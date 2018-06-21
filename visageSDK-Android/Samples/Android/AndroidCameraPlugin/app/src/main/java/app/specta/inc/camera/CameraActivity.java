@@ -1,56 +1,44 @@
 package app.specta.inc.camera;
 
 
-import android.content.res.Configuration;
+import android.Manifest;
 import android.app.AlertDialog;
-import android.graphics.Canvas;
-import android.opengl.GLSurfaceView;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.ImageFormat;
-import android.graphics.YuvImage;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.Size;
-import android.os.Bundle;
-import android.util.TypedValue;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.WindowManager;
+import android.widget.TextView;
 
-import android.opengl.GLES20;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.unity3d.player.UnityPlayer;
+import com.unity3d.player.UnityPlayerActivity;
 
 import java.io.IOException;
 import java.util.List;
-import java.lang.*;
-import java.lang.String;
-
-import com.google.android.gms.vision.Frame;
-import com.unity3d.player.UnityPlayer;
-import com.unity3d.player.UnityPlayerActivity;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.google.android.gms.vision.MultiDetector;
-
-import android.content.pm.PackageManager;
-import android.util.SparseArray;
-import android.Manifest;
-import android.support.v4.app.ActivityCompat;
-import java.nio.ByteBuffer;
+//import com.google.android.gms.vision.CameraSource;
 
 
 public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
-    public final String TAG = "SPECTA-Camera3";
+    public final String TAG = "SPECTA-Cam7";
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Camera cam;
     int ImageWidth = -1;
@@ -248,57 +236,6 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
         return nativeTexturePointer;
     }
 
-    /*
-     * JAVA texture creation
-     */
-    public int startCamera() {
-
-        if (!surfaceReady) {
-            Log.d(TAG, "#### StartCamera - surface not ready");
-            return -1;
-        }
-
-        if (nativeTexturePointer > 0) {
-            Log.d(TAG, "####### startCamera nativeTexturePointer=" + nativeTexturePointer);
-            return nativeTexturePointer;
-        }
-
-        // open the camera
-        cam = Camera.open();
-        setupCamera();
-
-        Log.d(TAG, "###### camera opened: " + (cam != null));
-
-        try {
-            cam.setPreviewTexture(tex);
-
-            cam.setPreviewCallbackWithBuffer(new PreviewCallback() {
-                private long timestamp = 0;
-
-                public void onPreviewFrame(byte[] data, Camera camera) {
-                    Log.v("CameraTest", "FPS = " + 1000.0 / (System.currentTimeMillis() - timestamp));
-                    //cameraFps = 1000.0f/(System.currentTimeMillis()-timestamp);
-                    timestamp = System.currentTimeMillis();
-                    WriteFrame(data);
-                    camera.addCallbackBuffer(data);
-                    //updateTexture();
-                    Log.v(TAG, "Camera preview ended :" +
-                            data[11] + "|" + data[22] + "|" + data[33] + "|" + data[44] + "|" + data[55] + "|" + data[66] + "|" + data[77]);
-                }
-            });
-
-            cam.startPreview();
-            openCam = true;
-
-        } catch (IOException ioe) {
-            Log.w("MainActivity", " ##### CAM LAUNCH FAILED");
-        }
-
-        Log.d(TAG, "#######  CAMERA START END -- nativeTexturePointer=" + nativeTexturePointer);
-        return nativeTexturePointer;
-    }
-
-
     public int startScanner(int nativeCode) {
 
 
@@ -307,6 +244,7 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
             cam.stopPreview();
             cam.release();
             cam = null;
+            openCam = false;
         }
 
         Log.d(TAG, "#### Start QR scanner - v0.1");
@@ -316,45 +254,45 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
 
-        if (barcodeDetector.isOperational()){
+        if (barcodeDetector.isOperational()) {
             Log.w(TAG, "mobile Vision detector dependencies are not yet available.");
         }
-
-        Detector frameDetector = new Detector() {
-            @Override
-            public SparseArray detect(Frame frame) {
-
-                ByteBuffer buffer = frame.getGrayscaleImageData();
-                Log.w(TAG, "Frame Detector - ON DETECT --->" + buffer.remaining());
-                int w = frame.getMetadata().getWidth();
-                int h = frame.getMetadata().getHeight();
-
-                byte[] arr = new byte[buffer.remaining()];
-                buffer.get(arr);
-
-                YuvImage yuvimage=new YuvImage(arr, ImageFormat.NV21, w, h, null);
-
-                WriteFrame(yuvimage.getYuvData());
-                return null;
-            }
-        };
-
-        if(frameDetector.isOperational()) {
-            Log.w(TAG, "mobile camera preview frame detector is operational");
-        } else {
-            Log.w(TAG, "mobile camera preview frame detector dependencies are not yet available.");
-        }
-        frameDetector.setProcessor(new Detector.Processor() {
-            @Override
-            public void release() {
-
-            }
-
-            @Override
-            public void receiveDetections(Detector.Detections detections) {
-
-            }
-        });
+//
+//        Detector frameDetector = new Detector() {
+//            @Override
+//            public SparseArray detect(Frame frame) {
+//
+//                ByteBuffer buffer = frame.getGrayscaleImageData();
+//                Log.w(TAG, "Frame Detector - ON DETECT --->" + buffer.remaining());
+//                int w = frame.getMetadata().getWidth();
+//                int h = frame.getMetadata().getHeight();
+//
+//                byte[] arr = new byte[buffer.remaining()];
+//                buffer.get(arr);
+//
+//                YuvImage yuvimage = new YuvImage(arr, ImageFormat.NV21, w, h, null);
+//
+//                WriteFrame(yuvimage.getYuvData());
+//                return null;
+//            }
+//        };
+//
+//        if (frameDetector.isOperational()) {
+//            Log.w(TAG, "mobile camera preview frame detector is operational");
+//        } else {
+//            Log.w(TAG, "mobile camera preview frame detector dependencies are not yet available.");
+//        }
+//        frameDetector.setProcessor(new Detector.Processor() {
+//            @Override
+//            public void release() {
+//
+//            }
+//
+//            @Override
+//            public void receiveDetections(Detector.Detections detections) {
+//
+//            }
+//        });
 
 
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
@@ -368,7 +306,7 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if (barcodes.size() != 0) {
 
-                    String qrCode= barcodes.valueAt(0).displayValue;
+                    String qrCode = barcodes.valueAt(0).displayValue;
 
                     Log.w(TAG, "### JAVA QR scanner detected:" + qrCode);
                     onCodeDetected(qrCode);
@@ -377,15 +315,31 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
             }
         });
 
-        MultiDetector multiDetector = new MultiDetector.Builder()
-                .add(frameDetector)
-                .add(barcodeDetector)
+        Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+        int screenOrientation = display.getRotation();
+
+        setParameters((screenOrientation * 90 + orientation) % 360, ImageWidth, ImageHeight, 1);
+
+        cameraSource = new CameraSource.Builder(this, barcodeDetector)
+                .setRequestedPreviewSize(ImageWidth, ImageHeight).setRequestedFps(30)
+               // .setAutoFocusEnabled(true) //you should add this feature
                 .build();
 
-        cameraSource = new CameraSource.Builder(this, multiDetector)
-                .setRequestedPreviewSize(480, 360).setRequestedFps(30)
-                .setAutoFocusEnabled(true) //you should add this feature
-                .build();
+        Log.w(TAG, "### CameraSource ready");
+        cameraSource.setPreviewCallback(new PreviewCallback() {
+            private long timestamp = 0;
+
+            @Override
+            public void onPreviewFrame(byte[] data, Camera camera) {
+                Log.v("CameraTest","FPS = "+1000.0/(System.currentTimeMillis()-timestamp));
+                cameraFps = 1000.0f/(System.currentTimeMillis()-timestamp);
+                timestamp=System.currentTimeMillis();
+                WriteFrame(data);
+                camera.addCallbackBuffer(data);
+            }
+        });
+
+        Log.w(TAG, "### CameraSource preview is ready");
 
         try {
             if (ActivityCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -398,57 +352,25 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Log.w(TAG, "### Scanner initialization completed!");
 
-
-        return  1;
+        return 1;
     }
 
-    public void releaseScanner(int nativeCode){
+    public void releaseScanner(int nativeCode) {
 
         Log.w(TAG, "### Releasing QR scanner..");
-        if(scannerEnabled){
+        if (scannerEnabled) {
             cameraSource.release();
         }
         scannerEnabled = false;
 
         Log.w(TAG, "### Starting the old camera preview");
-        startCamera();
+        GrabFromCamera(ImageWidth, ImageHeight, pickCam);
 
         Log.w(TAG, "### Preview started");
     }
 
-    //@SuppressLint("NewApi")
-    private void setupCamera() {
-        Camera.Parameters parms = cam.getParameters();
-
-        // Give the camera a hint that we're recording video. This can have a
-        // big impact on frame rate.
-        parms.setRecordingHint(true);
-        parms.setPreviewFormat(ImageFormat.NV21);
-
-        // leave the frame rate set to default
-        cam.setParameters(parms);
-
-        Camera.Size mCameraPreviewSize = parms.getPreviewSize();
-        ImageWidth = parms.getPreviewSize().width;
-        ImageHeight = parms.getPreviewSize().height;
-
-        // only for debugging output
-        int[] fpsRange = new int[2];
-        parms.getPreviewFpsRange(fpsRange);
-        String previewFacts = mCameraPreviewSize.width + "x"
-                + mCameraPreviewSize.height;
-        if (fpsRange[0] == fpsRange[1]) {
-            previewFacts += " @" + (fpsRange[0] / 1000.0) + "fps";
-        } else {
-            previewFacts += " @[" + (fpsRange[0] / 1000.0) + " - "
-                    + (fpsRange[1] / 1000.0) + "] fps";
-        }
-
-        Log.i(TAG, "previewFacts=" + previewFacts);
-
-        checkGlError("endSetupCamera");
-    }
 
     /**
      * Getting camera device ID

@@ -41,21 +41,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AndroidCameraCapture.h" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AndroidCameraCapture.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="413">
-              <caret line="65" column="0" lean-forward="true" selection-start-line="65" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
+            <state relative-caret-position="-10">
+              <caret line="25" column="3" lean-forward="false" selection-start-line="25" selection-start-column="3" selection-end-line="25" selection-end-column="3" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VisageTrackerUnityPlugin.cpp" pinned="false" current-in-tab="false">
+      <file leaf-file-name="VisageTrackerUnityPlugin.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="311">
-              <caret line="342" column="9" lean-forward="true" selection-start-line="342" selection-start-column="9" selection-end-line="342" selection-end-column="9" />
+            <state relative-caret-position="481">
+              <caret line="234" column="22" lean-forward="false" selection-start-line="234" selection-start-column="22" selection-end-line="234" selection-end-column="22" />
               <folding />
             </state>
           </provider>
@@ -104,8 +104,8 @@
       <file leaf-file-name="VisageTrackerUnityPlugin.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="453">
-              <caret line="32" column="77" lean-forward="true" selection-start-line="32" selection-start-column="77" selection-end-line="32" selection-end-column="77" />
+            <state relative-caret-position="-454">
+              <caret line="32" column="77" lean-forward="false" selection-start-line="32" selection-start-column="77" selection-end-line="32" selection-end-column="77" />
               <folding />
             </state>
           </provider>
@@ -115,14 +115,10 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>pixelData</find>
-      <find>res =</find>
-      <find>res</find>
       <find>updateAnalyserEstimations</find>
       <find>detectedAge</find>
       <find>_open</find>
       <find>_initTracker</find>
-      <find>renderFrame</find>
       <find>Java_</find>
       <find>Java_app_specta</find>
       <find>camera</find>
@@ -140,11 +136,15 @@
       <find>Java_app_specta_inc_camera_CameraActivity_setParameters</find>
       <find>onCodeDetected</find>
       <find>WriteFrame</find>
-      <find>writeframe</find>
       <find>trackingStatus</find>
       <find>TRACK_STAT_OFF</find>
       <find>Camera frame not yet ready</find>
       <find>GrabFromCamera</find>
+      <find>AlertDialogFunction</find>
+      <find>AlertCallback</find>
+      <find>render</find>
+      <find>renderFrame</find>
+      <find>writeframe</find>
     </findStrings>
     <replaceStrings>
       <replace>inc_camera_CameraActivity</replace>
@@ -169,9 +169,9 @@
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-1920" />
-    <option name="y" value="22" />
+    <option name="y" value="23" />
     <option name="width" value="1920" />
-    <option name="height" value="1058" />
+    <option name="height" value="1011" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -223,7 +223,7 @@
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1529511209633" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1529589404794" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -934,26 +934,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-10">
+          <caret line="25" column="3" lean-forward="false" selection-start-line="25" selection-start-column="3" selection-end-line="25" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="453">
-          <caret line="32" column="77" lean-forward="true" selection-start-line="32" selection-start-column="77" selection-end-line="32" selection-end-column="77" />
+        <state relative-caret-position="-454">
+          <caret line="32" column="77" lean-forward="false" selection-start-line="32" selection-start-column="77" selection-end-line="32" selection-end-column="77" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="311">
-          <caret line="342" column="9" lean-forward="true" selection-start-line="342" selection-start-column="9" selection-end-line="342" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="413">
-          <caret line="65" column="0" lean-forward="true" selection-start-line="65" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
+        <state relative-caret-position="481">
+          <caret line="234" column="22" lean-forward="false" selection-start-line="234" selection-start-column="22" selection-end-line="234" selection-end-column="22" />
           <folding />
         </state>
       </provider>

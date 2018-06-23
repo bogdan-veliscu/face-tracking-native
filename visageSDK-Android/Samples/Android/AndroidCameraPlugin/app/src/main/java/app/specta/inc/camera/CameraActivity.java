@@ -12,7 +12,6 @@ import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.Size;
 import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.SparseArray;
@@ -31,14 +30,8 @@ import com.unity3d.player.UnityPlayerActivity;
 import java.io.IOException;
 import java.util.List;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
-//import com.google.android.gms.vision.CameraSource;
-
-
-public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
-    public final String TAG = "SPECTA-Cam7";
+public class CameraActivity extends UnityPlayerActivity {
+    public final String TAG = "SPECTA-Cam4";
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Camera cam;
     int ImageWidth = -1;
@@ -69,28 +62,30 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
 
         super.onConfigurationChanged(newConfig);
 
-        CameraInfo camInfo = new CameraInfo();
+        if(!scannerEnabled) {
+            CameraInfo camInfo = new CameraInfo();
 
-        try {
-            Camera.getCameraInfo(camId, camInfo);
-        } catch (Exception e) {
+            try {
+                Camera.getCameraInfo(camId, camInfo);
+            } catch (Exception e) {
 
+            }
+            Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+
+            orientation = camInfo.orientation;
+
+            if (camInfo.facing == CameraInfo.CAMERA_FACING_FRONT)
+                setParameters((display.getRotation() * 90 + orientation) % 360, -1, -1, -1);
+            else if (camInfo.facing == CameraInfo.CAMERA_FACING_BACK)
+                setParameters((orientation + display.getRotation() * 90 + 360) % 360, -1, -1, -1);
         }
-        Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-
-        orientation = camInfo.orientation;
-
-        if (camInfo.facing == CameraInfo.CAMERA_FACING_FRONT)
-            setParameters((display.getRotation() * 90 + orientation) % 360, -1, -1, -1);
-        else if (camInfo.facing == CameraInfo.CAMERA_FACING_BACK)
-            setParameters((orientation - display.getRotation() * 90 + 360) % 360, -1, -1, -1);
     }
 
     @Override
     public void onPause() {
         closeCamera();
         if (cameraSource != null) {
-            cameraSource.release();
+            cameraSource.release(null);
         }
         super.onPause();
     }
@@ -147,7 +142,8 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
         try {
             cam = Camera.open(camId);
         } catch (Exception e) {
-            Log.e(TAG, "Unable to open camera");
+            Log.e(TAG, "Unable to open camera:");
+            e.printStackTrace();
             return;
         }
 
@@ -217,6 +213,7 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
 
     public void closeCamera() {
         if (cam != null) {
+            cam.setPreviewCallbackWithBuffer(null);
             cam.stopPreview();
             cam.release();
             cam = null;
@@ -238,18 +235,12 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
 
     public int startScanner(int nativeCode) {
 
-
-        Log.d(TAG, "#### Start QR scanner - v0.1  ---> closing the old camera preview");
-        if (cam != null) {
-            cam.stopPreview();
-            cam.release();
-            cam = null;
-            openCam = false;
-        }
-
         Log.d(TAG, "#### Start QR scanner - v0.1");
 
-        scannerEnabled = true;
+        closeCamera();
+        pickCam = CameraInfo.CAMERA_FACING_BACK;
+        camId = getCameraId(pickCam);
+
         barcodeDetector = new BarcodeDetector.Builder(this)
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
@@ -257,43 +248,6 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
         if (barcodeDetector.isOperational()) {
             Log.w(TAG, "mobile Vision detector dependencies are not yet available.");
         }
-//
-//        Detector frameDetector = new Detector() {
-//            @Override
-//            public SparseArray detect(Frame frame) {
-//
-//                ByteBuffer buffer = frame.getGrayscaleImageData();
-//                Log.w(TAG, "Frame Detector - ON DETECT --->" + buffer.remaining());
-//                int w = frame.getMetadata().getWidth();
-//                int h = frame.getMetadata().getHeight();
-//
-//                byte[] arr = new byte[buffer.remaining()];
-//                buffer.get(arr);
-//
-//                YuvImage yuvimage = new YuvImage(arr, ImageFormat.NV21, w, h, null);
-//
-//                WriteFrame(yuvimage.getYuvData());
-//                return null;
-//            }
-//        };
-//
-//        if (frameDetector.isOperational()) {
-//            Log.w(TAG, "mobile camera preview frame detector is operational");
-//        } else {
-//            Log.w(TAG, "mobile camera preview frame detector dependencies are not yet available.");
-//        }
-//        frameDetector.setProcessor(new Detector.Processor() {
-//            @Override
-//            public void release() {
-//
-//            }
-//
-//            @Override
-//            public void receiveDetections(Detector.Detections detections) {
-//
-//            }
-//        });
-
 
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
@@ -315,25 +269,17 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
             }
         });
 
-        Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-        int screenOrientation = display.getRotation();
-
-        setParameters((screenOrientation * 90 + orientation) % 360, ImageWidth, ImageHeight, 1);
 
         cameraSource = new CameraSource.Builder(this, barcodeDetector)
                 .setRequestedPreviewSize(ImageWidth, ImageHeight).setRequestedFps(30)
-               // .setAutoFocusEnabled(true) //you should add this feature
+                // .setAutoFocusEnabled(true) //you should add this feature
                 .build();
 
         Log.w(TAG, "### CameraSource ready");
         cameraSource.setPreviewCallback(new PreviewCallback() {
-            private long timestamp = 0;
 
             @Override
             public void onPreviewFrame(byte[] data, Camera camera) {
-                Log.v("CameraTest","FPS = "+1000.0/(System.currentTimeMillis()-timestamp));
-                cameraFps = 1000.0f/(System.currentTimeMillis()-timestamp);
-                timestamp=System.currentTimeMillis();
                 WriteFrame(data);
                 camera.addCallbackBuffer(data);
             }
@@ -349,26 +295,47 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
                         String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
             }
 
+            Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+            int screenOrientation = display.getRotation();
+
+            CameraInfo cameraInfo = new CameraInfo();
+            Camera.getCameraInfo(camId, cameraInfo);
+            orientation = cameraInfo.orientation;
+
+            Log.w(TAG, "### CameraSource orientation:" + orientation + "--->" + (orientation - screenOrientation * 90 + 360) % 360);
+
+            setParameters(90, ImageWidth, ImageHeight, 0);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
         Log.w(TAG, "### Scanner initialization completed!");
 
+        scannerEnabled = true;
         return 1;
     }
 
-    public void releaseScanner(int nativeCode) {
+    public int releaseScanner(int nativeCode) {
 
         Log.w(TAG, "### Releasing QR scanner..");
-        if (scannerEnabled) {
-            cameraSource.release();
+        if (cameraSource != null) {
+            cameraSource.release(new Runnable(){
+
+                @Override
+                public void run() {
+                    Log.w(TAG, "### Starting the old camera preview");
+                    GrabFromCamera(ImageWidth, ImageHeight, 0);
+                }
+            });
+            cameraSource = null;
         }
         scannerEnabled = false;
 
-        Log.w(TAG, "### Starting the old camera preview");
-        GrabFromCamera(ImageWidth, ImageHeight, pickCam);
+
+
 
         Log.w(TAG, "### Preview started");
+        return 0;
     }
 
 
@@ -387,7 +354,7 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
             Camera.getCameraInfo(i, info);
             cameraId = i;
 
-            Log.e(TAG, "getCameraId :" + i);
+            Log.w(TAG, "getCameraId :" + i);
             if (info.facing == CameraInfo.CAMERA_FACING_FRONT && pickCamera != 1)
                 return cameraId;
             else if (info.facing == CameraInfo.CAMERA_FACING_BACK && pickCamera == 1)
@@ -423,59 +390,22 @@ public class CameraActivity extends UnityPlayerActivity implements GLSurfaceView
         });
     }
 
-    int getCameraId() {
-        int cameraId = -1;
-        int numberOfCameras = Camera.getNumberOfCameras();
-        for (int i = 0; i < numberOfCameras; i++) {
-            CameraInfo info = new CameraInfo();
-            Camera.getCameraInfo(i, info);
-            cameraId = i;
-            if (info.facing == CameraInfo.CAMERA_FACING_FRONT) {
-                break;
-            }
-        }
-        return cameraId;
-    }
-
     @Override
     public void onDestroy() {
         closeCamera();
 
+        if (cameraSource != null) {
+            cameraSource.release(null);
+
+            cameraSource = null;
+        }
+
         super.onDestroy();
-    }
-
-
-    @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        init();
-    }
-
-    @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
-        //resize(width, height);
-    }
-
-    @Override
-    public void onDrawFrame(GL10 gl) {
-        render();
-    }
-
-    public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-        // Log.i(TAG, "#####   onSurfaceCreated=");
-        // updateTexture();
     }
 
     public static native void WriteFrame(byte[] frame);
 
     public static native void setParameters(int orientation, int width, int height, int flip);
-
-    public static native void bindTexture(int pointer);
-
-    public static native void init();
-
-    public static native void resize(int width, int height);
-
-    public static native void render();
 
     public static native void onCodeDetected(String code);
 

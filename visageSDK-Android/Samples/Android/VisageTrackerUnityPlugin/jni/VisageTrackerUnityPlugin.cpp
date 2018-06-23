@@ -313,8 +313,8 @@ extern "C" {
                 ageRefreshRequested =0;
                 int frameSize = camHeight * camWidth * 3;
 
-                std::thread bgCheck(updateAnalyserEstimations);
-                bgCheck.detach();
+                //std::thread bgCheck(updateAnalyserEstimations);
+               // bgCheck.detach();
             }
         } else {
             int res[] = {TRACK_STAT_OFF};

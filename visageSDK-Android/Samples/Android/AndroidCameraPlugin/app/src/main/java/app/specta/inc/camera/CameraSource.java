@@ -1,3 +1,5 @@
+package app.specta.inc.camera;
+
 /*
  * Copyright (C) The Android Open Source Project
  *
@@ -13,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.specta.inc.camera;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -92,14 +93,19 @@ public class CameraSource {
     private static final float ASPECT_RATIO_TOLERANCE = 0.01f;
 
     Camera.PreviewCallback customCallback;
+
     public void setPreviewCallback(Camera.PreviewCallback callback) {
         this.customCallback = callback;
     }
 
-    public void CallCustomCallback(byte[] data, Camera camera){
-        if (customCallback != null){
+    public void CallCustomCallback(byte[] data, Camera camera) {
+        if (customCallback != null) {
             customCallback.onPreviewFrame(data, camera);
         }
+    }
+
+    public void ToggleDetector(boolean active) {
+        mFrameProcessor.setActive(active);
     }
 
     @StringDef({
@@ -112,7 +118,8 @@ public class CameraSource {
             Camera.Parameters.FOCUS_MODE_MACRO
     })
     @Retention(RetentionPolicy.SOURCE)
-    private @interface FocusMode {}
+    private @interface FocusMode {
+    }
 
     @StringDef({
             Camera.Parameters.FLASH_MODE_ON,
@@ -122,7 +129,8 @@ public class CameraSource {
             Camera.Parameters.FLASH_MODE_TORCH
     })
     @Retention(RetentionPolicy.SOURCE)
-    private @interface FlashMode {}
+    private @interface FlashMode {
+    }
 
     private Context mContext;
 
@@ -330,10 +338,17 @@ public class CameraSource {
     /**
      * Stops the camera and releases the resources of the camera and underlying detector.
      */
-    public void release() {
+    public void release(Runnable callback) {
         synchronized (mCameraLock) {
             stop();
             mFrameProcessor.release();
+
+            customCallback = null;
+
+            if (callback != null) {
+                callback.run();
+            }
+
         }
     }
 
@@ -361,10 +376,11 @@ public class CameraSource {
                 mDummySurfaceView = new SurfaceView(mContext);
                 mCamera.setPreviewDisplay(mDummySurfaceView.getHolder());
             }
-            mCamera.setPreviewCallback(new CameraPreviewCallback(){
+            mCamera.setPreviewCallbackWithBuffer(new CameraPreviewCallback() {
 
             });
 
+            mCamera.startPreview();
             mProcessingThread = new Thread(mFrameProcessor);
             mFrameProcessor.setActive(true);
             mProcessingThread.start();
@@ -811,6 +827,12 @@ public class CameraSource {
         // setting mFlashMode to the one set in the params
         mFlashMode = parameters.getFlashMode();
 
+        parameters.setExposureCompensation(parameters.getMaxExposureCompensation());
+
+        if (parameters.isAutoExposureLockSupported()) {
+            parameters.setAutoExposureLock(false);
+        }
+
         camera.setParameters(parameters);
 
         // Four frame buffers are needed for working with the camera:
@@ -818,13 +840,11 @@ public class CameraSource {
         //   one for the frame that is currently being executed upon in doing detection
         //   one for the next pending frame to process immediately upon completing detection
         //   two for the frames that the camera uses to populate future preview images
-        camera.setPreviewCallbackWithBuffer(new CameraPreviewCallback());
-
-        for (int i = 0; i < 10; i++) {
-
-            camera.addCallbackBuffer(createPreviewBuffer(mPreviewSize));
-        }
-
+        //camera.setPreviewCallbackWithBuffer(new CameraPreviewCallback());
+        camera.addCallbackBuffer(createPreviewBuffer(mPreviewSize));
+        camera.addCallbackBuffer(createPreviewBuffer(mPreviewSize));
+        camera.addCallbackBuffer(createPreviewBuffer(mPreviewSize));
+        camera.addCallbackBuffer(createPreviewBuffer(mPreviewSize));
         return camera;
     }
 
@@ -1077,7 +1097,9 @@ public class CameraSource {
             mFrameProcessor.setNextFrame(data, camera);
 
             CallCustomCallback(data, camera);
-         }
+
+            camera.addCallbackBuffer(data);
+        }
     }
 
     /**
@@ -1200,7 +1222,7 @@ public class CameraSource {
                         return;
                     }
 
-                    CallCustomCallback(mPendingFrameData.array(),mCamera);
+                    //CallCustomCallback(mPendingFrameData.array(), mCamera);
 
                     outputFrame = new Frame.Builder()
                             .setImageData(mPendingFrameData, mPreviewSize.getWidth(),
@@ -1211,7 +1233,7 @@ public class CameraSource {
                             .build();
 
                     // Hold onto the frame data locally, so that we can use this for detection
-                    // below.  We need to clear mPendingFrameData to ensure that this buffer isn't
+                    // below.  We need to clear mPendingFrameData to ensure that this buffer isn'tfset
                     // recycled back to the camera before we are done using that data.
                     data = mPendingFrameData;
                     mPendingFrameData = null;

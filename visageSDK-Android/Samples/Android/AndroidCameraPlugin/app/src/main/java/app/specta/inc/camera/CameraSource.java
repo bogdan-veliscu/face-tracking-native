@@ -841,10 +841,10 @@ public class CameraSource {
         //   one for the next pending frame to process immediately upon completing detection
         //   two for the frames that the camera uses to populate future preview images
         //camera.setPreviewCallbackWithBuffer(new CameraPreviewCallback());
-        camera.addCallbackBuffer(createPreviewBuffer(mPreviewSize));
-        camera.addCallbackBuffer(createPreviewBuffer(mPreviewSize));
-        camera.addCallbackBuffer(createPreviewBuffer(mPreviewSize));
-        camera.addCallbackBuffer(createPreviewBuffer(mPreviewSize));
+
+        for (int i = 0; i < 10; i++) {
+            camera.addCallbackBuffer(createPreviewBuffer(mPreviewSize));
+        }
         return camera;
     }
 

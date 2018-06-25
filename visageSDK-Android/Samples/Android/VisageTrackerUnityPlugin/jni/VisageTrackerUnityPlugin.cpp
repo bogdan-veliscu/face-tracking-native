@@ -191,10 +191,12 @@ extern "C" {
 
 	void Java_app_specta_inc_camera_CameraActivity_WriteFrame(JNIEnv *env, jobject obj, jbyteArray frame)
 	{
-		//LOGI("Java_app_specta_inc_camera_CameraActivity_WriteFrame - called");
+
 		pthread_mutex_lock(&writeFrame_mutex);
 		if (!parametersChanged){
 			jbyte *pixelData = env->GetByteArrayElements(frame, 0);
+
+	       // LOGI("Java_app_specta_inc_camera_CameraActivity_WriteFrame : %d", pixelData);
 
 			imageCapture->WriteFrameYUV((unsigned char*)pixelData);
 			env->ReleaseByteArrayElements(frame, pixelData, 0);
@@ -594,7 +596,7 @@ extern "C" {
 	}
 
 
-	void Java_app_specta_inc_camera_CameraActivity_onCodeDetected(JNIEnv *env, jobject obj, jstring code){
+	void Java_app_specta_inc_camera_CameraActivity_onCodeDetected(JNIEnv *env, jobject obj, jstring code, jfloat top, jfloat left, jfloat bottom, jfloat right){
 
 	    LOGI("@@ QR _initScanner v01");
 
@@ -602,7 +604,7 @@ extern "C" {
 	    LOGI("##### Java_app_specta_inc_camera_CameraActivity_onCodeDetected : %s" , qrCode);
 
 	    if(scanCallback != NULL) {
-	        scanCallback(qrCode,  0,0,0,0);
+	        scanCallback(qrCode,  (float)top, (float)left, (float)bottom, (float)right);
 	    }
 	}
 

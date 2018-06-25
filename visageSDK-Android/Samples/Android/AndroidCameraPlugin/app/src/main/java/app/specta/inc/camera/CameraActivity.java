@@ -6,12 +6,12 @@ import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.Size;
-import android.opengl.GLES20;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.SparseArray;
@@ -31,19 +31,16 @@ import java.io.IOException;
 import java.util.List;
 
 public class CameraActivity extends UnityPlayerActivity {
-    public final String TAG = "SPECTA-Cam4";
+    public final String TAG = "SPECTA-Cam2";
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Camera cam;
     int ImageWidth = -1;
     int ImageHeight = -1;
     SurfaceTexture tex;
-    public float cameraFps;
     int pickCam = -1;
     int camId = -1;
     int orientation;
     boolean openCam = false;
-
-    boolean surfaceReady = false;
 
     // unity texture
     private int nativeTexturePointer = -1;
@@ -62,7 +59,7 @@ public class CameraActivity extends UnityPlayerActivity {
 
         super.onConfigurationChanged(newConfig);
 
-        if(!scannerEnabled) {
+        if (!scannerEnabled) {
             CameraInfo camInfo = new CameraInfo();
 
             try {
@@ -195,6 +192,8 @@ public class CameraActivity extends UnityPlayerActivity {
                 //Log.v("CameraTest","FPS = "+1000.0/(System.currentTimeMillis()-timestamp));
                 //cameraFps = 1000.0f/(System.currentTimeMillis()-timestamp);
                 //timestamp=System.currentTimeMillis();
+
+                //Log.w(TAG, "onPreviewFrame :" + data.length );
                 WriteFrame(data);
                 camera.addCallbackBuffer(data);
             }
@@ -203,13 +202,6 @@ public class CameraActivity extends UnityPlayerActivity {
         openCam = true;
     }
 
-    // check for OpenGL errors
-    private void checkGlError(String op) {
-        int error;
-        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
-            Log.e(TAG, op + ": glError 0x" + Integer.toHexString(error));
-        }
-    }
 
     public void closeCamera() {
         if (cam != null) {
@@ -234,9 +226,17 @@ public class CameraActivity extends UnityPlayerActivity {
     }
 
     public int startScanner(int nativeCode) {
+        Log.d(TAG, "#### Start QR scanner with code:" + nativeCode);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                startScannerTask();
+            }
+        });
+        return 0;
+    }
 
-        Log.d(TAG, "#### Start QR scanner - v0.1");
-
+    private void startScannerTask() {
         closeCamera();
         pickCam = CameraInfo.CAMERA_FACING_BACK;
         camId = getCameraId(pickCam);
@@ -260,10 +260,13 @@ public class CameraActivity extends UnityPlayerActivity {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if (barcodes.size() != 0) {
 
-                    String qrCode = barcodes.valueAt(0).displayValue;
+                    Barcode barcode = barcodes.valueAt(0);
+                    String qrCode = barcode.displayValue;
+                    Rect rect = barcode.getBoundingBox();
+
 
                     Log.w(TAG, "### JAVA QR scanner detected:" + qrCode);
-                    onCodeDetected(qrCode);
+                    onCodeDetected(qrCode, rect.top, rect.left, rect.bottom, rect.right);
 
                 }
             }
@@ -272,6 +275,7 @@ public class CameraActivity extends UnityPlayerActivity {
 
         cameraSource = new CameraSource.Builder(this, barcodeDetector)
                 .setRequestedPreviewSize(ImageWidth, ImageHeight).setRequestedFps(30)
+                .setFocusMode( Camera.Parameters.FOCUS_MODE_AUTO)
                 // .setAutoFocusEnabled(true) //you should add this feature
                 .build();
 
@@ -312,29 +316,31 @@ public class CameraActivity extends UnityPlayerActivity {
         Log.w(TAG, "### Scanner initialization completed!");
 
         scannerEnabled = true;
-        return 1;
     }
 
     public int releaseScanner(int nativeCode) {
 
-        Log.w(TAG, "### Releasing QR scanner..");
-        if (cameraSource != null) {
-            cameraSource.release(new Runnable(){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Log.d("UI thread", "I am the UI thread");
 
-                @Override
-                public void run() {
-                    Log.w(TAG, "### Starting the old camera preview");
-                    GrabFromCamera(ImageWidth, ImageHeight, 0);
+                Log.w(TAG, "### Releasing QR scanner..");
+                if (cameraSource != null) {
+                    cameraSource.release(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            Log.w(TAG, "### Starting the old camera preview");
+                            GrabFromCamera(ImageWidth, ImageHeight, 0);
+                        }
+                    });
+                    cameraSource = null;
                 }
-            });
-            cameraSource = null;
-        }
-        scannerEnabled = false;
+                scannerEnabled = false;
+                Log.w(TAG, "### Preview started");
+            }
+        });
 
-
-
-
-        Log.w(TAG, "### Preview started");
         return 0;
     }
 
@@ -407,7 +413,7 @@ public class CameraActivity extends UnityPlayerActivity {
 
     public static native void setParameters(int orientation, int width, int height, int flip);
 
-    public static native void onCodeDetected(String code);
+    public static native void onCodeDetected(String code, float top, float left, float bottom, float right);
 
     static {
         System.loadLibrary("VisageVision");

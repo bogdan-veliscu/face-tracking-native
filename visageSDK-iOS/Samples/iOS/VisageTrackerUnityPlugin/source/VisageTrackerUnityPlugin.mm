@@ -50,6 +50,8 @@ const NSString *preset;
 static const float m_pi = 3.14159265f;
 static const float inv_pi = 1.0f/m_pi;
 
+static BOOL scannerEnabled = false;
+
 static int clamp(int x)
 {
 	unsigned y;
@@ -156,7 +158,7 @@ extern "C" {
         return detectedGender;
     }
 	
-	void _openCamera(int orientation, int device, int width, int height, int isMirrored)
+	void _openCamera(int orientation, int device, int width2, int height, int isMirrored)
 	{
 
 		NSString* deviceType = [UIDeviceHardware platform];
@@ -282,29 +284,34 @@ extern "C" {
 	int _track()
 	{
 
-        trackerStatus = m_Tracker->track(frameWidth, frameHeight, (const char *)pixels, trackingData,format);
-        
-        if(ageRefreshRequested){
-            ageRefreshRequested =0;
-            if (format == 1) {
-                //Convert to RGBA for image to be drawn
-                YUV_TO_RGBA(pixels, (unsigned char*)m_Frame->imageData, frameWidth, frameHeight);
-            }
-            else {
-                memcpy(m_Frame->imageData, pixels, m_Frame->imageSize);
-            }
+        if(!scannerEnabled){
+            trackerStatus = m_Tracker->track(frameWidth, frameHeight, (const char *)pixels, trackingData,format);
             
-            m_Frame->width = cam_width;
-            m_Frame->height = cam_height;
-        
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                detectedAge = m_FaceAnalizer->estimateAge(m_Frame, &trackingData[0]);
-                detectedGender = m_FaceAnalizer->estimateGender(m_Frame, &trackingData[0]);
-                NSLog(@"#### Detected age:%d and gender: %d", detectedAge, detectedGender);
-            });
-           
-        }
+            if(ageRefreshRequested){
+                ageRefreshRequested =0;
+                if (format == 1) {
+                    //Convert to RGBA for image to be drawn
+                    YUV_TO_RGBA(pixels, (unsigned char*)m_Frame->imageData, frameWidth, frameHeight);
+                }
+                else {
+                    memcpy(m_Frame->imageData, pixels, m_Frame->imageSize);
+                }
                 
+                m_Frame->width = cam_width;
+                m_Frame->height = cam_height;
+            
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    detectedAge = m_FaceAnalizer->estimateAge(m_Frame, &trackingData[0]);
+                    detectedGender = m_FaceAnalizer->estimateGender(m_Frame, &trackingData[0]);
+                    NSLog(@"#### Detected age:%d and gender: %d", detectedAge, detectedGender);
+                });
+               
+            }
+        } else {
+            trackerStatus[0] = TRACK_STAT_RECOVERING;
+            _grabFrame();
+        }
+        
 		if(trackerStatus[0] == TRACK_STAT_OFF && pixels)
 		{
 			if (format == VISAGE_FRAMEGRABBER_FMT_LUMINANCE)
@@ -582,47 +589,40 @@ extern "C" {
     
     static void SetCallback() {
         [cameraGrabber setCompletionWithBlock:^(NSString *resultAsString) {
-            NSLog(@"###  SetCallback 1");
             CGRect *rect = cameraGrabber.qrFrame;
-            NSLog(@"###  SetCallback 2");
-            
+        
             NSLog(@"###  SCAN onScan: %@ , at frame: %@", resultAsString, NSStringFromCGRect(*rect));
             if (scanCallback != NULL){
-                NSLog(@"###  SetCallback 3");
                 Rect *myRect = new Rect{(short)rect->origin.x,(short)rect->origin.y,
                     (short)rect->size.width,(short)rect->size.height};
                 NSLog(@"### QR rect bounds: %d, %d | %d, %d", myRect->top, myRect->left,
                       myRect->bottom, myRect->right );
                 scanCallback([resultAsString UTF8String],
                              rect->origin.y, rect->origin.x, rect->size.height, rect->size.width );
-                
-                NSLog(@"###  SetCallback 4");
             }
         }];
     }
     
     void _initScanner(transitionCallback initCallback, callbackFunc callback){
-         NSLog(@"### QR SCAN _initScanner - ASYNC --- v2.0");
-        
+         NSLog(@"### QR SCAN _initScanner - ASYNC --- v3.4");
         scanCallback = callback;
-
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        scannerEnabled = true;
+        _openCamera(VISAGE_PORTRAIT, 1,cam_width, cam_height, true);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
             if (cameraGrabber){
-                
                 NSLog(@"### QR SCAN _initScanner - actual init start");
                 [cameraGrabber initScanner];
-                
                 SetCallback();
-                
                 [cameraGrabber startScanning];
                 NSLog(@"### VisageFaceAnalyser _initScanner : completed!");
-                
-                NSLog(@"### QR SCAN _initScanner - ASYNC - returned");
-                if (initCallback != NULL){
-                    initCallback();
-                }
             }
         });
+
+        NSLog(@"### QR SCAN _initScanner - ASYNC - returned");
+        if (initCallback != NULL){
+            initCallback();
+        }
     }
     
     /** Releases memory allocated by the scanner in the initScanner function.
@@ -632,11 +632,13 @@ extern "C" {
             
             NSLog(@"### QR SCAN _releaseScanner - ASYNC - before the actual release");
             [cameraGrabber stopScanning];
-            
+
+            _openCamera(VISAGE_PORTRAIT, 0,cam_width, cam_height, true);
             NSLog(@"### QR SCAN _releaseScanner - ASYNC - before callback");
             if (callback != NULL){
                 callback();
             }
+            scannerEnabled = false;
         }
     }
     

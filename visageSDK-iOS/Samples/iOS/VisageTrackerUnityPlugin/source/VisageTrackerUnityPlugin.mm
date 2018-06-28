@@ -309,7 +309,7 @@ extern "C" {
             }
         } else {
             trackerStatus[0] = TRACK_STAT_RECOVERING;
-            _grabFrame();
+            //_grabFrame();
         }
         
 		if(trackerStatus[0] == TRACK_STAT_OFF && pixels)
@@ -604,7 +604,7 @@ extern "C" {
     }
     
     void _initScanner(transitionCallback initCallback, callbackFunc callback){
-         NSLog(@"### QR SCAN _initScanner - ASYNC --- v3.4");
+         NSLog(@"### QR SCAN _initScanner - ASYNC --- v3.5");
         scanCallback = callback;
         scannerEnabled = true;
         _openCamera(VISAGE_PORTRAIT, 1,cam_width, cam_height, true);
@@ -617,12 +617,13 @@ extern "C" {
                 [cameraGrabber startScanning];
                 NSLog(@"### VisageFaceAnalyser _initScanner : completed!");
             }
+            
+            NSLog(@"### QR SCAN _initScanner - ASYNC - returned");
+            if (initCallback != NULL){
+                [NSThread sleepForTimeInterval:0.05f];
+                initCallback();
+            }
         });
-
-        NSLog(@"### QR SCAN _initScanner - ASYNC - returned");
-        if (initCallback != NULL){
-            initCallback();
-        }
     }
     
     /** Releases memory allocated by the scanner in the initScanner function.

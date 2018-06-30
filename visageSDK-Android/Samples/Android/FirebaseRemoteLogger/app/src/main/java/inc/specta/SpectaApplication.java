@@ -1,13 +1,24 @@
-package app.specta.inc.camera;
+package app.specta.inc;
 
 import android.app.Application;
+import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
 
 public class SpectaApplication extends Application {
 
+    public final String TAG = "SpectaAPP";
+    File logFile;
     /**
      * Called when the application is starting, before any activity, service, or receiver objects (excluding content providers) have been created.
      */
@@ -18,7 +29,7 @@ public class SpectaApplication extends Application {
 
             File appDirectory = new File( Environment.getExternalStorageDirectory() + "/specta" );
             File logDirectory = new File( appDirectory + "/log" );
-            File logFile = new File( logDirectory, "logcat" + System.currentTimeMillis() + ".txt" );
+            logFile = new File( logDirectory, "logcat" + System.currentTimeMillis() + ".txt" );
 
             // create app folder
             if ( !appDirectory.exists() ) {
@@ -43,6 +54,35 @@ public class SpectaApplication extends Application {
         } else {
             // not accessible
         }
+    }
+
+    public void onPause() {
+        //saving log file to firebase
+        Uri file = Uri.fromFile(logFile);
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        // Create a storage reference from our app
+        StorageReference storageRef = storage.getReference();
+
+        StorageReference riversRef = storageRef.child("Logs/"+file.getLastPathSegment());
+        UploadTask uploadTask = riversRef.putFile(file);
+
+// Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Log.w(TAG, "### Could not upload file ["+logFile.getName()+"] :-> " + exception.toString());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+
+                Log.w(TAG, "### Log file uploaded: " + logFile.getName() );
+            }
+        });
     }
 
     /* Checks if external storage is available for read and write */

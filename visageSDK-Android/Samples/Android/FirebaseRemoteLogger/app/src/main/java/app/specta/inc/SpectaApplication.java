@@ -1,9 +1,13 @@
 package app.specta.inc;
 
+import android.app.Activity;
 import android.app.Application;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,6 +28,7 @@ public class SpectaApplication extends Application {
      */
     public void onCreate() {
         super.onCreate();
+        Log.i(TAG, "### onCreate ");
 
         if ( isExternalStorageWritable() ) {
 
@@ -49,11 +54,48 @@ public class SpectaApplication extends Application {
                 e.printStackTrace();
             }
 
-        } else if ( isExternalStorageReadable() ) {
-            // only readable
         } else {
             // not accessible
+            Log.i(TAG, "### SD card not accessible");
         }
+
+        this.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(Activity activity, Bundle bundle) {
+                Log.i(TAG, "### onActivityCreated ");
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+                Log.i(TAG, "### onActivityStarted ");
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+                Log.i(TAG, "### onActivityResumed ");
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+                Log.i(TAG, "### onActivityPaused ");
+                onPause();
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+                Log.i(TAG, "### onActivityStopped ");
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+                Log.i(TAG, "### onActivitySaveInstanceState ");
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+                Log.i(TAG, "### onActivityDestroyed ");
+            }
+        });
     }
 
     public void onPause() {
@@ -61,10 +103,13 @@ public class SpectaApplication extends Application {
         Uri file = Uri.fromFile(logFile);
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
+
         // Create a storage reference from our app
         StorageReference storageRef = storage.getReference();
 
-        StorageReference riversRef = storageRef.child("Logs/"+file.getLastPathSegment());
+
+        StorageReference riversRef = storageRef.child("logs/" +getDeviceName() +file.getLastPathSegment());
+
         UploadTask uploadTask = riversRef.putFile(file);
 
 // Register observers to listen for when the download is done or if it fails
@@ -83,6 +128,8 @@ public class SpectaApplication extends Application {
                 Log.w(TAG, "### Log file uploaded: " + logFile.getName() );
             }
         });
+
+
     }
 
     /* Checks if external storage is available for read and write */
@@ -102,5 +149,36 @@ public class SpectaApplication extends Application {
             return true;
         }
         return false;
+    }
+
+    public static String getDeviceName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.startsWith(manufacturer)) {
+            return capitalize(model);
+        }
+        return capitalize(manufacturer) + " " + model;
+    }
+
+    private static String capitalize(String str) {
+        if (TextUtils.isEmpty(str)) {
+            return str;
+        }
+        char[] arr = str.toCharArray();
+        boolean capitalizeNext = true;
+
+        StringBuilder phrase = new StringBuilder();
+        for (char c : arr) {
+            if (capitalizeNext && Character.isLetter(c)) {
+                phrase.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+                continue;
+            } else if (Character.isWhitespace(c)) {
+                capitalizeNext = true;
+            }
+            phrase.append(c);
+        }
+
+        return phrase.toString();
     }
 }

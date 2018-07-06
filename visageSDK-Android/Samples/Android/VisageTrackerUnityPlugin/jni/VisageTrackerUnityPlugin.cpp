@@ -39,7 +39,6 @@ static VsImage *pixelData = 0;
 
 static AndroidCameraCapture *imageCapture = 0;
 
-
 // Helper method to create C string copy
 static char* MakeStringCopy (const char* val)
 {
@@ -88,6 +87,13 @@ extern "C" {
 	static float yTexScale;
 	//
 	static bool parametersChanged;
+
+    static bool scannerEnabled;
+    static bool scannerWaitingForFrames;
+
+    transitionCallback initScannerCallback;
+    transitionCallback releaseScannerCallback;
+
 	pthread_mutex_t writeFrame_mutex;
 	pthread_mutex_t grabFrame_mutex;
 
@@ -201,9 +207,17 @@ extern "C" {
 			imageCapture->WriteFrameYUV((unsigned char*)pixelData);
 			env->ReleaseByteArrayElements(frame, pixelData, 0);
 		}
+
+
+
 		parametersChanged = false;
 		//LOGI("Java_app_specta_inc_camera_CameraActivity_WriteFrame - END");
 		pthread_mutex_unlock(&writeFrame_mutex);
+
+		if(scannerWaitingForFrames && scannerEnabled == false){
+       	    scannerEnabled = true;
+       	    LOGI("Java_app_specta_inc_camera_CameraActivity_init - START");
+        }
 	}
 
     void Java_app_specta_inc_camera_CameraActivity_init(JNIEnv*)
@@ -223,6 +237,23 @@ extern "C" {
     	renderFrame();
     }
 
+    void Java_app_specta_inc_camera_CameraActivity_setScannerEnabled(JNIEnv *env, jobject obj, jint enabled){
+        LOGI("### Scanner callback time: - just returned from JAVA2");
+
+        scannerWaitingForFrames = enabled !=0;
+
+        scannerEnabled = false;
+        if(scannerWaitingForFrames){
+            if(initScannerCallback != NULL){
+                initScannerCallback();
+            }
+        } else {
+            if(releaseScannerCallback != NULL){
+                releaseScannerCallback();
+            }
+        }
+
+    }
 	void Java_app_specta_inc_camera_CameraActivity_setParameters(JNIEnv *env, jobject obj, jint orientation,
 	jint width, jint height, jint flip)
 	{
@@ -274,7 +305,7 @@ extern "C" {
 		}
 	}
 
-	void _grabFrame()
+	void _grabFrameInternal()
 	{
 		if (imageCapture == 0)
 			return;
@@ -283,6 +314,11 @@ extern "C" {
 		pixelData = imageCapture->GrabFrame(ts);
 
 		pthread_mutex_unlock(&grabFrame_mutex);
+	}
+
+	void _grabFrame(){
+	    std::thread bgGrab(_grabFrameInternal);
+        bgGrab.detach();
 	}
 	void updateAnalyserEstimations(){
 
@@ -295,38 +331,43 @@ extern "C" {
 
 	int _track()
 	{
-		pthread_mutex_lock(&grabFrame_mutex);
+	    if (!scannerEnabled){
+            pthread_mutex_lock(&grabFrame_mutex);
 
-	    if (pixelData != 0){
-	        //LOGI("#### Camera frame ready v2!");
+            if (pixelData != 0){
+                //LOGI("#### Camera frame ready v2!");
 
-            if (camOrientation == 90 || camOrientation == 270)
-                trackingStatus = m_Tracker->track(camHeight, camWidth, (const char*) pixelData->imageData, trackingData,
-                VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
-            else
-                trackingStatus = m_Tracker->track(camWidth, camHeight, (const char*) pixelData->imageData, trackingData,
-                VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
+                if (camOrientation == 90 || camOrientation == 270)
+                    trackingStatus = m_Tracker->track(camHeight, camWidth, (const char*) pixelData->imageData, trackingData,
+                    VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
+                else
+                    trackingStatus = m_Tracker->track(camWidth, camHeight, (const char*) pixelData->imageData, trackingData,
+                    VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
 
-	        //LOGI("#### Tracking ended with status: %d" , trackingStatus[0]);
-            if (trackingStatus[0] == TRACK_STAT_OFF)
-                pixelData = 0;
+                //LOGI("#### Tracking ended with status: %d" , trackingStatus[0]);
+                if (trackingStatus[0] == TRACK_STAT_OFF)
+                    pixelData = 0;
 
-            if(ageRefreshRequested && m_FaceAnalizer && trackingStatus[0] == TRACK_STAT_OK){
-                ageRefreshRequested =0;
-                int frameSize = camHeight * camWidth * 3;
+                if(ageRefreshRequested && m_FaceAnalizer && trackingStatus[0] == TRACK_STAT_OK){
+                    ageRefreshRequested =0;
+                    int frameSize = camHeight * camWidth * 3;
 
-                //std::thread bgCheck(updateAnalyserEstimations);
-               // bgCheck.detach();
+                    //std::thread bgCheck(updateAnalyserEstimations);
+                   // bgCheck.detach();
+                }
+            } else {
+                int res[] = {TRACK_STAT_OFF};
+
+                trackingStatus = &res[0];
+                LOGI("#### Camera frame not yet ready v2 :%d!", trackingStatus[0]);
             }
-        } else {
-            int res[] = {TRACK_STAT_OFF};
 
-            trackingStatus = &res[0];
-	        LOGI("#### Camera frame not yet ready v2 :%d!", trackingStatus[0]);
-	    }
-
-		//LOGI("# Native _track:%d", trackingStatus[0]);
-		pthread_mutex_unlock(&grabFrame_mutex);
+            //LOGI("# Native _track:%d", trackingStatus[0]);
+            pthread_mutex_unlock(&grabFrame_mutex);
+           } else {
+              int res[] = {TRACK_STAT_RECOVERING};
+              trackingStatus = &res[0];
+           }
 		return trackingStatus[0];
 	}
 
@@ -609,8 +650,16 @@ extern "C" {
 	}
 
 	void _initScanner(transitionCallback initCallback, callbackFunc callback){
-		LOGI("@@ QR _initScanner v01");
 
+		LOGI("@@ QR _initScanner v01b");
+
+		pthread_mutex_lock(&grabFrame_mutex);
+		pthread_mutex_lock(&writeFrame_mutex);
+				LOGI("@@ QR _initScanner v02 - in mutex");
+
+        initScannerCallback = initCallback;
+
+        scannerEnabled = true;
 		scanCallback = callback;
 
 
@@ -650,16 +699,23 @@ extern "C" {
         	LOGI("@@ QR _initScanner - dataClass is NULL");
        	}
 
-		if (initCallback != NULL){
-		    initCallback();
-		}
+
+		pthread_mutex_unlock(&writeFrame_mutex);
+		pthread_mutex_unlock(&grabFrame_mutex);
+       	 LOGI("@@ QR _initScanner - Returning to unity");
 	}
 
 	    /** Releases memory allocated by the scanner in the initScanner function.
      */
     void _releaseScanner(transitionCallback callback){
 
-            LOGI("@@ QR _releaseScanner");
+            LOGI("@@ QR _releaseScanner v2");
+
+            pthread_mutex_lock(&grabFrame_mutex);
+            pthread_mutex_lock(&writeFrame_mutex);
+
+            LOGI("@@ QR _releaseScanner - in mutex");
+            releaseScannerCallback = callback;
 
             jni_env = 0;
             _vm->AttachCurrentThread(&jni_env, 0);
@@ -692,9 +748,11 @@ extern "C" {
                 jni_env->DeleteGlobalRef(javaClassRef);
             }
 
-            if (callback != NULL){
-                callback();
-            }
+            scannerEnabled = false;
+
+
+		pthread_mutex_unlock(&writeFrame_mutex);
+		pthread_mutex_unlock(&grabFrame_mutex);
     }
 
     void _toggleTorch(int on){

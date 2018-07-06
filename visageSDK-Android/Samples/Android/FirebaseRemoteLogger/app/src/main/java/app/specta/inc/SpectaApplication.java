@@ -20,6 +20,8 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class SpectaApplication extends Application {
 
@@ -36,6 +38,8 @@ public class SpectaApplication extends Application {
 
             File appDirectory = new File( Environment.getExternalStorageDirectory() + "/specta" );
             File logDirectory = new File( appDirectory + "/log" );
+            Date now = new Date();
+            String dateTime = new SimpleDateFormat("_dd_hh:mm").format(now);
             logFile = new File( logDirectory, "logcat" + System.currentTimeMillis() + ".txt" );
 
             // create app folder

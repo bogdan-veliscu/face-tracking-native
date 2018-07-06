@@ -12,6 +12,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.Size;
+import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.SparseArray;
@@ -31,7 +32,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class CameraActivity extends UnityPlayerActivity {
-    public final String TAG = "SPECTA-Cam2";
+    public final String TAG = "SPECTA-Cam3";
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Camera cam;
     int ImageWidth = -1;
@@ -227,12 +228,24 @@ public class CameraActivity extends UnityPlayerActivity {
 
     public int startScanner(int nativeCode) {
         Log.d(TAG, "#### Start QR scanner with code:" + nativeCode);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                startScannerTask();
+
+        new AsyncTask<Void, Void, Void>() {
+            protected void onPreExecute() {
+                // Pre Code
             }
-        });
+            protected Void doInBackground(Void... unused) {
+                // Background Code
+                startScannerTask();
+                setScannerEnabled(1);
+
+                return null;
+            }
+            protected void onPostExecute(Void unused) {
+                // Post Code
+            }
+        }.execute();
+
+        Log.d(TAG, "#### Start QR scanner with code: -> After async task started" + nativeCode);
         return 0;
     }
 
@@ -320,11 +333,14 @@ public class CameraActivity extends UnityPlayerActivity {
 
     public int releaseScanner(int nativeCode) {
 
-        runOnUiThread(new Runnable() {
-            public void run() {
-                Log.d("UI thread", "I am the UI thread");
-
-                Log.w(TAG, "### Releasing QR scanner..");
+        Log.w(TAG, "### Releasing QR scanner-> before async task");
+        new AsyncTask<Void, Void, Void>() {
+            protected void onPreExecute() {
+                // Pre Code
+            }
+            protected Void doInBackground(Void... unused) {
+                // Background Code
+                Log.w(TAG, "### Releasing QR scanner-> async task start");
                 if (cameraSource != null) {
                     cameraSource.release(new Runnable() {
 
@@ -338,9 +354,18 @@ public class CameraActivity extends UnityPlayerActivity {
                 }
                 scannerEnabled = false;
                 Log.w(TAG, "### Preview started");
-            }
-        });
 
+                setScannerEnabled(0);
+
+                return null;
+            }
+            protected void onPostExecute(Void unused) {
+                // Post Code
+            }
+        }.execute();
+
+
+        Log.w(TAG, "### Releasing QR scanner-> after async task");
         return 0;
     }
 
@@ -412,6 +437,8 @@ public class CameraActivity extends UnityPlayerActivity {
     public static native void WriteFrame(byte[] frame);
 
     public static native void setParameters(int orientation, int width, int height, int flip);
+
+    public static native void setScannerEnabled(int enabled);
 
     public static native void onCodeDetected(String code, float top, float left, float bottom, float right);
 

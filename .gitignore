@@ -92,3 +92,6 @@ DerivedData/
 *.perspectivev3
 !default.perspectivev3
 AndroidCameraPlugin.jar
+FirebaseRemoteLogger.jar
+visageSDK-Android/Samples/Android/VisageTrackerUnityPlugin/libs
+visageSDK-Android/Samples/Android/VisageTrackerUnityPlugin/obj

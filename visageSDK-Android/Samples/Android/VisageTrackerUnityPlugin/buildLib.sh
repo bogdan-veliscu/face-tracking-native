@@ -1,5 +1,5 @@
-bash
+#!/usr/bin/env bash
+#bash
 ndk-build
-mv /Users/bogdan/spectanative/visageSDK-Android/Samples/Android/VisageTrackerUnityPlugin/libs/armeabi-v7a/libVisageTrackerUnityPlugin.so /Users/bogdan/Dropbox/bgx/Specta/face2/face2/Assets/Plugins/Android/libVisageTrackerUnityPlugin.so
-mv /Users/bogdan/spectanative/visageSDK-Android/Samples/Android/VisageTrackerUnityPlugin/libs/armeabi-v7a/libVisageVision.so /Users/bogdan/Dropbox/bgx/Specta/face2/face2/Assets/Plugins/Android/libVisageVision.so
+mv /Users/bogdan/work/specta-native/visageSDK-Android/Samples/Android/VisageTrackerUnityPlugin/libs/armeabi-v7a/libVisageTrackerUnityPlugin.so /Users/bogdan/work/specta-try-on/Assets/Plugins/Android/libVisageTrackerUnityPlugin.so
 

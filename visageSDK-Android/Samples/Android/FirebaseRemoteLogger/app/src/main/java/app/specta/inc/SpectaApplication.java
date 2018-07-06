@@ -3,6 +3,7 @@ package app.specta.inc;
 import android.app.Activity;
 import android.app.Application;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,6 +19,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 public class SpectaApplication extends Application {
 
@@ -77,7 +79,7 @@ public class SpectaApplication extends Application {
 
             @Override
             public void onActivityPaused(Activity activity) {
-                Log.i(TAG, "### onActivityPaused ");
+                Log.i(TAG, "### onActivityPaused2 ");
                 onPause();
             }
 
@@ -99,35 +101,53 @@ public class SpectaApplication extends Application {
     }
 
     public void onPause() {
-        //saving log file to firebase
-        Uri file = Uri.fromFile(logFile);
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
+        new AsyncTask<Void, Void, Void>() {
+            protected void onPreExecute() {
+                // Pre Code
+            }
+            protected Void doInBackground(Void... unused) {
+                // Background Code
 
-        // Create a storage reference from our app
-        StorageReference storageRef = storage.getReference();
+                //saving log file to firebase
+                Uri file = Uri.fromFile(logFile);
+
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                // Create a storage reference from our app
+                StorageReference storageRef = storage.getReference();
 
 
-        StorageReference riversRef = storageRef.child("logs/" +getDeviceName() +file.getLastPathSegment());
+                StorageReference riversRef = storageRef.child("logs/" +getDeviceName() +file.getLastPathSegment());
 
-        UploadTask uploadTask = riversRef.putFile(file);
+                UploadTask uploadTask = riversRef.putFile(file);
 
 // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Log.w(TAG, "### Could not upload file ["+logFile.getName()+"] :-> " + exception.toString());
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        Log.w(TAG, "### Could not upload file ["+logFile.getName()+"] :-> " + exception.toString());
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                        // ...
 
-                Log.w(TAG, "### Log file uploaded: " + logFile.getName() );
+                        Log.w(TAG, "### Log file uploaded: " + logFile.getName() );
+                    }
+                });
+
+                return null;
             }
-        });
+            protected void onPostExecute(Void unused) {
+                // Post Code
+            }
+        }.execute();
+
+
+
 
 
     }
@@ -181,4 +201,13 @@ public class SpectaApplication extends Application {
 
         return phrase.toString();
     }
+    private class SpectaTask extends AsyncTask<Void, Void, Void> {
+
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            return null;
+        }
+    }
+
 }

@@ -177,6 +177,7 @@
 				7FF119A914EE95F500128847 /* Sources */,
 				7FF119AA14EE95F500128847 /* Frameworks */,
 				7FF119AB14EE95F500128847 /* Headers */,
+				43CC7D2420F0324A0082827C /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -211,6 +212,22 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		43CC7D2420F0324A0082827C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "mv /Users/bogdan/Library/Developer/Xcode/DerivedData/VisageTrackerUnityPlugin-cwdjfzwswfgnkofpheioqcsyzerh/Build/Products/Release-iphoneos/libVisageTrackerUnityPlugin.a /Users/bogdan/work/specta-try-on/Assets/Plugins/iOS/libVisageTrackerUnityPlugin.a";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7FF119A914EE95F500128847 /* Sources */ = {

@@ -163,6 +163,13 @@ void AndroidCameraCapture::YUV_NV21_TO_RGB(unsigned char* yuv, VsImage* buff, in
     unsigned char* rgb = (unsigned char*)buff->imageData;
 
     int a = 0;
+    float fadeFactor = 1;
+            if(framesToFade > 0) {
+                fadeFactor = (float)(maxFramesToFade-framesToFade)/maxFramesToFade;
+
+                framesToFade--;
+            }
+
     for (int i = 0, ci = ii; i < height; ++i, ci += di)
     {
         for (int j = 0, cj = ij; j < width; ++j, cj += dj)
@@ -185,6 +192,10 @@ void AndroidCameraCapture::YUV_NV21_TO_RGB(unsigned char* yuv, VsImage* buff, in
             int r = (a0 + a1) >> 10;
             int g = (a0 - a2 - a3) >> 10;
             int b = (a0 + a4) >> 10;
+
+            r = (int) (fadeFactor *r);
+            g = (int) (fadeFactor *g);
+            b = (int) (fadeFactor *b);
 
             *rgb++ = clamp(r);
             *rgb++ = clamp(g);

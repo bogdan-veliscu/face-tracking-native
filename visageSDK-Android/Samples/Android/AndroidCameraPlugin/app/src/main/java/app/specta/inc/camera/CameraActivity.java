@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class CameraActivity extends UnityPlayerActivity {
-    public final String TAG = "SPECTA-Cam3";
+    public final String TAG = "SPECTA-Cam4";
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Camera cam;
     int ImageWidth = -1;
@@ -122,6 +122,7 @@ public class CameraActivity extends UnityPlayerActivity {
         }
 
         Log.i(TAG, "SettingPreview size to:" + width + "x" + height);
+
         parameters.setPreviewSize(sizes.get(idx).width, sizes.get(idx).height);
     }
 
@@ -148,6 +149,14 @@ public class CameraActivity extends UnityPlayerActivity {
         ImageWidth = imWidth;
         ImageHeight = imHeight;
         Camera.Parameters parameters = cam.getParameters();
+        Size preferedSize = parameters.getPreferredPreviewSizeForVideo();
+        Log.d(TAG, "#### getPreferredPreviewSizeForVideo " + preferedSize.height + " | " + preferedSize.height);
+        if(preferedSize.height < ImageHeight && preferedSize.width < ImageWidth){
+            ImageHeight = preferedSize.height;
+            ImageWidth = preferedSize.width;
+
+        }
+
         setPreviewSize(parameters, ImageWidth, ImageHeight);
         parameters.setPreviewFormat(ImageFormat.NV21);
         cam.setParameters(parameters);
@@ -236,7 +245,6 @@ public class CameraActivity extends UnityPlayerActivity {
             protected Void doInBackground(Void... unused) {
                 // Background Code
                 startScannerTask();
-                setScannerEnabled(1);
 
                 return null;
             }
@@ -323,6 +331,8 @@ public class CameraActivity extends UnityPlayerActivity {
 
             setParameters(90, ImageWidth, ImageHeight, 0);
 
+            setScannerEnabled(1);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -346,16 +356,16 @@ public class CameraActivity extends UnityPlayerActivity {
 
                         @Override
                         public void run() {
-                            Log.w(TAG, "### Starting the old camera preview");
+                            Log.w(TAG, "### Starting the old camera preview 2");
                             GrabFromCamera(ImageWidth, ImageHeight, 0);
+
+                            setScannerEnabled(0);
                         }
                     });
                     cameraSource = null;
                 }
                 scannerEnabled = false;
                 Log.w(TAG, "### Preview started");
-
-                setScannerEnabled(0);
 
                 return null;
             }

@@ -91,6 +91,8 @@ extern "C" {
     static bool scannerEnabled;
     static bool scannerWaitingForFrames;
 
+    static bool switchingCamera;
+
     transitionCallback initScannerCallback;
     transitionCallback releaseScannerCallback;
 
@@ -206,9 +208,10 @@ extern "C" {
 
 			imageCapture->WriteFrameYUV((unsigned char*)pixelData);
 			env->ReleaseByteArrayElements(frame, pixelData, 0);
+		} else {
+       	    LOGI("Write frame after changing parameters");
+       	    switchingCamera = false;
 		}
-
-
 
 		parametersChanged = false;
 		//LOGI("Java_app_specta_inc_camera_CameraActivity_WriteFrame - END");
@@ -217,25 +220,9 @@ extern "C" {
 		if(scannerWaitingForFrames && scannerEnabled == false){
        	    scannerEnabled = true;
        	    LOGI("Java_app_specta_inc_camera_CameraActivity_init - START");
+
         }
 	}
-
-    void Java_app_specta_inc_camera_CameraActivity_init(JNIEnv*)
-    {
-        LOGI("Java_app_specta_inc_camera_CameraActivity_init - START");
-    	initializeOpenGL();
-    	LOGI("Java_app_specta_inc_camera_CameraActivity_init - END");
-    }
-    void Java_app_specta_inc_camera_CameraActivity_resize(JNIEnv*, jint width, jint height)
-    {
-        LOGI("Java_app_specta_inc_camera_CameraActivity_resize - START");
-    	resizeViewport(width, height);
-    	LOGI("Java_app_specta_inc_camera_CameraActivity_resize - START");
-    }
-    void Java_app_specta_inc_camera_CameraActivity_render(JNIEnv*)
-    {
-    	renderFrame();
-    }
 
     void Java_app_specta_inc_camera_CameraActivity_setScannerEnabled(JNIEnv *env, jobject obj, jint enabled){
         LOGI("### Scanner callback time: - just returned from JAVA2");
@@ -415,6 +402,7 @@ extern "C" {
 
 	void _bindTexture(int texID)
 	{
+
         textureID = texID;
     	if (textureID != -1 && pixelData != 0)
         		{
@@ -465,6 +453,11 @@ extern "C" {
     }
 
     void _getRawFrame(int* height, int *width, char *rawData){
+
+        if(switchingCamera){
+           memset(rawData, 0, camHeight * camWidth * 3);
+           imageCapture->framesToFade = imageCapture->maxFramesToFade;
+        } else {
         		pthread_mutex_lock(&grabFrame_mutex);
                 if (camOrientation == 90 || camOrientation == 270){
         		    *height = camWidth;
@@ -479,6 +472,7 @@ extern "C" {
         		}
 
         		pthread_mutex_unlock(&grabFrame_mutex);
+        }
     }
 
 	// a helper function to get all the needed info in one native call
@@ -639,8 +633,6 @@ extern "C" {
 
 	void Java_app_specta_inc_camera_CameraActivity_onCodeDetected(JNIEnv *env, jobject obj, jstring code, jfloat top, jfloat left, jfloat bottom, jfloat right){
 
-	    LOGI("@@ QR _initScanner v01");
-
 	    const char *qrCode = env->GetStringUTFChars(code, NULL);
 	    LOGI("##### Java_app_specta_inc_camera_CameraActivity_onCodeDetected : %s" , qrCode);
 
@@ -651,17 +643,13 @@ extern "C" {
 
 	void _initScanner(transitionCallback initCallback, callbackFunc callback){
 
-		LOGI("@@ QR _initScanner v01b");
-
-		pthread_mutex_lock(&grabFrame_mutex);
-		pthread_mutex_lock(&writeFrame_mutex);
-				LOGI("@@ QR _initScanner v02 - in mutex");
+	    LOGI("@@ QR _initScanner v4.0");
 
         initScannerCallback = initCallback;
 
         scannerEnabled = true;
 		scanCallback = callback;
-
+        switchingCamera = true;
 
 		jni_env = 0;
 		_vm->AttachCurrentThread(&jni_env, 0);
@@ -699,9 +687,6 @@ extern "C" {
         	LOGI("@@ QR _initScanner - dataClass is NULL");
        	}
 
-
-		pthread_mutex_unlock(&writeFrame_mutex);
-		pthread_mutex_unlock(&grabFrame_mutex);
        	 LOGI("@@ QR _initScanner - Returning to unity");
 	}
 
@@ -710,9 +695,7 @@ extern "C" {
     void _releaseScanner(transitionCallback callback){
 
             LOGI("@@ QR _releaseScanner v2");
-
-            pthread_mutex_lock(&grabFrame_mutex);
-            pthread_mutex_lock(&writeFrame_mutex);
+            switchingCamera = true;
 
             LOGI("@@ QR _releaseScanner - in mutex");
             releaseScannerCallback = callback;
@@ -750,9 +733,6 @@ extern "C" {
 
             scannerEnabled = false;
 
-
-		pthread_mutex_unlock(&writeFrame_mutex);
-		pthread_mutex_unlock(&grabFrame_mutex);
     }
 
     void _toggleTorch(int on){

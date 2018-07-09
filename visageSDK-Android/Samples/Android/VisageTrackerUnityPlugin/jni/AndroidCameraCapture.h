@@ -30,6 +30,9 @@ public:
 
 	bool frameArrived;
 
+    int framesToFade = 0;
+    static const int maxFramesToFade = 15;
+
 	/** Constructor.
 	 *
 	 */

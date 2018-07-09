@@ -115,4 +115,6 @@ extern "C" {
 
     void _toggleTorch(int on);
 
+    static int framesToFade = 0;
+    static int maxFramesToFade = 100;
 }

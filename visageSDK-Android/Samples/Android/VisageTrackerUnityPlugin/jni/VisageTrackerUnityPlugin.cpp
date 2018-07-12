@@ -3,7 +3,7 @@
 //  VisageTrackerUnityPlugin
 //
 //
-
+#include "Unity/IUnityGraphics.h"
 #include "VisageTrackerUnityPlugin.h"
 #include "VisageTracker.h"
 #include "VisageFaceAnalyser.h"
@@ -17,13 +17,98 @@
 #include <thread>
 
 #include <android/log.h>
-#define  LOG_TAG    "UnityPlugin"
+#define  LOG_TAG    "UnityPlugin v3"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
 
 
 using namespace VisageSDK;
+
+static void* g_TextureHandle = NULL;
+
+static int   g_TextureWidth  = 0;
+static int   g_TextureHeight = 0;
+
+static GLuint frame_tex_id = 0;
+
+// --------------------------------------------------------------------------
+// SetTimeFromUnity, an example function we export which is called by one of the scripts.
+
+static float g_Time;
+
+extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API SetTimeFromUnity (float t) { g_Time = t; }
+
+
+// --------------------------------------------------------------------------
+// SetTextureFromUnity, an example function we export which is called by one of the scripts.
+
+
+// --------------------------------------------------------------------------
+// UnitySetInterfaces
+
+static void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType eventType);
+
+static IUnityInterfaces* s_UnityInterfaces = NULL;
+static IUnityGraphics* s_Graphics = NULL;
+
+extern "C" void	UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces* unityInterfaces)
+{
+
+    LOGI("### VisageFaceAnalyser - UnityPluginLoad");
+	s_UnityInterfaces = unityInterfaces;
+	s_Graphics = s_UnityInterfaces->Get<IUnityGraphics>();
+	s_Graphics->RegisterDeviceEventCallback(OnGraphicsDeviceEvent);
+
+
+	// Run OnGraphicsDeviceEvent(initialize) manually on plugin load
+	OnGraphicsDeviceEvent(kUnityGfxDeviceEventInitialize);
+}
+
+extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
+{
+    //LOGI("### VisageFaceAnalyser - UnityPluginUnload");
+	s_Graphics->UnregisterDeviceEventCallback(OnGraphicsDeviceEvent);
+}
+
+extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API SetTextureFromUnity(void* textureHandle, int w, int h)
+{
+	// A script calls this at initialization time; just remember the texture pointer here.
+	// Will update texture pixels each frame from the plugin rendering event (texture update
+	// needs to happen on the rendering thread).
+	LOGI("### VisageFaceAnalyser - SetTextureFromUnity");
+	g_TextureHandle = textureHandle;
+	g_TextureWidth = w;
+	g_TextureHeight = h;
+
+	GLuint frame_tex_id = (GLuint)(size_t)(g_TextureHandle);
+}
+// --------------------------------------------------------------------------
+// GraphicsDeviceEvent
+
+static UnityGfxRenderer s_DeviceType = kUnityGfxRendererNull;
+
+
+static void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType eventType)
+{
+    //LOGI("### VisageFaceAnalyser - OnGraphicsDeviceEvent");
+	// Create graphics API implementation upon initialization
+	if (eventType == kUnityGfxDeviceEventInitialize)
+	{
+		s_DeviceType = s_Graphics->GetRenderer();
+		LOGI("### VisageFaceAnalyser - kUnityGfxDeviceEventInitialize");
+	}
+
+	// Cleanup graphics API implementation upon shutdown
+	if (eventType == kUnityGfxDeviceEventShutdown)
+	{
+		s_DeviceType = kUnityGfxRendererNull;
+	}
+}
+
+
+
+static int g_TextureId = -1;
 
 static callbackFunc scanCallback;
 
@@ -36,6 +121,7 @@ static int ageRefreshRequested = 1;
 
 int format = VISAGE_FRAMEGRABBER_FMT_LUMINANCE;
 static VsImage *pixelData = 0;
+static VsImage *renderImage = 0;
 
 static AndroidCameraCapture *imageCapture = 0;
 
@@ -98,6 +184,7 @@ extern "C" {
 
 	pthread_mutex_t writeFrame_mutex;
 	pthread_mutex_t grabFrame_mutex;
+  pthread_mutex_t displayFrame_mutex;
 
 	JavaVM* _vm = 0;
 	JNIEnv* jni_env = 0;
@@ -139,6 +226,15 @@ extern "C" {
 
 	void _initTracker (char* configuration, char* license)
 	{
+  /*
+        pthread_mutex_lock(&displayFrame_mutex);
+          if(pixelDataRaw != 0){
+            delete[](unsigned char*)pixelDataRaw;
+          }
+          pixelDataRaw = new unsigned char[camHeight * camWidth * 3];
+       pthread_mutex_unlock(&displayFrame_mutex);
+*/
+
 		jni_env = 0;
 		_vm->AttachCurrentThread(&jni_env, 0);
 		jclass unity = jni_env->FindClass("com/unity3d/player/UnityPlayer");
@@ -156,12 +252,25 @@ extern "C" {
 		pthread_mutex_init(&writeFrame_mutex, NULL);
 		pthread_mutex_init(&grabFrame_mutex, NULL);
 
+	  	//Set up mutex for render thread synchronization
+      pthread_mutex_destroy(&displayFrame_mutex);
+      pthread_mutex_init(&displayFrame_mutex, NULL);
+
 	}
 
 	void _releaseTracker()
 	{
 		delete m_Tracker;
 		delete m_FaceAnalizer;
+
+/*
+        pthread_mutex_lock(&displayFrame_mutex);
+          if(pixelDataRaw != 0){
+            delete[](unsigned char*)pixelDataRaw;
+            pixelDataRaw = 0;
+          }
+       pthread_mutex_unlock(&displayFrame_mutex);
+*/
 
 		m_Tracker = 0;
 	}
@@ -250,8 +359,10 @@ extern "C" {
 			camWidth = width;
 		if (height !=-1)
 			camHeight = height;
-		if (orientation !=-1)
+	  if (orientation !=-1){
 			camOrientation = orientation;
+		  //LOGI("#### setParameters: %d ", orientation);
+	  }
 		if (flip !=-1)
 			camFlip = flip;
 
@@ -299,6 +410,27 @@ extern "C" {
 		pthread_mutex_lock(&grabFrame_mutex);
 		long ts;
 		pixelData = imageCapture->GrabFrame(ts);
+      /*
+
+       LOGI("#### _grabFrameInternal ---> 1");
+	  int frameSize = camHeight * camWidth * 3;
+	  pthread_mutex_lock(&displayFrame_mutex);
+      if(switchingCamera){
+		 memset(pixelDataRaw, 0, frameSize);
+		 imageCapture->framesToFade = imageCapture->maxFramesToFade;
+		  LOGI("#### _grabFrameInternal ---> 2");
+	  } else if (pixelData != 0 && pixelDataRaw != 0){
+	   LOGI("#### _grabFrameInternal ---> 2");
+	    memcpy(pixelDataRaw, pixelData->imageData, (frameSize)*sizeof(char));
+	     LOGI("#### _grabFrameInternal ---> 3");
+	  }
+
+	  pthread_mutex_unlock(&displayFrame_mutex);
+*/
+	  if(pixelData == 0) {
+	    LOGI("#### _grabFrameInternal is 0");
+
+	  }
 
 		pthread_mutex_unlock(&grabFrame_mutex);
 	}
@@ -331,10 +463,12 @@ extern "C" {
                     trackingStatus = m_Tracker->track(camWidth, camHeight, (const char*) pixelData->imageData, trackingData,
                     VISAGE_FRAMEGRABBER_FMT_RGB, VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
 
-                //LOGI("#### Tracking ended with status: %d" , trackingStatus[0]);
-                if (trackingStatus[0] == TRACK_STAT_OFF)
+			  //g_TextureId
+			  if (trackingStatus[0] == TRACK_STAT_OFF){
                     pixelData = 0;
-
+                  //LOGI("#### TRACK_STAT_OFF  !");
+				  g_TextureId = -1;
+               }
                 if(ageRefreshRequested && m_FaceAnalizer && trackingStatus[0] == TRACK_STAT_OK){
                     ageRefreshRequested =0;
                     int frameSize = camHeight * camWidth * 3;
@@ -402,26 +536,49 @@ extern "C" {
 
 	void _bindTexture(int texID)
 	{
+	  // binds a texture with the given native hardware texture id through opengl
+	  if (texID != -1 && pixelData != 0)
+	  {
+	      //LOGI("### Native _bindTexture :%d", texID);
+		  g_TextureId = texID;
+//			glBindTexture(GL_TEXTURE_2D, texID);
+//			if (camOrientation == 90 || camOrientation == 270)
+//				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camHeight, camWidth, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+//			else
+//				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+	  }
+  }
 
-        textureID = texID;
-    	if (textureID != -1 && pixelData != 0)
+  static void UNITY_INTERFACE_API OnRenderEvent(int eventID)
+  {
+
+      //LOGI("### Native OnRenderEvent :%d", eventID);
+	  // Unknown / unsupported graphics device type? Do nothing
+	  if (s_Graphics == NULL){
+		  return;
+		  //LOGI("### Native OnRenderEvent [NOT READY] :%d", eventID);
+	  }
+          pthread_mutex_lock(&grabFrame_mutex);
+	  // binds a texture with the given native hardware texture id through opengl
+	  if (g_TextureId!= -1 &&  pixelData != 0)
         		{
-        	    	glActiveTexture(GL_TEXTURE0);
-        			//glBindTexture(GL_TEXTURE_2D, textureID);
-        			glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureID);
-        			if (camOrientation == 90 || camOrientation == 270)
-        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camHeight, camWidth, GL_RGB,
-        				 GL_UNSIGNED_BYTE, pixelData->imageData);
-        			else
-        				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_RGB,
-        				GL_UNSIGNED_BYTE, pixelData->imageData);
+          glBindTexture(GL_TEXTURE_2D, g_TextureId);
+          glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pixelData->width, pixelData->height, GL_RGB, GL_UNSIGNED_BYTE, (const char*) pixelData->imageData);
+            //LOGI("# Native OnRenderEvent - END ");
+	  } else {
+	         //LOGI("# Native OnRenderEvent - IGNORED : %d ", g_TextureId );
+	  }
+          pthread_mutex_unlock(&grabFrame_mutex);
+  }
 
-		        // Bind screen buffer into use.
-                //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-                glViewport(0, 0, camWidth, camHeight);
+  // --------------------------------------------------------------------------
+  // GetRenderEventFunc, an example function we export which is used to get a rendering event callback function.
 
+  extern "C" UnityRenderingEvent UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API GetRenderEventFunc()
+  {
+	  return OnRenderEvent;
         		}
-	}
+
 
 	void initializeOpenGL()
     {

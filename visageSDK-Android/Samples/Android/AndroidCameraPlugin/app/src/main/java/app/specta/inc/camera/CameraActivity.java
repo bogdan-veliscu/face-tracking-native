@@ -151,10 +151,10 @@ public class CameraActivity extends UnityPlayerActivity {
         Camera.Parameters parameters = cam.getParameters();
         Size preferedSize = parameters.getPreferredPreviewSizeForVideo();
         Log.d(TAG, "#### getPreferredPreviewSizeForVideo " + preferedSize.height + " | " + preferedSize.height);
-        if(preferedSize.height < ImageHeight && preferedSize.width < ImageWidth){
-            ImageHeight = preferedSize.height;
-            ImageWidth = preferedSize.width;
-
+        //if(preferedSize.height < ImageHeight && preferedSize.width < ImageWidth)
+        {
+            ImageHeight = preferedSize.height / 2;
+            ImageWidth = preferedSize.width / 2;
         }
 
         setPreviewSize(parameters, ImageWidth, ImageHeight);

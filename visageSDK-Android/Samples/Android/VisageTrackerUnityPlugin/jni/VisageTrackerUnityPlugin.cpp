@@ -23,12 +23,15 @@
 
 using namespace VisageSDK;
 
+static bool previewStarted = false;
+
 static void *g_TextureHandle = NULL;
 
 static int g_TextureWidth = 0;
 static int g_TextureHeight = 0;
 
 static GLuint frame_tex_id = 0;
+
 
 // --------------------------------------------------------------------------
 // SetTimeFromUnity, an example function we export which is called by one of the
@@ -116,6 +119,7 @@ static int ageRefreshRequested = 1;
 int format = VISAGE_FRAMEGRABBER_FMT_LUMINANCE;
 static VsImage *trackImage = 0;
 static VsImage *renderImage = 0;
+static VsImage *drawImageBuffer = 0;
 
 static AndroidCameraCapture *imageCapture = 0;
 
@@ -225,8 +229,11 @@ void _initTracker(char *configuration, char *license) {
   LOGI("_initTracker with license: %s", license);
   initializeLicenseManager(jni_env, obj_Activity, license, AlertCallback);
 
-  if (m_Tracker)
-    _releaseTracker();
+  if (m_Tracker) {
+    delete m_Tracker;
+    delete m_FaceAnalizer;
+  }
+  //_releaseTracker();
 
   m_Tracker = new VisageTracker(configuration);
   pthread_mutex_init(&writeFrame_mutex, NULL);
@@ -241,7 +248,15 @@ void _releaseTracker() {
   delete m_Tracker;
   delete m_FaceAnalizer;
 
+  LOGI("@@ QR _releaseTracker v2");
+  pthread_mutex_lock(&grabFrame_mutex);
+
+  vsReleaseImage(&drawImageBuffer);
+  drawImageBuffer = 0;
+  vsReleaseImage(&renderImage);
+  renderImage = 0;
   m_Tracker = 0;
+  pthread_mutex_unlock(&grabFrame_mutex);
 }
 
 void _initFaceAnalyser(char *config, char *license) {
@@ -351,11 +366,26 @@ void Java_app_specta_inc_camera_CameraActivity_setParameters(
     yTexScale = camHeight / (float)GetNearestPow2(camHeight);
   }
 
-  // Dispose of the previous drawImage
-  vsReleaseImage(&trackImage);
-  trackImage = 0;
+  // Dispose of the previous drawImageBuffer
+  vsReleaseImage(&drawImageBuffer);
+  drawImageBuffer = 0;
 
-  trackImage = vsCreateImage(vsSize(trackWidth, trackHeight), VS_DEPTH_8U, 3);
+  // Depending on the camera orientation (landscape or portrait), create a
+  // drawImageBuffer buffer for storing pixels that will be used in the tracking
+  // thread
+  if (camOrientation == 90 || camOrientation == 270)
+    drawImageBuffer = vsCreateImage(vsSize(height, width), VS_DEPTH_8U, 3);
+  else
+    drawImageBuffer = vsCreateImage(vsSize(width, height), VS_DEPTH_8U, 3);
+
+  // Dispose of the previous drawImage
+  vsReleaseImage(&renderImage);
+  renderImage = 0;
+
+  // Create a renderImage buffer based on the drawImageBuffer which will be used
+  // in the rendering thread NOTE: Copying imageData between track and draw
+  // buffers is protected with mutexes
+  renderImage = vsCloneImage(drawImageBuffer);
 
   parametersChanged = true;
   pthread_mutex_unlock(&writeFrame_mutex);
@@ -378,29 +408,40 @@ void _getCameraInfo(float *focus, int *ImageWidth, int *ImageHeight) {
 void _toggleTorch(int on) { LOGI("@@ QR _toggleTorch"); }
 
 void _grabFrameInternal() {
-  if (imageCapture == 0)
-    return;
-  pthread_mutex_lock(&grabFrame_mutex);
-  long ts;
-  renderImage = imageCapture->GrabFrame(ts);
 
-  if (trackImage != 0 && renderImage != 0) {
-    //vsResize(renderImage, trackImage);
+  while (previewStarted) {
+    if (imageCapture == 0) {
+      // return;
+      usleep(1000 * 100);
+      continue;
+    }
+    pthread_mutex_lock(&grabFrame_mutex);
+    long ts;
+    trackImage = imageCapture->GrabFrame(ts);
 
-    vsReleaseImage(&trackImage);
-    trackImage = vsCloneImage(renderImage);
+    if (trackImage == 0) {
+      // vsResize(renderImage, trackImage);
+      pthread_mutex_unlock(&grabFrame_mutex);
+      continue;
+    }
+    pthread_mutex_unlock(&grabFrame_mutex);
+
+    // update the draw buffer image
+    pthread_mutex_lock(&displayFrame_mutex);
+
+    // copy current image to back buffer
+    vsCopy(trackImage, drawImageBuffer);
+
+    pthread_mutex_unlock(&displayFrame_mutex);
   }
-
-  if (renderImage == 0) {
-    LOGI("#### _grabFrameInternal is 0");
-  }
-
-  pthread_mutex_unlock(&grabFrame_mutex);
 }
 
 void _grabFrame() {
-  std::thread bgGrab(_grabFrameInternal);
-  bgGrab.detach();
+  if (!previewStarted) {
+    previewStarted = true;
+    std::thread bgGrab(_grabFrameInternal);
+    bgGrab.detach();
+  }
 }
 void updateAnalyserEstimations() {
 
@@ -508,24 +549,30 @@ void _bindTexture(int texID) {
 
 static void UNITY_INTERFACE_API OnRenderEvent(int eventID) {
 
-  // LOGI("### Native OnRenderEvent :%d", eventID);
   // Unknown / unsupported graphics device type? Do nothing
   if (s_Graphics == NULL) {
     return;
-    // LOGI("### Native OnRenderEvent [NOT READY] :%d", eventID);
   }
-  pthread_mutex_lock(&grabFrame_mutex);
+
+  //***
+  //*** LOCK track thread to copy data for rendering ***
+  //***
+  pthread_mutex_lock(&displayFrame_mutex);
+  // copy image for rendering
+  vsCopy(drawImageBuffer, renderImage);
+
+  //***
+  //*** UNLOCK track thread ***
+  //***
+  pthread_mutex_unlock(&displayFrame_mutex);
+
   // binds a texture with the given native hardware texture id through opengl
   if (g_TextureId != -1 && renderImage != 0) {
     glBindTexture(GL_TEXTURE_2D, g_TextureId);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, renderImage->width, renderImage->height,
-                    GL_RGB, GL_UNSIGNED_BYTE, (const char *)renderImage->imageData);
-
-    //LOGI("# Native OnRenderEvent - %dx%d ", renderImage->width, renderImage->height);
-  } else {
-    // LOGI("# Native OnRenderEvent - IGNORED : %d ", g_TextureId );
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, renderImage->width,
+                    renderImage->height, GL_RGB, GL_UNSIGNED_BYTE,
+                    (const char *)renderImage->imageData);
   }
-  pthread_mutex_unlock(&grabFrame_mutex);
 }
 
 // --------------------------------------------------------------------------

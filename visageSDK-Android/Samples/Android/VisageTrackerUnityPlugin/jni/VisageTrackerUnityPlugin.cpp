@@ -16,6 +16,18 @@
 #include <thread>
 #include <unistd.h>
 
+#include "GLError.h"
+#include "PlatformBase.h"
+
+#include <assert.h>
+#if UNITY_IPHONE
+#include <OpenGLES/ES2/gl.h>
+#elif UNITY_ANDROID || UNITY_WEBGL
+#include <GLES2/gl2.h>
+#else
+#include "GLEW/glew.h"
+#endif
+
 #include <android/log.h>
 #define LOG_TAG "UnityPlugin v7"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -32,12 +44,85 @@ static int g_TextureHeight = 0;
 
 static GLuint frame_tex_id = 0;
 
+GLuint m_VertexShader;
+GLuint m_FragmentShader;
+GLuint m_Program;
+GLuint m_FrameBuffer;
+GLuint m_RenderBuffer;
+GLuint m_VertexBuffer;
 
+int m_UniformWorldMatrix;
+int m_UniformProjMatrix;
+
+static const char *kGlesVProgTextGLES3 =
+    "attribute vec4 a_position;                         \n"
+    "attribute vec2 a_texCoord;                         \n"
+    "varying vec2 v_texCoord;                           \n"
+
+    "void main(){                                       \n"
+    "   gl_Position = a_position;                       \n"
+    "   v_texCoord = a_texCoord;                        \n"
+    "}                                                  \n";
+
+#undef VERTEX_SHADER_SRC
+
+static const char *kGlesFShaderTextGLES3 =
+    "#ifdef GL_ES                                       \n"
+    "precision highp float;                             \n"
+    "#endif                                             \n"
+
+    "varying vec2 v_texCoord;                           \n"
+    "uniform sampler2D y_texture;                       \n"
+    "uniform sampler2D uv_texture;                      \n"
+
+    "void main (void){                                  \n"
+    "   float r, g, b, y, u, v;                         \n"
+
+    // We had put the Y values of each pixel to the R,G,B components by
+    // GL_LUMINANCE, that's why we're pulling it from the R component, we
+    // could also use G or B
+    "   y = texture2D(y_texture, v_texCoord).r;         \n"
+
+    // We had put the U and V values of each pixel to the A and R,G,B
+    // components of the texture respectively using GL_LUMINANCE_ALPHA.
+    // Since U,V bytes are interspread in the texture, this is probably the
+    // fastest way to use them in the shader
+    "   u = texture2D(uv_texture, v_texCoord).a - 0.5;  \n"
+    "   v = texture2D(uv_texture, v_texCoord).r - 0.5;  \n"
+
+    // The numbers are just YUV to RGB conversion constants
+    "   r = y + 1.13983*v;                              \n"
+    "   g = y - 0.39465*u - 0.58060*v;                  \n"
+    "   b = y + 2.03211*u;                              \n"
+
+    // We finally set the RGB color of our pixel
+    "   gl_FragColor = vec4(r, g, b, 1.0);              \n"
+    "}                                                  \n";
+
+GLfloat vertices[] = {-1, -1, 0,  // bottom left corner
+                      -1, 1,  0,  // top left corner
+                      1,  1,  0,  // top right corner
+                      1,  -1, 0}; // bottom right corner
+
+GLubyte indices[] = {
+    0, 1, 2,  // first triangle (bottom left - top left - top right)
+    0, 2, 3}; // second triangle (bottom left - top right - bottom right)
+
+const GLuint kStride = 0; // COORDS_PER_VERTEX * 4;
+const GLshort kIndicesInformation[] = {0, 1, 2, 0, 2, 3};
+
+static GLuint positionObject;
+static GLuint texturePosition;
+static GLuint yTextureObject;
+static GLuint uvTextureObject;
 // --------------------------------------------------------------------------
 // SetTimeFromUnity, an example function we export which is called by one of the
 // scripts.
 
 static float g_Time;
+// static int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
+#define GL_FRAGMENT_SHADER 0x8B30
+#define GL_VERTEX_SHADER 0x8B31
 
 extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API
 SetTimeFromUnity(float t) {
@@ -90,19 +175,109 @@ SetTextureFromUnity(void *textureHandle, int w, int h) {
 
 static UnityGfxRenderer s_DeviceType = kUnityGfxRendererNull;
 
+void CreateResources();
 static void UNITY_INTERFACE_API
 OnGraphicsDeviceEvent(UnityGfxDeviceEventType eventType) {
   // LOGI("### VisageFaceAnalyser - OnGraphicsDeviceEvent");
   // Create graphics API implementation upon initialization
   if (eventType == kUnityGfxDeviceEventInitialize) {
     s_DeviceType = s_Graphics->GetRenderer();
+
     LOGI("### VisageFaceAnalyser - kUnityGfxDeviceEventInitialize");
+
+    CreateResources();
+
+    LOGI("### Conversion shader initialized!");
   }
 
   // Cleanup graphics API implementation upon shutdown
   if (eventType == kUnityGfxDeviceEventShutdown) {
     s_DeviceType = kUnityGfxRendererNull;
   }
+}
+
+static GLuint CreateShader(GLenum type, const char *sourceText) {
+  GLuint shader = glCreateShader(type);
+  glShaderSource(shader, 1, &sourceText, NULL);
+  glCompileShader(shader);
+
+  GLint compiled = 0;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+  if (!compiled) {
+    GLint infoLen = 0;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
+    if (infoLen) {
+      char *buf = (char *)malloc(infoLen);
+      if (buf) {
+        glGetShaderInfoLog(shader, infoLen, NULL, buf);
+        LOGE("Could not compile shader %d:\n%s\n", type, buf);
+        free(buf);
+      }
+      glDeleteShader(shader);
+      shader = 0;
+    }
+  }
+  return shader;
+}
+
+enum VertexInputs { kVertexInputPosition = 0, kVertexInputColor = 1 };
+
+void CreateResources() {
+
+  LOGI("### CreateResources API: %d", s_DeviceType);
+  // Create shaders
+  if (s_DeviceType == kUnityGfxRendererOpenGLES30) {
+
+    LOGI("### CreateResources - kUnityGfxRendererOpenGLES30");
+    m_VertexShader = CreateShader(GL_VERTEX_SHADER, kGlesVProgTextGLES3);
+    printGLError("GL_VERTEX_SHADER");
+    m_FragmentShader = CreateShader(GL_FRAGMENT_SHADER, kGlesFShaderTextGLES3);
+    printGLError("GL_FRAGMENT_SHADER");
+  }
+
+  // Link shaders into a program and find uniform locations
+  m_Program = glCreateProgram();
+  printGLError("glCreateProgram");
+
+  glAttachShader(m_Program, m_VertexShader);
+  printGLError("m_VertexShader");
+
+  glAttachShader(m_Program, m_FragmentShader);
+  printGLError("m_FragmentShader");
+
+  glLinkProgram(m_Program);
+  printGLError("glLinkProgram");
+
+  GLint status = 0;
+  glGetProgramiv(m_Program, GL_LINK_STATUS, &status);
+
+  printGLError("glGetProgramiv");
+  assert(status == GL_TRUE);
+
+  // get index of the generic vertex attribute bound to vPosition
+  positionObject = glGetAttribLocation(m_Program, "a_position");
+  printGLError("glGetAttribLocation");
+
+  // get index of the generic vertex attribute bound to vTexCoord
+  texturePosition = glGetAttribLocation(m_Program, "a_texCoord");
+  printGLError("glGetAttribLocation");
+
+  yTextureObject = glGetUniformLocation(m_Program, "y_texture");
+  printGLError("glGetUniformLocation");
+
+  uvTextureObject = glGetUniformLocation(m_Program, "uv_texture");
+  printGLError("glGetUniformLocation");
+
+  // Create vertex buffer
+  glGenBuffers(1, &m_VertexBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+  glBufferData(GL_ARRAY_BUFFER, 1024, NULL, GL_STREAM_DRAW);
+
+  assert(glGetError() == GL_NO_ERROR);
+
+  LOGI("CREATED shader program successfully!");
+
+  assert(glGetError() == GL_NO_ERROR);
 }
 
 static int g_TextureId = -1;
@@ -546,6 +721,9 @@ void _bindTexture(int texID) {
     // event callback
   }
 }
+void drawPreviewFrame(const char *yuvBuffer);
+void renderPreviewTexture();
+void preparePreview(const char *yuvBuffer);
 
 static void UNITY_INTERFACE_API OnRenderEvent(int eventID) {
 
@@ -568,13 +746,218 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID) {
 
   // binds a texture with the given native hardware texture id through opengl
   if (g_TextureId != -1 && renderImage != 0) {
-    glBindTexture(GL_TEXTURE_2D, g_TextureId);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, renderImage->width,
-                    renderImage->height, GL_RGB, GL_UNSIGNED_BYTE,
-                    (const char *)renderImage->imageData);
+
+    preparePreview((const char *)renderImage->imageData);
+    renderPreviewTexture();
+    drawPreviewFrame((const char *)renderImage->imageData);
   }
 }
 
+void preparePreview(const char *yuvBuffer) {
+
+  const char *uvBuffer = uvBuffer + camWidth * camHeight;
+  // Setup the pixel alignement
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  printGLError("preparePreview");
+
+  // Active the y texture
+  glActiveTexture(GL_TEXTURE1);
+
+  printGLError("preparePreview");
+  // Bind the texture
+  glBindTexture(GL_TEXTURE_2D, GL_TEXTURE1);
+  printGLError("preparePreview");
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, camWidth, camHeight, 0,
+               GL_LUMINANCE, GL_UNSIGNED_BYTE, yuvBuffer);
+  printGLError("preparePreview:glTexImage2D");
+
+  // Setup the texture parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  printGLError("preparePreview");
+
+  // Prepare the UV channel texture
+  glActiveTexture(GL_TEXTURE2);
+  printGLError("preparePreview");
+
+  // Bind the texture
+  glBindTexture(GL_TEXTURE_2D, GL_TEXTURE2);
+  printGLError("preparePreview");
+
+  // Setup the texture parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  printGLError("preparePreview");
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, camWidth, camHeight, 0,
+               GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, uvBuffer);
+
+  glViewport(0, 0, camWidth, camHeight);
+}
+
+void renderPreviewTexture() {
+  // Generate framebuffer object name
+  glGenFramebuffers(1, &m_FrameBuffer);
+  printGLError("glGenFramebuffers");
+
+  // Bind the framebuffer
+  glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
+  printGLError("renderPreviewTexture");
+
+  // Generate render buffer object name
+  glGenRenderbuffers(1, &m_RenderBuffer);
+  printGLError("renderPreviewTexture");
+
+  // Bind render buffer
+  glBindRenderbuffer(GL_RENDERBUFFER, m_RenderBuffer);
+  printGLError("renderPreviewTexture");
+
+  // Create and initialize render buffer for display RGBAwith the same size of
+  // the viewport
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA4, camWidth, camHeight);
+  printGLError("renderPreviewTexture");
+
+  // Attach render buffer to frame buffer object
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            GL_RENDERBUFFER, m_RenderBuffer);
+  printGLError("renderPreviewTexture");
+
+  // Attach y plane to frame buffer object
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         g_TextureId, 0);
+  printGLError("renderPreviewTexture");
+
+  // Attach uv plane to frame buffer object
+  //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+  //                       GL_TEXTURE2, 0);
+  printGLError("renderPreviewTexture");
+
+  // Bind the framebuffer
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  printGLError("renderPreviewTexture");
+
+  // Check if the framebuffer is correctly setup
+  GLint status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+  if (status != GL_FRAMEBUFFER_COMPLETE) {
+    LOGI(" FBO setting fault : %d ", status);
+    return;
+  }
+  printGLError("renderPreviewTexture");
+}
+
+void drawPreviewFrame(const char *yuvBuffer) {
+  const char *uvBuffer = uvBuffer + camWidth * camHeight;
+  LOGI("drawPreviewFrame");
+  glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
+  printGLError("glBindFramebuffer");
+  glUseProgram(m_Program);
+  printGLError("glUseProgram");
+
+  // y plane buffer setup
+  glActiveTexture(GL_TEXTURE1);
+  printGLError("glActiveTexture");
+
+  glBindTexture(GL_TEXTURE_2D, GL_TEXTURE1);
+  printGLError("glBindTexture");
+
+  glUniform1i(yTextureObject, 0);
+  printGLError("glUniform1i");
+
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight, GL_LUMINANCE,
+                  GL_UNSIGNED_BYTE, yuvBuffer);
+  printGLError("glTexSubImage2D");
+
+  // uv plane buffer setup
+  glActiveTexture(GL_TEXTURE2);
+  printGLError("glActiveTexture");
+
+  glBindTexture(GL_TEXTURE_2D, GL_TEXTURE2);
+  printGLError("glBindTexture");
+
+  glUniform1i(uvTextureObject, 1);
+  printGLError("glUniform1i");
+
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, camWidth, camHeight,
+                  GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, uvBuffer);
+  printGLError("glTexSubImage2D");
+
+
+  glViewport(0, 0, camWidth, camHeight);
+  printGLError("glTexSubImage2D");
+  /*
+  int triangleCount = 1;
+  struct MyVertex {
+    float x, y, z;
+    unsigned int color;
+  };
+  MyVertex verticesFloat3Byte4[3] = {
+      {-0.5f, -0.25f, 0, 0xFFff0000},
+      {0.5f, -0.25f, 0, 0xFF00ff00},
+      {0, 0.5f, 0, 0xFF0000ff},
+  };
+
+  // Bind a vertex buffer, and update data in it
+  const int kVertexSize = 12 + 4;
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  printGLError("vertex buffer");
+  glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+  printGLError("vertex buffer");
+  glBufferSubData(GL_ARRAY_BUFFER, 0, kVertexSize * triangleCount * 3,
+                  verticesFloat3Byte4);
+  printGLError("vertex buffer");
+
+  // Setup vertex layout
+  glEnableVertexAttribArray(kVertexInputPosition);
+  printGLError("vertex buffer");
+
+  glVertexAttribPointer(positionObject, 3, GL_FLOAT, GL_FALSE, kVertexSize,
+                        (char *)NULL + 0);
+  printGLError("vertex buffer");
+
+  glEnableVertexAttribArray(positionObject);
+  printGLError("vertex buffer");
+
+  glVertexAttribPointer(kVertexInputColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,
+                        kVertexSize, (char *)NULL + 12);
+  printGLError("vertex buffer");
+
+  // Draw
+  glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3);
+
+  printGLError("vertex buffer");
+
+
+    glVertexAttribPointer(positionObject, 2, GL_FLOAT, GL_FALSE, kStride,
+                          kVertexInformation);
+    printGLError("glVertexAttribPointer");
+
+    glVertexAttribPointer(texturePosition, 2, GL_SHORT, GL_FALSE, kStride,
+                          kTextureCoordinateInformation);glDrawArrays
+    printGLError("glVertexAttribPointer");
+
+    glEnableVertexAttribArray(positionObject);
+    printGLError("glVertexAttribArray");
+
+    glEnableVertexAttribArray(texturePosition);
+    printGLError("glVertexAttribArray");
+
+
+          glBindFramebuffer(GL_FRAMEBUFFER, 0);
+          printGLError("glBindFramebuffer");
+
+          glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
+          printGLError("glDrawElements");
+
+          // eglSwapBuffers(display, surface);
+          printGLError("eglSwapBuffers");  */
+}
 // --------------------------------------------------------------------------
 // GetRenderEventFunc, an example function we export which is used to get a
 // rendering event callback function.

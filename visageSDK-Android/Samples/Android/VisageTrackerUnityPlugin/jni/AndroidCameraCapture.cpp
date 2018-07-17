@@ -13,6 +13,16 @@ AndroidCameraCapture::AndroidCameraCapture()
 	pts = 0;
 }
 
+/**
+ * Simple timer function
+ */
+long getTimestamp() {
+	struct timespec now;
+	clock_gettime(CLOCK_REALTIME, &now);
+	return (long) ((now.tv_sec*1000000000LL + now.tv_nsec)/1000000LL);
+}
+
+
 AndroidCameraCapture::AndroidCameraCapture(int width, int height, int orientation, int flip)
 {
 	buffer = vsCreateImage(vsSize(width, height),VS_DEPTH_8U,3);
@@ -57,7 +67,12 @@ void AndroidCameraCapture::WriteFrameYUV(unsigned char* imageData)
 {
 	pthread_mutex_lock(&mutex);
 	//YUV420toRGB(imageData, buffer, width, height);
+	long start = getTimestamp();
+
 	YUV_NV21_TO_RGB(imageData, buffer, width, height);
+    long end = getTimestamp();
+
+    //LOGI("### Frame conversion took : %d ", (int)(end -start));
 	frameArrived = true;
 	pthread_cond_signal(&cond);
 	pthread_mutex_unlock(&mutex);

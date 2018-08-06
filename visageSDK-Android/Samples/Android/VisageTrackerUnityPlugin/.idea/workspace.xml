@@ -11,21 +11,71 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="VisageTrackerUnityPlugin.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="VisageTrackerUnityPlugin.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="969" column="12" lean-forward="false" selection-start-line="969" selection-start-column="5" selection-end-line="969" selection-end-column="12" />
+            <state relative-caret-position="4860">
+              <caret line="324" column="4" lean-forward="false" selection-start-line="324" selection-start-column="4" selection-end-line="324" selection-end-column="4" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="IUnityGraphics.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jni/Unity/IUnityGraphics.h">
+      <file leaf-file-name="VisageTrackerUnityPlugin.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="3" column="23" lean-forward="false" selection-start-line="3" selection-start-column="23" selection-end-line="3" selection-end-column="23" />
+            <state relative-caret-position="735">
+              <caret line="49" column="28" lean-forward="false" selection-start-line="49" selection-start-column="28" selection-end-line="49" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GLUtils.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jni/GLUtils.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="495">
+              <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FrameRenderer.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jni/FrameRenderer.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-26">
+              <caret line="24" column="0" lean-forward="true" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AndroidCameraCapture.cpp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="375">
+              <caret line="25" column="42" lean-forward="false" selection-start-line="25" selection-start-column="22" selection-end-line="25" selection-end-column="42" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FrameRenderer.cpp" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/jni/FrameRenderer.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="685">
+              <caret line="133" column="70" lean-forward="true" selection-start-line="133" selection-start-column="70" selection-end-line="133" selection-end-column="70" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AndroidCameraCapture.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1365">
+              <caret line="91" column="23" lean-forward="false" selection-start-line="91" selection-start-column="19" selection-end-line="91" selection-end-column="23" />
               <folding />
             </state>
           </provider>
@@ -35,39 +85,42 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>m_APIType</find>
-      <find>s_DeviceType</find>
-      <find>glview</find>
-      <find>DrawSimpleTriangles</find>
-      <find>DrawColoredTriangle</find>
-      <find>m_VertexBuffer</find>
-      <find>opengl</find>
-      <find>onrenderev</find>
-      <find>glGenTextures</find>
-      <find>luminance</find>
-      <find>onrendere</find>
-      <find>drawp</find>
-      <find>vertexsh</find>
-      <find>display</find>
-      <find>drawpre</find>
+      <find>g_TextureId</find>
+      <find>Unity texture not yet ready</find>
+      <find>m_pDataY</find>
+      <find>isdirt</find>
+      <find>rame Renderer not yet initialized -- initializing now ..</find>
+      <find>bindte</find>
+      <find>enderer-&gt;init</find>
+      <find>renderer-&gt;renderFrame</find>
+      <find>init(</find>
+      <find>renderer</find>
+      <find>init</find>
+      <find>gls</find>
+      <find>m_width</find>
+      <find>createTextures</find>
+      <find>glTexSubImage2D</find>
+      <find>writeframe</find>
+      <find>YUV_NV21_TO_RGB</find>
+      <find>buffer</find>
+      <find>AndroidCameraCapture</find>
+      <find>grabfram</find>
+      <find>m_pDataUV</find>
+      <find>GLCLEA</find>
+      <find>glClear</find>
+      <find>draw</find>
+      <find>GLCL</find>
+      <find>onre</find>
       <find>onrender</find>
-      <find>attrib</find>
-      <find>a_position</find>
-      <find>renderPreviewTexture</find>
-      <find>drawPreviewFrame</find>
-      <find>m_FrameBuffer</find>
-      <find>uvTextureObject</find>
-      <find>kVertexInformation</find>
-      <find>kIndicesInformation</find>
-      <find>vertex</find>
-      <find>createres</find>
-      <find>drawfra</find>
-      <find>onren</find>
-      <find>preparePreview</find>
-      <find>GL_FRAMEBUFFER</find>
+      <find>gltex</find>
+      <find>trackImage</find>
+      <find>Java_app_specta_inc_camera_CameraActivity_draw</find>
     </findStrings>
     <replaceStrings>
       <replace>inc_camera_CameraActivity</replace>
+      <replace>mHeight</replace>
+      <replace>mWidth</replace>
+      <replace>displayFrameBuffer</replace>
     </replaceStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -79,24 +132,27 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/buildLib.sh" />
-        <option value="$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h" />
-        <option value="$PROJECT_DIR$/jni/AndroidCameraCapture.h" />
         <option value="$PROJECT_DIR$/jni/PlatformBase.h" />
         <option value="$PROJECT_DIR$/jni/Application.mk" />
-        <option value="$PROJECT_DIR$/jni/AndroidCameraCapture.cpp" />
         <option value="$PROJECT_DIR$/jni/Unity/GLError.cpp" />
         <option value="$PROJECT_DIR$/jni/Unity/GLError.h" />
-        <option value="$PROJECT_DIR$/jni/Android.mk" />
+        <option value="$PROJECT_DIR$/jni/AndroidCameraCapture.h" />
         <option value="$PROJECT_DIR$/jni/GLError.h" />
         <option value="$PROJECT_DIR$/jni/GLError.cpp" />
+        <option value="$PROJECT_DIR$/jni/Android.mk" />
+        <option value="$PROJECT_DIR$/jni/FrameRenderer.h" />
+        <option value="$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h" />
+        <option value="$PROJECT_DIR$/jni/AndroidCameraCapture.cpp" />
+        <option value="$PROJECT_DIR$/jni/GLUtils.h" />
         <option value="$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp" />
+        <option value="$PROJECT_DIR$/jni/FrameRenderer.cpp" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1903" />
-    <option name="y" value="22" />
-    <option name="width" value="1920" />
+    <option name="x" value="-1886" />
+    <option name="y" value="49" />
+    <option name="width" value="1809" />
     <option name="height" value="1009" />
   </component>
   <component name="ProjectView">
@@ -114,6 +170,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -126,31 +184,38 @@
               <item name="VisageTrackerUnityPlugin" type="462c0819:PsiDirectoryNode" />
               <item name="jni" type="462c0819:PsiDirectoryNode" />
             </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scratches" />
+      <pane id="AndroidView">
+        <subPane>
+          <expand>
             <path>
-              <item name="VisageTrackerUnityPlugin" type="b2602c69:ProjectViewProjectNode" />
-              <item name="VisageTrackerUnityPlugin" type="462c0819:PsiDirectoryNode" />
-              <item name="jni" type="462c0819:PsiDirectoryNode" />
-              <item name="Unity" type="462c0819:PsiDirectoryNode" />
+              <item name="VisageTrackerUnityPlugin" type="1abcf292:AndroidViewProjectNode" />
+              <item name="VisageTrackerUnityPlugin" type="e9137016:NonAndroidModuleNode" />
+            </path>
+            <path>
+              <item name="VisageTrackerUnityPlugin" type="1abcf292:AndroidViewProjectNode" />
+              <item name="VisageTrackerUnityPlugin" type="e9137016:NonAndroidModuleNode" />
+              <item name="test-resources" type="f7eae187:NonAndroidSourceTypeNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
-      <pane id="Scratches" />
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C/C++" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1531825556695" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1533592697879" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -466,7 +531,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1903" y="22" width="1920" height="1009" extended-state="0" />
+    <frame x="-1886" y="49" width="1809" height="1009" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295063" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -474,17 +539,17 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32275712" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21006565" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32950193" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23588924" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24957556" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24945612" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Fabric" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14217253" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Fabric" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14483494" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -493,7 +558,7 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295063" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32932165" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -506,34 +571,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3525">
-          <caret line="235" column="58" lean-forward="false" selection-start-line="235" selection-start-column="58" selection-end-line="235" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/buildLib.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="208" lean-forward="false" selection-start-line="3" selection-start-column="208" selection-end-line="3" selection-end-column="208" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jni/Android.mk">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jni/Application.mk">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="945">
@@ -545,6 +582,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1635">
           <caret line="109" column="4" lean-forward="false" selection-start-line="109" selection-start-column="4" selection-end-line="109" selection-end-column="41" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -595,6 +633,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1635">
           <caret line="109" column="4" lean-forward="false" selection-start-line="109" selection-start-column="4" selection-end-line="109" selection-end-column="41" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -638,6 +677,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="630">
           <caret line="42" column="24" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="24" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -674,6 +714,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="615">
           <caret line="41" column="19" lean-forward="false" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="19" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -717,6 +758,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -770,10 +812,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h">
+    <entry file="file://$PROJECT_DIR$/jni/Unity/GLError.h" />
+    <entry file="file://$PROJECT_DIR$/jni/Unity/GLError.cpp" />
+    <entry file="file://$PROJECT_DIR$/jni/PlatformBase.h" />
+    <entry file="file://$PROJECT_DIR$/jni/Unity/IUnityGraphicsMetal.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1740">
-          <caret line="116" column="0" lean-forward="false" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/Unity/IUnityGraphics.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="23" lean-forward="false" selection-start-line="3" selection-start-column="23" selection-end-line="3" selection-end-column="23" />
         </state>
       </provider>
     </entry>
@@ -784,29 +836,15 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jni/Unity/GLError.h" />
-    <entry file="file://$PROJECT_DIR$/jni/Unity/GLError.cpp" />
-    <entry file="file://$PROJECT_DIR$/jni/Android.mk">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="392">
-          <caret line="52" column="11" lean-forward="false" selection-start-line="52" selection-start-column="11" selection-end-line="52" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jni/PlatformBase.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="22" lean-forward="false" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jni/Unity/IUnityGraphicsMetal.h">
+    <entry file="file://$PROJECT_DIR$/jni/GLUtils.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/jni/GLError.h" />
+    <entry file="file://$PROJECT_DIR$/jni/GLError.cpp" />
     <entry file="file://$PROJECT_DIR$/jni/Application.mk">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -814,46 +852,65 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.h">
+    <entry file="file://$PROJECT_DIR$/jni/Android.mk">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="39" lean-forward="false" selection-start-line="14" selection-start-column="39" selection-end-line="14" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jni/GLError.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="3" lean-forward="false" selection-start-line="9" selection-start-column="3" selection-end-line="9" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jni/GLError.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="675">
-          <caret line="45" column="64" lean-forward="false" selection-start-line="45" selection-start-column="64" selection-end-line="45" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1200">
-          <caret line="80" column="57" lean-forward="false" selection-start-line="80" selection-start-column="57" selection-end-line="80" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jni/Unity/IUnityGraphics.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="23" lean-forward="false" selection-start-line="3" selection-start-column="23" selection-end-line="3" selection-end-column="23" />
-          <folding />
+        <state relative-caret-position="516">
+          <caret line="51" column="34" lean-forward="false" selection-start-line="51" selection-start-column="34" selection-end-line="51" selection-end-column="34" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="969" column="12" lean-forward="false" selection-start-line="969" selection-start-column="5" selection-end-line="969" selection-end-column="12" />
+        <state relative-caret-position="4860">
+          <caret line="324" column="4" lean-forward="false" selection-start-line="324" selection-start-column="4" selection-end-line="324" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/VisageTrackerUnityPlugin.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="735">
+          <caret line="49" column="28" lean-forward="false" selection-start-line="49" selection-start-column="28" selection-end-line="49" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/GLUtils.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="25" column="42" lean-forward="false" selection-start-line="25" selection-start-column="22" selection-end-line="25" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/AndroidCameraCapture.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1365">
+          <caret line="91" column="23" lean-forward="false" selection-start-line="91" selection-start-column="19" selection-end-line="91" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/FrameRenderer.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-26">
+          <caret line="24" column="0" lean-forward="true" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jni/FrameRenderer.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="685">
+          <caret line="133" column="70" lean-forward="true" selection-start-line="133" selection-start-column="70" selection-end-line="133" selection-end-column="70" />
           <folding />
         </state>
       </provider>
@@ -910,12 +967,11 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>VisageTrackerUnityPlugin</last-edited>
+          <last-edited>Native-Android-Gradle|VisageTrackerUnityPlugin</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
                 <option value="0.2" />
-                <option value="0.6" />
               </list>
             </option>
           </splitter-proportions>

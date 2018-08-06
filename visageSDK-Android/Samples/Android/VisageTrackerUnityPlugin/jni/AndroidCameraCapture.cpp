@@ -48,19 +48,23 @@ AndroidCameraCapture::~AndroidCameraCapture(void)
 	pthread_cond_destroy(&cond);
 }
 
-void AndroidCameraCapture::WriteFrame(unsigned char* imageData)
-{
-	pthread_mutex_lock(&mutex);
-	//data = imageData;
-	//YUV420toRGB(data, buffer, width, height);
-	for (int i=0;i<width*height;i++){
-			buffer->imageData[i*3] = imageData[i*4];
-			buffer->imageData[i*3+1] = imageData[i*4+1];
-			buffer->imageData[i*3+2] = imageData[i*4+2];
-		}
-	frameArrived = true;
-	pthread_cond_signal(&cond);
-	pthread_mutex_unlock(&mutex);
+void AndroidCameraCapture::WriteFrame(unsigned char *imageData) {
+
+  if (imageData == 0) {
+    return;
+  }
+  pthread_mutex_lock(&mutex);
+  // data = imageData;
+  // YUV420toRGB(data, buffer, width, height);
+  for (int i = 0; i < width * height; i++) {
+    buffer->imageData[i * 3] = imageData[i * 3];
+    buffer->imageData[i * 3 + 1] = imageData[i * 3 + 1];
+    buffer->imageData[i * 3 + 2] = imageData[i * 3 + 2];
+  }
+  delete[] imageData;
+  frameArrived = true;
+  pthread_cond_signal(&cond);
+  pthread_mutex_unlock(&mutex);
 }
 
 void AndroidCameraCapture::WriteFrameYUV(unsigned char* imageData)

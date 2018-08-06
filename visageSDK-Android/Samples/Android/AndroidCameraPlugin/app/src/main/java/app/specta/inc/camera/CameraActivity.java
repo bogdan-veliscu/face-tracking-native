@@ -43,10 +43,6 @@ public class CameraActivity extends UnityPlayerActivity {
     int orientation;
     boolean openCam = false;
 
-    // unity texture
-    private int nativeTexturePointer = -1;
-
-
     private boolean scannerEnabled = false;
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
@@ -72,10 +68,6 @@ public class CameraActivity extends UnityPlayerActivity {
 
             orientation = camInfo.orientation;
 
-            if (camInfo.facing == CameraInfo.CAMERA_FACING_FRONT)
-                setParameters((display.getRotation() * 90 + orientation) % 360, -1, -1, -1);
-            else if (camInfo.facing == CameraInfo.CAMERA_FACING_BACK)
-                setParameters((orientation + display.getRotation() * 90 + 360) % 360, -1, -1, -1);
         }
     }
 
@@ -130,6 +122,7 @@ public class CameraActivity extends UnityPlayerActivity {
      * Start grabbing frames from camera
      */
     public void GrabFromCamera(int imWidth, int imHeight, int pickCamera) {
+
         //on first call (from onResume), function parameters are set to -1; frame dimensions and camera are set on next call from Unity script
         if (imWidth == -1 || imHeight == -1) {
             imWidth = 320;
@@ -153,8 +146,8 @@ public class CameraActivity extends UnityPlayerActivity {
         Log.d(TAG, "#### getPreferredPreviewSizeForVideo " + preferedSize.height + " | " + preferedSize.height);
         //if(preferedSize.height < ImageHeight && preferedSize.width < ImageWidth)
         {
-            ImageHeight = preferedSize.height / 2;
-            ImageWidth = preferedSize.width / 2;
+            ImageHeight = preferedSize.height;
+            ImageWidth = preferedSize.width ;
         }
 
         setPreviewSize(parameters, ImageWidth, ImageHeight);
@@ -190,11 +183,6 @@ public class CameraActivity extends UnityPlayerActivity {
         ImageWidth = previewSize.width;
         ImageHeight = previewSize.height;
 
-        if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT)
-            setParameters((screenOrientation * 90 + orientation) % 360, ImageWidth, ImageHeight, flip);
-        else
-            setParameters((orientation - screenOrientation * 90 + 360) % 360, ImageWidth, ImageHeight, flip);
-
         cam.setPreviewCallbackWithBuffer(new PreviewCallback() {
             private long timestamp = 0;
 
@@ -204,8 +192,15 @@ public class CameraActivity extends UnityPlayerActivity {
                 //timestamp=System.currentTimeMillis();
 
                 //Log.w(TAG, "onPreviewFrame :" + data.length );
-                WriteFrame(data);
-                camera.addCallbackBuffer(data);
+                try{
+                    camera.addCallbackBuffer(data);
+                }catch (Exception e) {
+                    Log.e("CameraTest", "addCallbackBuffer error");
+                    return;
+                }
+
+                long start = System.currentTimeMillis();
+                draw(data, ImageWidth, ImageHeight, orientation);
             }
         });
         cam.startPreview();
@@ -220,19 +215,6 @@ public class CameraActivity extends UnityPlayerActivity {
             cam.release();
             cam = null;
         }
-    }
-
-    public int getPreviewSizeWidth() {
-        return ImageWidth;
-    }
-
-    public int getPreviewSizeHeight() {
-
-        return ImageHeight;
-    }
-
-    public int getNativeTexturePointer() {
-        return nativeTexturePointer;
     }
 
     public int startScanner(int nativeCode) {
@@ -305,8 +287,15 @@ public class CameraActivity extends UnityPlayerActivity {
 
             @Override
             public void onPreviewFrame(byte[] data, Camera camera) {
-                WriteFrame(data);
-                camera.addCallbackBuffer(data);
+                try{
+                    camera.addCallbackBuffer(data);
+                }catch (Exception e) {
+                    Log.e("CameraTest", "addCallbackBuffer error");
+                    return;
+                }
+
+                long start = System.currentTimeMillis();
+                draw(data, ImageWidth, ImageHeight, orientation);
             }
         });
 
@@ -328,8 +317,6 @@ public class CameraActivity extends UnityPlayerActivity {
             orientation = cameraInfo.orientation;
 
             Log.w(TAG, "### CameraSource orientation:" + orientation + "--->" + (orientation - screenOrientation * 90 + 360) % 360);
-
-            setParameters(90, ImageWidth, ImageHeight, 0);
 
             setScannerEnabled(1);
 
@@ -444,9 +431,7 @@ public class CameraActivity extends UnityPlayerActivity {
         super.onDestroy();
     }
 
-    public static native void WriteFrame(byte[] frame);
-
-    public static native void setParameters(int orientation, int width, int height, int flip);
+    public static native void draw(byte[] data, int width, int height, int rotation);
 
     public static native void setScannerEnabled(int enabled);
 

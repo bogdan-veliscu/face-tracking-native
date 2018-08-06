@@ -50,7 +50,8 @@ LOCAL_C_INCLUDES +=  $(VISAGE_HEADERS) $(VISAGE_HEADERS)/libAfm $(VISAGE_HEADERS
 LOCAL_MODULE    := VisageTrackerUnityPlugin
 LOCAL_SRC_FILES := \
 	VisageTrackerUnityPlugin.cpp \
-	GLError.cpp \
+	FrameRenderer.cpp \
+	GLUtils.cpp \
 	AndroidCameraCapture.cpp
 
 LOCAL_SHARED_LIBRARIES := VisageVision VisageAnalyser

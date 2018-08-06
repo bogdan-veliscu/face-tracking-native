@@ -10,7 +10,8 @@
  It implements high-level wrapper functions around key functionalities from visage|SDK that enable usage of visage|SDK face tracking capabilities in Unity C# scripts.
  */
 
-
+#ifndef VISAGE_TRACKER_UNITY_PLUGIN_H
+#define VISAGE_TRACKER_UNITY_PLUGIN_H
 
 extern "C" {
 	
@@ -36,7 +37,7 @@ extern "C" {
 	
 	/** Binds a texture with the given native hardware texture id through OpenGL.
 	 */
-	void _bindTexture(int texID);
+	void _bindTexture(int texID, int width, int height);
 
 	/** Returns the current head translation, rotation and tracking status.
 	 */
@@ -100,13 +101,13 @@ extern "C" {
     typedef void (*callbackFunc)(const char *, float top, float left, float bottom, float right);
     typedef void (*transitionCallback)();
 
-    struct Rect {
+    struct RectStruct {
       short               top;
       short               left;
       short               bottom;
       short               right;
     };
-    typedef struct Rect Rect;
+    typedef RectStruct Rect;
 
     void _initScanner(transitionCallback initCallback, callbackFunc scanCallback);
 
@@ -118,3 +119,5 @@ extern "C" {
     static int framesToFade = 0;
     static int maxFramesToFade = 100;
 }
+
+#endif // GLERROR_H

@@ -6,7 +6,7 @@
 
 #define DEBUG 1
 
-#define  LOG_TAG "TrackerPlugin v3"
+#define  LOG_TAG "TrackerPlugin v4"
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #if DEBUG
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -23,10 +23,10 @@ void _check_gl_error(const char *file, int line, const char *msg);
 
 void mat4f_load_ortho(float left, float right, float bottom, float top, float near, float far, float* mat4f);
 void mat4f_load_rotation_z(int rotation, float* mat4f);
+void mat4f_load_world_matrix(int rotation, float* mat4f);
 void mat4f_load_scale(float scaleX, float scaleY, float scaleZ, float* mat4f);
 float aspect_ratio_correction(bool fillScreen, size_t backingWidth, size_t backingHeight, size_t width, size_t height);
-
-
+void mat4f_load_world_matrix(int rotation, float* mat4f);
 #define check_gl_error(MSG) _check_gl_error(__FILE__, __LINE__, MSG)
 
 

@@ -41,7 +41,7 @@ static int g_TextureId = -1;
 static FrameRenderer *renderer = 0;
 
 unsigned char *rawFrameBuffer = 0;
-pthread_mutex_t grabFrame_mutex;
+//pthread_mutex_t grabFrame_mutex;
 
 // --------------------------------------------------------------------------
 // SetTimeFromUnity, an example function we export which is called by one of the
@@ -54,15 +54,13 @@ SetTimeFromUnity(float t) {
   g_Time = t;
 }
 
-
-
 /**
  * Simple timer function
  */
 long getTimestamp() {
-	struct timespec now;
-	clock_gettime(CLOCK_REALTIME, &now);
-	return (long) ((now.tv_sec*1000000000LL + now.tv_nsec)/1000000LL);
+  struct timespec now;
+  clock_gettime(CLOCK_REALTIME, &now);
+  return (long)((now.tv_sec * 1000000000LL + now.tv_nsec) / 1000000LL);
 }
 
 // --------------------------------------------------------------------------
@@ -142,7 +140,7 @@ static int ageRefreshRequested = 1;
 int format = VISAGE_FRAMEGRABBER_FMT_LUMINANCE;
 static VsImage *trackImage = 0;
 
-static AndroidCameraCapture *imageCapture = 0;
+//static AndroidCameraCapture *imageCapture = 0;
 
 // Helper method to create C string copy
 static char *MakeStringCopy(const char *val) {
@@ -256,9 +254,7 @@ void _initTracker(char *configuration, char *license) {
   //_releaseTracker();
 
   m_Tracker = new VisageTracker(configuration);
-  pthread_mutex_init(&grabFrame_mutex, NULL);
-
-
+  //pthread_mutex_init(&grabFrame_mutex, NULL);
 }
 
 void _releaseTracker() {
@@ -266,9 +262,9 @@ void _releaseTracker() {
   delete m_FaceAnalizer;
 
   LOGI("@@ QR _releaseTracker v2");
-  pthread_mutex_lock(&grabFrame_mutex);
+  //pthread_mutex_lock(&grabFrame_mutex);
   m_Tracker = 0;
-  pthread_mutex_unlock(&grabFrame_mutex);
+  //pthread_mutex_unlock(&grabFrame_mutex);
 }
 
 void _initFaceAnalyser(char *config, char *license) {
@@ -295,19 +291,22 @@ void _refreshAgeEstimate() { ageRefreshRequested = 1; }
 int _estimateAge() { return detectedAge; }
 int _estimateGender() { return detectedGender; }
 
-unsigned char* copyToCharArray(JNIEnv *env, jbyteArray array,unsigned char * buffer) {
-    int len = env->GetArrayLength (array);
-    if(buffer == 0){
-      buffer = new unsigned char[len];
-    }
-    env->GetByteArrayRegion (array, 0, len, reinterpret_cast<jbyte*>(buffer));
-    //LOGI("Write frame - completed %d bytes", len);
-    return buffer;
+unsigned char *copyToCharArray(JNIEnv *env, jbyteArray array,
+                               unsigned char *buffer) {
+  int len = env->GetArrayLength(array);
+  if (buffer == 0) {
+    buffer = new unsigned char[len];
+  }
+  env->GetByteArrayRegion(array, 0, len, reinterpret_cast<jbyte *>(buffer));
+  // LOGI("Write frame - completed %d bytes", len);
+  return buffer;
 }
 
-JNIEXPORT void Java_app_specta_inc_camera_CameraActivity_draw(JNIEnv * env, jobject obj, jbyteArray data, jint width, jint height, jint rotation)
-{
-  jbyte* bufferPtr = env->GetByteArrayElements(data, 0);
+JNIEXPORT void
+Java_app_specta_inc_camera_CameraActivity_draw(JNIEnv *env, jobject obj,
+                                               jbyteArray data, jint width,
+                                               jint height, jint rotation) {
+  jbyte *bufferPtr = env->GetByteArrayElements(data, 0);
 
   jsize arrayLength = env->GetArrayLength(data);
 
@@ -315,14 +314,10 @@ JNIEXPORT void Java_app_specta_inc_camera_CameraActivity_draw(JNIEnv * env, jobj
     camWidth = width;
     camHeight = height;
     camOrientation = rotation;
-    pthread_mutex_lock(&grabFrame_mutex);
-    delete imageCapture;
-    imageCapture =
-        new AndroidCameraCapture(camWidth, camHeight, camOrientation, camFlip);
-    pthread_mutex_unlock(&grabFrame_mutex);
   }
 
-  //LOGE("@ Java_app_specta_inc_camera_CameraActivity_draw : %d x %d", width, height );
+  // LOGE("@ Java_app_specta_inc_camera_CameraActivity_draw : %d x %d", width,
+  // height );
   if (renderer == 0) {
     LOGI("# Frame Renderer not yet initialized -- initializing now ..");
     renderer = new FrameRenderer();
@@ -330,9 +325,10 @@ JNIEXPORT void Java_app_specta_inc_camera_CameraActivity_draw(JNIEnv * env, jobj
 
   if (renderer != nullptr) {
     renderer->draw((uint8_t *)bufferPtr, (size_t)arrayLength, (size_t)width,
-                     (size_t)height, rotation);
+                   (size_t)height, rotation);
   } else {
-    LOGI("Java_com_android_gles3jni_GLES3JNILib_draw --> FrameRenderer is NULL");
+    LOGI(
+        "Java_com_android_gles3jni_GLES3JNILib_draw --> FrameRenderer is NULL");
   }
 
   env->ReleaseByteArrayElements(data, bufferPtr, 0);
@@ -370,44 +366,28 @@ void _getCameraInfo(float *focus, int *ImageWidth, int *ImageHeight) {
 
 void _toggleTorch(int on) { LOGI("@@ QR _toggleTorch"); }
 
-void _grabFrameInternal() {
-
-  while (previewStarted) {
-    if (imageCapture == 0 || g_TextureId == -1) {
-      // return;
-      usleep(1000 * 100);
-      continue;
-    }
-    pthread_mutex_lock(&grabFrame_mutex);
-    long ts;
-    trackImage = imageCapture->GrabFrame(ts);
-    pthread_mutex_unlock(&grabFrame_mutex);
-  }
-}
 
 void _grabFrame() {
-  if (!previewStarted) {
-    previewStarted = true;
-    std::thread bgGrab(_grabFrameInternal);
-    bgGrab.detach();
-  }
+
 }
 void updateAnalyserEstimations() {
 
-  pthread_mutex_lock(&grabFrame_mutex);
+  //pthread_mutex_lock(&grabFrame_mutex);
   detectedAge = m_FaceAnalizer->estimateAge(trackImage, trackingData);
   detectedGender = m_FaceAnalizer->estimateGender(trackImage, trackingData);
-  pthread_mutex_unlock(&grabFrame_mutex);
+  //pthread_mutex_unlock(&grabFrame_mutex);
   LOGI("#### updateAnalyserEstimations Detected age:%d and gender: %d",
        detectedAge, detectedGender);
 }
 
 int _track() {
- if (!scannerEnabled) {
-    pthread_mutex_lock(&grabFrame_mutex);
+  if (!scannerEnabled) {
+    //pthread_mutex_lock(&grabFrame_mutex);
 
     if (trackImage != 0) {
-      // LOGI("#### Camera frame ready v2!");
+      LOGI("#### Camera frame ready v2!");
+    long start = getTimestamp();
+
 
       if (camOrientation == 90 || camOrientation == 270)
         trackingStatus = m_Tracker->track(
@@ -420,11 +400,12 @@ int _track() {
             trackingData, VISAGE_FRAMEGRABBER_FMT_RGB,
             VISAGE_FRAMEGRABBER_ORIGIN_TL, 0, -1);
 
+    LOGI("### VisageSDK _track took : %d ", (int)(getTimestamp() - start));
       // g_TextureId
       if (trackingStatus[0] == TRACK_STAT_OFF) {
         trackImage = 0;
         // LOGI("#### TRACK_STAT_OFF  !");
-        //g_TextureId = -1;
+        // g_TextureId = -1;
       }
       if (ageRefreshRequested && m_FaceAnalizer &&
           trackingStatus[0] == TRACK_STAT_OK) {
@@ -434,14 +415,14 @@ int _track() {
         // bgCheck.detach();
       }
     } else {
-      int res[] = {TRACK_STAT_OFF};
+      int res[] = {TRACK_STAT_RECOVERING};
 
       trackingStatus = &res[0];
       LOGI("#### Camera frame not yet ready v2 :%d!", trackingStatus[0]);
     }
 
-    // LOGI("# Native _track:%d", trackingStatus[0]);
-    pthread_mutex_unlock(&grabFrame_mutex);
+    LOGI("# Native _track:%d", trackingStatus[0]);
+    //pthread_mutex_unlock(&grabFrame_mutex);
   } else {
     int res[] = {TRACK_STAT_RECOVERING};
     trackingStatus = &res[0];
@@ -522,16 +503,10 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID) {
 
     cameraFrameArrived = false;
 
-    //LOGI("# renderer->renderFrame(%p, %d) ", &rawFrameBuffer, g_TextureId);
+    // LOGI("# renderer->renderFrame(%p, %d) ", &rawFrameBuffer, g_TextureId);
     long start = getTimestamp();
     unsigned char *img = renderer->render();
     LOGI("### Frame rendering took : %d ", (int)(getTimestamp() - start));
-
-    imageCapture->WriteFrame(img);
-    //delete[] img;
-    long end = getTimestamp();
-
-    LOGI("### Frame conversion took : %d ", (int)(end - start));
 
   } else {
     LOGE("# Unity texture not yet ready");

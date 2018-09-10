@@ -34,11 +34,25 @@ class FrameRenderer {
   GLuint createProgram();
   GLuint useProgram();
 
+  void drawTriangle();
+
+  void DrawSimpleTriangles(const float worldMatrix[16], int triangleCount, const void* verticesFloat3Byte4);
+
  protected:
   GLuint m_program;
   GLuint m_vertexShader;
   GLuint m_pixelShader;
 
+/*
+  GLuint m_program2;
+  GLuint m_vertexShader2;
+  GLuint m_pixelShader2;
+
+  GLuint m_UniformWorldMatrix;
+  GLuint m_UniformProjMatrix;
+
+  GLuint  m_VertexBuffer;
+*/
   size_t m_width;
   size_t m_height;
   size_t m_backingWidth;
@@ -49,7 +63,7 @@ class FrameRenderer {
 
   GLuint m_frameBuffer = 0 ;
   GLuint m_renderTarget;
-
+  GLuint m_unityTexture;
 
  private:
   uint8_t *m_pDataY;
@@ -67,9 +81,8 @@ class FrameRenderer {
   GLuint m_textureLoc;
   GLint m_textureYLoc;
   GLint m_textureUVLoc;
-  GLint m_uniformProjection;
-  GLint m_uniformRotation;
-  GLint m_uniformScale;
+  GLint m_uniformProjectionMatrix;
+  GLint m_uniformWorldMatrix;
 
   int m_rotation;
 

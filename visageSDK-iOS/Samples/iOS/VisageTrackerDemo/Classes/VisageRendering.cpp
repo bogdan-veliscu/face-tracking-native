@@ -823,7 +823,7 @@ void VisageRendering::DisplayFeaturePoints(FaceData* trackingData, int width, in
 		12, 12
 	};
 
-	else DrawPoints2D(eyesPointsR, 10, trackingData->eyeClosure[1] <= 0.5f, trackingData, frame, drawQuality);
+//    else DrawPoints2D(eyesPointsR, 10, trackingData->eyeClosure[1] <= 0.5f, trackingData, frame, drawQuality);
 
 	static int eyesPointsL[] = {
 		3,	1,

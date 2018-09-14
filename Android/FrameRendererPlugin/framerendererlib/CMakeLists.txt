@@ -10,6 +10,12 @@ cmake_minimum_required(VERSION 3.4.1)
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-rtti -fno-exceptions -Wall")
+
+set(OPENGL_LIB GLESv3)
+
 add_library( # Sets the name of the library.
              native-framerenderer
 
@@ -17,7 +23,10 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/FrameRedererPlugin.cpp )
+              src/main/cpp/FrameRendererPlugin.cpp
+              src/main/cpp/GLUtils.cpp
+              src/main/cpp/VideoRendererYUV420.cpp
+              src/main/cpp/FrameRenderer.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -41,4 +50,9 @@ target_link_libraries( # Specifies the target library.
 
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib} )
+                       ${OPENGL_LIB}
+                       android
+                       EGL
+                       ${log-lib}
+                       m
+                       )

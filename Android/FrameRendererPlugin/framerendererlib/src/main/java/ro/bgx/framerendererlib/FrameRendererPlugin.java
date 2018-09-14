@@ -9,6 +9,18 @@ public class FrameRendererPlugin {
 
     private long startTime;
 
+    static {
+        Log.w("BGX", "before loading native library");
+        System.loadLibrary("native-framerenderer");
+        Log.w("BGX", "before loading native library");
+    }
+
+    public static native void draw(byte[] data, int width, int height, int rotation);
+
+    public static native void setScannerEnabled(int enabled);
+
+
+
     public static FrameRendererPlugin getInstance() {
         return ourInstance;
     }

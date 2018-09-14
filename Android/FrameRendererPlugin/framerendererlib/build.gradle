@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 26
 
 
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
 
@@ -33,10 +33,13 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'com.android.support:appcompat-v7:28.0.0-rc02'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.google.android.gms:play-services-vision:15.0.2'
+
+    implementation files('libs/unity-classes.jar')
 }
 
 //task copyPluginToSpectaTryOn (type: Copy){
@@ -44,3 +47,9 @@ dependencies {
 //    from ('build/ouptputs/aar')
 //    into ('')
 //}
+
+task copyPluginToCammeraPreview (type: Copy){
+    dependsOn assemble
+    from ('build/outputs/aar/framerendererlib-release.aar')
+    into ('../../../../CameraPreview/Assets/Plugins/Android')
+}

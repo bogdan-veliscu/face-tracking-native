@@ -39,7 +39,7 @@ void _bindTexture(int texID, int width, int height) {
 
 JNIEXPORT void JNICALL Java_ro_bgx_framerendererlib_FrameRendererPlugin_draw(
     JNIEnv *env, jobject obj, jbyteArray data, jint width, jint height, jint orientation) {
-  LOGI("Java_ro_bgx_framerendererlib_FrameRendererPlugin_draw --> ");
+  //LOGI("Java_ro_bgx_framerendererlib_FrameRendererPlugin_draw --> ");
   jbyte *bufferPtr = env->GetByteArrayElements(data, 0);
 
   jsize arrayLength = env->GetArrayLength(data);
@@ -73,7 +73,7 @@ long getTimestamp() {
 }
 
 static void UNITY_INTERFACE_API OnRenderEvent(int eventID) {
-  LOGI("# OnRenderEvent ..");
+  //LOGI("# OnRenderEvent ..");
 
   // binds a texture with the given native hardware texture id through opengl
   if (g_TextureId != -1) {
@@ -85,7 +85,7 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID) {
 
     // LOGI("# renderer->renderFrame(%p, %d) ", &mFrame, g_TextureId);
     long start = getTimestamp();
-    g_renderer->render();
+    g_renderer->render(g_TextureId);
 
     long end = getTimestamp();
 

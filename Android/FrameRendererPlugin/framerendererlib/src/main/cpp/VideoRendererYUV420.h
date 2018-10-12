@@ -23,7 +23,7 @@ public:
   ~VideoRendererYUV420();
 
   void init(size_t width, size_t height);
-  void render();
+  void render(int unityTexture);
   void updateFrame(const video_frame &frame);
   void draw(uint8_t *buffer, size_t length, size_t width, size_t height,
             int rotation);
@@ -37,6 +37,10 @@ public:
   GLuint m_program;
   GLuint m_vertexShader;
   GLuint m_pixelShader;
+
+  GLuint m_frameBuffer;
+  GLuint m_renderTarget;
+  int m_unityTextureHandle;
 
   size_t m_width;
   size_t m_height;
@@ -68,7 +72,7 @@ private:
 
   int m_rotation;
 
-
+  void createRenderTarget();
 };
 
 #endif // _H_VIDEO_RENDER_YUV_

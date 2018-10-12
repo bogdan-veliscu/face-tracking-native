@@ -441,7 +441,7 @@ void FrameRenderer::deleteTextures() {
   }
 }
 
-/*
+
 void FrameRenderer::DrawSimpleTriangles(const float worldMatrix[16], int triangleCount, const void* verticesFloat3Byte4)
 {
   // Set basic render state
@@ -512,7 +512,7 @@ void FrameRenderer::drawTriangle(){
   };
 
   DrawSimpleTriangles(worldMatrix, 1, verts);
-}*/
+}
 
 GLuint FrameRenderer::createProgram() {
   m_program = ::create_program(kGlesVProgTextGLES3, kFragmentShader, m_vertexShader,

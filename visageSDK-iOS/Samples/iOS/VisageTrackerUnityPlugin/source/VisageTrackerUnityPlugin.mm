@@ -262,6 +262,10 @@ extern "C" {
     // binds a texture with the given native hardware texture id through metal
     void _bindTextureMetal(void* texID)
     {
+        if (pixelsRGBA == 0 || pixels == 0){
+            
+            return;
+        }
         if(switchingCamera){
             memset(pixelsRGBA, 0, frameWidth * frameHeight);
             framesToFade = maxFramesToFade;

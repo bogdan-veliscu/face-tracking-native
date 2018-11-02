@@ -64,7 +64,8 @@ VsImage *CreateVsImageFromUIImage(UIImage *image, int nChannels);
 	
 	//initialize licensing
 	//example how to initialize license key
-	//initializeLicenseManager("license-key-filename.vlc");
+   // [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"919-046-887-983-067-951-656-595-674-116-265.vlc"] UTF8String]
+	initializeLicenseManager( [[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"919-046-887-983-067-951-656-595-674-116-265.vlc"] UTF8String]);
 	
 	if (self->m_informer == NULL)
 		self->m_informer = informer;
@@ -75,18 +76,20 @@ VsImage *CreateVsImageFromUIImage(UIImage *image, int nChannels);
 	NSString* deviceType = [UIDeviceHardware platform];
 	
 	//NSLog(deviceType);
-#ifdef FACE_TRACKER
-	if ([deviceType hasPrefix:@"iPhone3"] ||           // iPhone4
-		[deviceType hasPrefix:@"iPhone4"] ||           // iPhone4S
-		[deviceType hasPrefix:@"iPad2"]                // iPad2
-		)
-		tracker = new VisageTracker("Facial Features Tracker - Low.cfg");
-	else
-		tracker = new VisageTracker("Facial Features Tracker - High.cfg");      // all other devices
-#else
-	tracker = new VisageTracker("Head Tracker.cfg");
-#endif
+//#ifdef FACE_TRACKER
+//    if ([deviceType hasPrefix:@"iPhone3"] ||           // iPhone4
+//        [deviceType hasPrefix:@"iPhone4"] ||           // iPhone4S
+//        [deviceType hasPrefix:@"iPad2"]                // iPad2
+//        )
+//        tracker = new VisageTracker("Facial Features Tracker - Low.cfg");
+//    else
+//        tracker = new VisageTracker("Facial Features Tracker - High.cfg");      // all other devices
+//#else
+//    tracker = new VisageTracker("Head Tracker.cfg");
+//#endif
 
+    tracker = new VisageTracker("Head Tracker2.cfg");
+    
 	//get OpenGL context size
 	glWidth = glView.bounds.size.width;
 	glHeight = glView.bounds.size.height;

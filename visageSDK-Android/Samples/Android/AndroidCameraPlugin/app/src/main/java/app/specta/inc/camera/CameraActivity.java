@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class CameraActivity extends UnityPlayerActivity {
-    public final String TAG = "SPECTA-Cam4";
+    public final String TAG = "SPECTA-JAVA";
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Camera cam;
     int ImageWidth = -1;
@@ -154,11 +154,23 @@ public class CameraActivity extends UnityPlayerActivity {
         if(preferedSize.height < ImageHeight && preferedSize.width < ImageWidth){
             ImageHeight = preferedSize.height;
             ImageWidth = preferedSize.width;
-
         }
 
         setPreviewSize(parameters, ImageWidth, ImageHeight);
         parameters.setPreviewFormat(ImageFormat.NV21);
+
+        parameters.setExposureCompensation(parameters.getMinExposureCompensation());
+
+        if (parameters.isAutoWhiteBalanceLockSupported()) {
+            parameters.setAutoWhiteBalanceLock(false);
+            Log.i(TAG, "@@@ setAutoWhiteBalanceLock ");
+        }
+
+        Log.i(TAG, "setExposureCompensation" + parameters.getMaxExposureCompensation()+ ", " + parameters.getMinExposureCompensation());
+        if(parameters.isAutoExposureLockSupported()) {
+            parameters.setAutoExposureLock(false);
+        }
+
         cam.setParameters(parameters);
         Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
         int screenOrientation = display.getRotation();

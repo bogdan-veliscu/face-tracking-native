@@ -37,7 +37,7 @@ extern "C" {
      int VisageSDK::VisageFaceAnalyser::init    (    const char *     dataPath    )
      
      */
-    EXPORT_API void _initFaceAnalyser(char* config);
+    EXPORT_API void _initFaceAnalyser(char* config, char* license);
     
     /*
      

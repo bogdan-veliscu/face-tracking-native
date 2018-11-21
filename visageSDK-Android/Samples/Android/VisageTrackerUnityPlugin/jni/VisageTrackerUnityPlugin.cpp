@@ -609,29 +609,6 @@ extern "C" {
     	glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    void _getRawFrame(int* height, int *width, char *rawData){
-
-        if(switchingCamera){
-           memset(rawData, 0, camHeight * camWidth * 3);
-           imageCapture->framesToFade = imageCapture->maxFramesToFade;
-        } else {
-        		pthread_mutex_lock(&grabFrame_mutex);
-                if (camOrientation == 90 || camOrientation == 270){
-        		    *height = camWidth;
-                    *width  = camHeight;
-        		} else {
-                    *height = camHeight;
-                    *width  = camWidth;
-        		}
-        		int frameSize = camHeight * camWidth * 3;
-        		if (pixelData != 0){
-        		    memcpy(rawData, pixelData->imageData, (frameSize)*sizeof(char));
-        		}
-
-        		pthread_mutex_unlock(&grabFrame_mutex);
-        }
-    }
-
 	// a helper function to get all the needed info in one native call
 	bool _getFaceModel(int* vertexNumber, float* vertices, int* triangleNumber, int* triangles, float* texCoord)
 	{

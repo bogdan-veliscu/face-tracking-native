@@ -86,8 +86,6 @@ extern "C" {
 	*/
 	bool _getFeaturePoints3DRel(int number, int* groups, int* indices, float* positions);
 
-    void _getRawFrame(int* camHeight, int *camWidth, char *rawData);
-
     void initializeOpenGL();
 
     void resizeViewport(int newWidth, int newHeight);

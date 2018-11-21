@@ -119,16 +119,8 @@ extern "C" {
         
         m_Tracker = new VisageTracker(config);
         
-        NSBundle *mainBundle = [NSBundle mainBundle];
-        NSString *myLicenseFoloder = @"Data/Raw/Visage Tracker/919-046-857-953-067-951-656-595-019-143-317.vlc";
         
-        NSLog(@"## initializeLicenseManager v2 : %@", myLicenseFoloder);
-        
-        initializeLicenseManager(MakeStringCopy([myLicenseFoloder UTF8String]));
-        
-        NSString *myFile = [mainBundle pathForResource:@"Data/Raw/Visage Tracker/bdtsdata/LBF/vfadata" ofType: @""];
-        
-        _initFaceAnalyser(MakeStringCopy([myFile UTF8String]));
+        NSLog(@"### _initTracker");
     }
     
     void _releaseTracker()
@@ -139,8 +131,10 @@ extern "C" {
         m_Tracker = 0;
     }
     
-    void _initFaceAnalyser(char* config){
-        
+    void _initFaceAnalyser(char* config, char* license){
+        NSLog(@"### _initFaceAnalyser :");
+       // NSLog(@"## _initFaceAnalyser  config: %s --- license: %s", config, license);
+        initializeLicenseManager(license);
         if (m_FaceAnalizer){
             delete m_FaceAnalizer;
         }
@@ -314,9 +308,12 @@ extern "C" {
                 m_Frame->height = cam_height;
                 
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    detectedAge = m_FaceAnalizer->estimateAge(m_Frame, &trackingData[0]);
-                    detectedGender = m_FaceAnalizer->estimateGender(m_Frame, &trackingData[0]);
-                    NSLog(@"#### Detected age:%d and gender: %d", detectedAge, detectedGender);
+                    
+                    if (m_FaceAnalizer) {
+                        detectedAge = m_FaceAnalizer->estimateAge(m_Frame, &trackingData[0]);
+                        detectedGender = m_FaceAnalizer->estimateGender(m_Frame, &trackingData[0]);
+                        NSLog(@"#### Detected age:%d and gender: %d", detectedAge, detectedGender);
+                    }
                 });
                 
             }

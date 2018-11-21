@@ -827,11 +827,11 @@ public class CameraSource {
         // setting mFlashMode to the one set in the params
         mFlashMode = parameters.getFlashMode();
 
-        parameters.setExposureCompensation(parameters.getMaxExposureCompensation());
-
-        if (parameters.isAutoExposureLockSupported()) {
-            parameters.setAutoExposureLock(false);
-        }
+//        parameters.setExposureCompensation(parameters.getMaxExposureCompensation());
+//
+//        if (parameters.isAutoExposureLockSupported()) {
+//            parameters.setAutoExposureLock(false);
+//        }
 
         camera.setParameters(parameters);
 

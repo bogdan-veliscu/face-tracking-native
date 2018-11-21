@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class CameraActivity extends UnityPlayerActivity {
-    public final String TAG = "SPECTA-Cam4";
+    public final String TAG = "SPECTA-JAVA";
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Camera cam;
     int ImageWidth = -1;
@@ -42,6 +42,10 @@ public class CameraActivity extends UnityPlayerActivity {
     int camId = -1;
     int orientation;
     boolean openCam = false;
+
+    // unity texture
+    private int nativeTexturePointer = -1;
+
 
     private boolean scannerEnabled = false;
     private BarcodeDetector barcodeDetector;
@@ -68,6 +72,10 @@ public class CameraActivity extends UnityPlayerActivity {
 
             orientation = camInfo.orientation;
 
+            if (camInfo.facing == CameraInfo.CAMERA_FACING_FRONT)
+                setParameters((display.getRotation() * 90 + orientation) % 360, -1, -1, -1);
+            else if (camInfo.facing == CameraInfo.CAMERA_FACING_BACK)
+                setParameters((orientation + display.getRotation() * 90 + 360) % 360, -1, -1, -1);
         }
     }
 
@@ -122,7 +130,6 @@ public class CameraActivity extends UnityPlayerActivity {
      * Start grabbing frames from camera
      */
     public void GrabFromCamera(int imWidth, int imHeight, int pickCamera) {
-
         //on first call (from onResume), function parameters are set to -1; frame dimensions and camera are set on next call from Unity script
         if (imWidth == -1 || imHeight == -1) {
             imWidth = 320;
@@ -144,14 +151,26 @@ public class CameraActivity extends UnityPlayerActivity {
         Camera.Parameters parameters = cam.getParameters();
         Size preferedSize = parameters.getPreferredPreviewSizeForVideo();
         Log.d(TAG, "#### getPreferredPreviewSizeForVideo " + preferedSize.height + " | " + preferedSize.height);
-        //if(preferedSize.height < ImageHeight && preferedSize.width < ImageWidth)
-        {
+        if(preferedSize.height < ImageHeight && preferedSize.width < ImageWidth){
             ImageHeight = preferedSize.height;
-            ImageWidth = preferedSize.width ;
+            ImageWidth = preferedSize.width;
         }
 
         setPreviewSize(parameters, ImageWidth, ImageHeight);
         parameters.setPreviewFormat(ImageFormat.NV21);
+
+        parameters.setExposureCompensation(parameters.getMinExposureCompensation());
+
+        if (parameters.isAutoWhiteBalanceLockSupported()) {
+            parameters.setAutoWhiteBalanceLock(false);
+            Log.i(TAG, "@@@ setAutoWhiteBalanceLock ");
+        }
+
+        Log.i(TAG, "setExposureCompensation" + parameters.getMaxExposureCompensation()+ ", " + parameters.getMinExposureCompensation());
+        if(parameters.isAutoExposureLockSupported()) {
+            parameters.setAutoExposureLock(false);
+        }
+
         cam.setParameters(parameters);
         Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
         int screenOrientation = display.getRotation();
@@ -183,6 +202,11 @@ public class CameraActivity extends UnityPlayerActivity {
         ImageWidth = previewSize.width;
         ImageHeight = previewSize.height;
 
+        if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT)
+            setParameters((screenOrientation * 90 + orientation) % 360, ImageWidth, ImageHeight, flip);
+        else
+            setParameters((orientation - screenOrientation * 90 + 360) % 360, ImageWidth, ImageHeight, flip);
+
         cam.setPreviewCallbackWithBuffer(new PreviewCallback() {
             private long timestamp = 0;
 
@@ -192,15 +216,8 @@ public class CameraActivity extends UnityPlayerActivity {
                 //timestamp=System.currentTimeMillis();
 
                 //Log.w(TAG, "onPreviewFrame :" + data.length );
-                try{
-                    camera.addCallbackBuffer(data);
-                }catch (Exception e) {
-                    Log.e("CameraTest", "addCallbackBuffer error");
-                    return;
-                }
-
-                long start = System.currentTimeMillis();
-                draw(data, ImageWidth, ImageHeight, orientation);
+                WriteFrame(data);
+                camera.addCallbackBuffer(data);
             }
         });
         cam.startPreview();
@@ -215,6 +232,19 @@ public class CameraActivity extends UnityPlayerActivity {
             cam.release();
             cam = null;
         }
+    }
+
+    public int getPreviewSizeWidth() {
+        return ImageWidth;
+    }
+
+    public int getPreviewSizeHeight() {
+
+        return ImageHeight;
+    }
+
+    public int getNativeTexturePointer() {
+        return nativeTexturePointer;
     }
 
     public int startScanner(int nativeCode) {
@@ -287,15 +317,8 @@ public class CameraActivity extends UnityPlayerActivity {
 
             @Override
             public void onPreviewFrame(byte[] data, Camera camera) {
-                try{
-                    camera.addCallbackBuffer(data);
-                }catch (Exception e) {
-                    Log.e("CameraTest", "addCallbackBuffer error");
-                    return;
-                }
-
-                long start = System.currentTimeMillis();
-                draw(data, ImageWidth, ImageHeight, orientation);
+                WriteFrame(data);
+                camera.addCallbackBuffer(data);
             }
         });
 
@@ -317,6 +340,8 @@ public class CameraActivity extends UnityPlayerActivity {
             orientation = cameraInfo.orientation;
 
             Log.w(TAG, "### CameraSource orientation:" + orientation + "--->" + (orientation - screenOrientation * 90 + 360) % 360);
+
+            setParameters(90, ImageWidth, ImageHeight, 0);
 
             setScannerEnabled(1);
 
@@ -431,7 +456,9 @@ public class CameraActivity extends UnityPlayerActivity {
         super.onDestroy();
     }
 
-    public static native void draw(byte[] data, int width, int height, int rotation);
+    public static native void WriteFrame(byte[] frame);
+
+    public static native void setParameters(int orientation, int width, int height, int flip);
 
     public static native void setScannerEnabled(int enabled);
 

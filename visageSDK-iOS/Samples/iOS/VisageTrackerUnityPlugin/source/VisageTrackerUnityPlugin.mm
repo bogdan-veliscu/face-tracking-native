@@ -167,16 +167,16 @@ extern "C" {
         if (orientation == VISAGE_PORTRAIT || orientation == VISAGE_PORTRAIT_FLIPPED)
         {
             // portrait mode
-            cam_width = 480;
-            cam_height = 640;
-            preset = AVCaptureSessionPreset640x480;
+            cam_width = 720;
+            cam_height = 1280;
+            preset = AVCaptureSessionPreset1280x720;
         }
         else
         {
             // landscape mode
-            cam_width = 640;
-            cam_height = 480;
-            preset = AVCaptureSessionPreset640x480;
+            cam_width = 1280;
+            cam_height = 720;
+            preset = AVCaptureSessionPreset1280x720 ;
         }
         
         // override for iPhone 4

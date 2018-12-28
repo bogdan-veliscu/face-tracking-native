@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		433D4ACC200E992100825128 /* QrScannerPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 433D4ACA200E992100825128 /* QrScannerPlugin.h */; };
 		433D4ACD200E992100825128 /* QrScannerPlugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = 433D4ACB200E992100825128 /* QrScannerPlugin.mm */; };
+		4341D7EC21C5487C001CF8A0 /* VisageTrackerUnityShared.h in Headers */ = {isa = PBXBuildFile; fileRef = 4341D7EB21C5487C001CF8A0 /* VisageTrackerUnityShared.h */; };
 		43B924D31F9FD1CA00C10F47 /* VisageFaceAnalyser.h in Headers */ = {isa = PBXBuildFile; fileRef = 43B924D21F9FD1CA00C10F47 /* VisageFaceAnalyser.h */; };
 		43B924D51F9FD1F600C10F47 /* libVisageAnalyser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 43B924D41F9FD1F600C10F47 /* libVisageAnalyser.a */; };
 		5F2E9AF71BC449080097BFCD /* UIDeviceHardware.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F2E9AF51BC449080097BFCD /* UIDeviceHardware.h */; };
@@ -32,6 +33,7 @@
 /* Begin PBXFileReference section */
 		433D4ACA200E992100825128 /* QrScannerPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QrScannerPlugin.h; path = source/QrScannerPlugin.h; sourceTree = SOURCE_ROOT; };
 		433D4ACB200E992100825128 /* QrScannerPlugin.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = QrScannerPlugin.mm; path = source/QrScannerPlugin.mm; sourceTree = SOURCE_ROOT; };
+		4341D7EB21C5487C001CF8A0 /* VisageTrackerUnityShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisageTrackerUnityShared.h; sourceTree = "<group>"; };
 		43B924D21F9FD1CA00C10F47 /* VisageFaceAnalyser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VisageFaceAnalyser.h; path = ../../../include/VisageFaceAnalyser.h; sourceTree = "<group>"; };
 		43B924D41F9FD1F600C10F47 /* libVisageAnalyser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libVisageAnalyser.a; path = ../../../lib/libVisageAnalyser.a; sourceTree = "<group>"; };
 		5F2E9AF51BC449080097BFCD /* UIDeviceHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIDeviceHardware.h; path = source/UIDeviceHardware.h; sourceTree = SOURCE_ROOT; };
@@ -114,6 +116,7 @@
 		7FF119B214EE95F500128847 /* VisageTrackerUnityPlugin */ = {
 			isa = PBXGroup;
 			children = (
+				4341D7EB21C5487C001CF8A0 /* VisageTrackerUnityShared.h */,
 				433D4ACA200E992100825128 /* QrScannerPlugin.h */,
 				433D4ACB200E992100825128 /* QrScannerPlugin.mm */,
 				7FEEBBCE14F7C36100136774 /* VisageTrackerUnityPlugin.h */,
@@ -160,6 +163,7 @@
 				7FEEBBCC14F7C35900136774 /* VisageTrackerUnityPlugin-Prefix.pch in Headers */,
 				D767EB241C74C55700BAFBC9 /* CameraGrabber.h in Headers */,
 				5F2E9AF71BC449080097BFCD /* UIDeviceHardware.h in Headers */,
+				4341D7EC21C5487C001CF8A0 /* VisageTrackerUnityShared.h in Headers */,
 				433D4ACC200E992100825128 /* QrScannerPlugin.h in Headers */,
 				7FEEBBD014F7C36100136774 /* VisageTrackerUnityPlugin.h in Headers */,
 				7F0E734814F7C402005262D4 /* VisageTracker.h in Headers */,
@@ -225,7 +229,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mv /Users/bogdan/Library/Developer/Xcode/DerivedData/VisageTrackerUnityPlugin-cwdjfzwswfgnkofpheioqcsyzerh/Build/Products/Release-iphoneos/libVisageTrackerUnityPlugin.a /Users/bogdan/work/specta-try-on/Assets/Plugins/iOS/libVisageTrackerUnityPlugin.a\n";
+			shellScript = "mv /Users/bogdan/Library/Developer/Xcode/DerivedData/VisageTrackerUnityPlugin-cwdjfzwswfgnkofpheioqcsyzerh/Build/Products/Release-iphoneos/libVisageTrackerUnityPlugin.a /Users/bogdan/work/specta-try-on/specta-virtual-mirror/Assets/Plugins/iOS/libVisageTrackerUnityPlugin.a\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

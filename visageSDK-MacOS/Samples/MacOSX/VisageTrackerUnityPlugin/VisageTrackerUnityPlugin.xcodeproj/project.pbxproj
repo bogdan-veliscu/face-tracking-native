@@ -23,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4341D7ED21C548A2001CF8A0 /* VisageTrackerUnityShared.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisageTrackerUnityShared.h; sourceTree = "<group>"; };
 		43B924CD1F9FBF2800C10F47 /* libVisageAnalyser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libVisageAnalyser.a; sourceTree = "<group>"; };
 		43B924CF1F9FC53A00C10F47 /* VisageFaceAnalyser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisageFaceAnalyser.h; sourceTree = "<group>"; };
 		D7E9F93B1CC50F1A006F7830 /* CameraGrabber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraGrabber.h; path = ../Common/CameraGrabber.h; sourceTree = "<group>"; };
@@ -92,6 +93,7 @@
 				D7F1F3AA1C96E77C00761CF2 /* SupportingFiles */,
 				D7F1F3A71C96E77600761CF2 /* VisageTrackerUnityPlugin.h */,
 				D7F1F3A81C96E77600761CF2 /* VisageTrackerUnityPlugin.mm */,
+				4341D7ED21C548A2001CF8A0 /* VisageTrackerUnityShared.h */,
 				D7F1F3931C96E61A00761CF2 /* Info.plist */,
 			);
 			path = VisageTrackerUnityPlugin;

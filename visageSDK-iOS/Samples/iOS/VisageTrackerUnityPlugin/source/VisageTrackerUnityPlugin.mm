@@ -714,6 +714,7 @@ extern "C" {
     }
     
     void _tapToFocus (float x, float y){
-        
+
+        [cameraGrabber focusOnPoint: CGPointMake(x, y)];
     }
 }

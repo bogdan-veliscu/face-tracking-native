@@ -90,6 +90,8 @@ int height;
         
         NSLog(@"### CameraOptions UPDATE : lockForConfiguration");
         if (useFacePosition){
+            NSLog(@"### Camera FOCUS on point : %f, %f" , facePosition.x, facePosition.y);
+            
             if ([myDevice isFocusPointOfInterestSupported])
             {
                 [myDevice setFocusPointOfInterest:facePosition];

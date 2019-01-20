@@ -145,5 +145,7 @@ typedef void VsImage;
  * @since 4.0.0
  */
 - (void)toggleTorch;
+    
+- (void)focusOnPoint : (CGPoint) point;
 
 @end

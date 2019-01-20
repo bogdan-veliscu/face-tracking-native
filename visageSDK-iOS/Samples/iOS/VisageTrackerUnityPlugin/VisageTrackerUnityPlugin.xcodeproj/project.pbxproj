@@ -229,7 +229,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mv /Users/bogdan/Library/Developer/Xcode/DerivedData/VisageTrackerUnityPlugin-cwdjfzwswfgnkofpheioqcsyzerh/Build/Products/Release-iphoneos/libVisageTrackerUnityPlugin.a /Users/bogdan/work/specta-try-on/specta-virtual-mirror/Assets/Plugins/iOS/libVisageTrackerUnityPlugin.a\n";
+			shellScript = "mv /Users/bogdan/Library/Developer/Xcode/DerivedData/VisageTrackerUnityPlugin-cwdjfzwswfgnkofpheioqcsyzerh/Build/Products/Release-iphoneos/libVisageTrackerUnityPlugin.a /Users/bogdan/work/specta-main/specta-virtual-mirror/Assets/Plugins/iOS/libVisageTrackerUnityPlugin.a\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

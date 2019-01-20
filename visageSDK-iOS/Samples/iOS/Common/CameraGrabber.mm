@@ -23,6 +23,7 @@
 int width;
 int height;
 
+    AVCaptureDevice *myDevice;
 #pragma mark -
 #pragma mark Initialization
 - (id)init
@@ -84,19 +85,65 @@ int height;
 	//[self initCapture];
 }
 
+    static void updateCameraSettings(AVCaptureDevice *myDevice, bool useFacePosition,  CGPoint facePosition) {
+        [myDevice lockForConfiguration:nil];
+        
+        NSLog(@"### CameraOptions UPDATE : lockForConfiguration");
+        if (useFacePosition){
+            if ([myDevice isFocusPointOfInterestSupported])
+            {
+                [myDevice setFocusPointOfInterest:facePosition];
+                [myDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+                
+                NSLog(@"### CameraOptions useFacePosition UPDATE : AVCaptureFocusModeAutoFocus");
+            }
+            if(myDevice.exposurePointOfInterestSupported){
+                [myDevice setExposurePointOfInterest:facePosition];
+                [myDevice setExposureMode:AVCaptureExposureModeAutoExpose];
+                NSLog(@"### CameraOptions useFacePosition UPDATE : AVCaptureExposureModeAutoExpose");
+            }
+        } else {
+            if ([myDevice isFocusPointOfInterestSupported])
+            {
+                [myDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+                NSLog(@"### CameraOptions UPDATE : AVCaptureFocusModeContinuousAutoFocus");
+            }
+            if([myDevice isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]){
+                [myDevice setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+                NSLog(@"### CameraOptions UPDATE : AVCaptureExposureModeContinuousAutoExposure");
+            }
+        }
+        
+        if ([myDevice isWhiteBalanceModeSupported:AVCaptureWhiteBalanceModeContinuousAutoWhiteBalance]) {
+            [myDevice setWhiteBalanceMode:AVCaptureWhiteBalanceModeContinuousAutoWhiteBalance];
+            NSLog(@"### CameraOptions UPDATE : AVCaptureWhiteBalanceModeContinuousAutoWhiteBalance");
+        }
+        if (myDevice.isLowLightBoostSupported) {
+            myDevice.automaticallyEnablesLowLightBoostWhenAvailable = true;
+            NSLog(@"### CameraOptions UPDATE : automaticallyEnablesLowLightBoostWhenAvailable");
+        }
+        
+        NSLog(@"### CameraOptions UPDATE : unlockForConfiguration");
+        [myDevice unlockForConfiguration];
+    }
+    
 - (void)initCapture
 {
+    NSLog(@"### initCapture..");
 	/*We setup the input*/
 	AVCaptureDeviceInput *captureInput = nil;
+
 	NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
 	for (AVCaptureDevice *device in devices) {
 		if (_device == 0) {
 			if ([device position] == AVCaptureDevicePositionFront) {
+                myDevice = device;
 				captureInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:nil];
 				break;
 			}
 		} else {
 			if ([device position] == AVCaptureDevicePositionBack) {
+                myDevice = device;
 				captureInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:nil];
 				break;
 			}
@@ -104,9 +151,13 @@ int height;
 	}
 	
 	if (captureInput == nil) {
-		NSLog(@"No camera! Exiting...");
+		NSLog(@"### No camera! Exiting...");
 		return;
-	}
+    } else {
+        updateCameraSettings(myDevice, false, CGPointMake(0.5f, 0.5f));
+    }
+    
+    
 	
 	/*We setupt the output*/
 	AVCaptureVideoDataOutput *captureOutput = [[AVCaptureVideoDataOutput alloc] init];
@@ -550,6 +601,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [defaultDevice unlockForConfiguration];
 }
+    
+    - (void)focusOnPoint : (CGPoint) point
+    {
+        NSLog(@"### CameraOptions UPDATE : lockForConfiguration");
+        updateCameraSettings(myDevice, true, point);
+    }
 
 -(void) initScanner{
     

@@ -16,7 +16,15 @@
 
 using namespace VisageSDK;
 
+char* trackerConfig;
+char* trackerLicense;
+char* analyserConfig;
+char* analyserLicense;
+
 static callbackFunc scanCallback;
+
+static transitionCallback trackerInitCallback;
+static transitionCallback analyserInitCallback;
 
 static VisageTracker* m_Tracker = 0;
 static CameraGrabber *cameraGrabber = 0;
@@ -110,19 +118,33 @@ extern "C" {
     
     void _initTracker (char* config, char* license)
     {
-        //initialize licensing
-        //example how to initialize license key
-        initializeLicenseManager(license);
-        
-        if (m_Tracker)
-            _releaseTracker();
-        
-        m_Tracker = new VisageTracker(config);
-        
-        
-        NSLog(@"### _initTracker");
+        _initTrackerWithCallback(config, license, nullptr);
+        NSLog(@"### _initTracker v3");
     }
     
+    void _initTrackerWithCallback(char* config, char* license, transitionCallback callback){
+        NSLog(@"### _initTrackerWithCallback v6");
+        trackerConfig = MakeStringCopy(config);
+        trackerLicense = MakeStringCopy(license);
+        trackerInitCallback = callback;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+            NSLog(@"### _initTrackerWithCallback ----- 1");
+            initializeLicenseManager(trackerLicense);
+            
+            NSLog(@"### _initTrackerWithCallback ----- 2");
+            if (m_Tracker)
+                _releaseTracker();
+        
+            NSLog(@"### _initTrackerWithCallback ----- 3");
+            m_Tracker = new VisageTracker(trackerConfig);
+            NSLog(@"### _initTrackerWithCallback ----- 4");
+            if (trackerInitCallback != NULL){
+                NSLog(@"### _initTracker callback");
+                trackerInitCallback();
+            }
+        });
+    }
     void _releaseTracker()
     {
         delete m_Tracker;
@@ -132,16 +154,33 @@ extern "C" {
     }
     
     void _initFaceAnalyser(char* config, char* license){
-        NSLog(@"### _initFaceAnalyser :");
-       // NSLog(@"## _initFaceAnalyser  config: %s --- license: %s", config, license);
-        initializeLicenseManager(license);
-        if (m_FaceAnalizer){
-            delete m_FaceAnalizer;
-        }
-        m_FaceAnalizer = new VisageFaceAnalyser();
-        printf("@@ VisageFaceAnalyser initi with config: %s\n", config);
-        int ret = m_FaceAnalizer->init(config);
-        NSLog(@"### VisageFaceAnalyser _initFaceAnalyser :%d", ret);
+        _initFaceAnalyserWithCallback(config, license, nullptr);
+    }
+    
+    EXPORT_API void _initFaceAnalyserWithCallback(char* config, char* license, transitionCallback callbackFunc){
+        
+        analyserConfig = MakeStringCopy(config);
+        analyserLicense = MakeStringCopy(license);
+        analyserInitCallback = callbackFunc;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSLog(@"### _initFaceAnalyserWithCallback v2 ");
+            
+            initializeLicenseManager(analyserLicense);
+            
+            if (m_FaceAnalizer){
+                delete m_FaceAnalizer;
+            }
+            m_FaceAnalizer = new VisageFaceAnalyser();
+            printf("@@ VisageFaceAnalyser initi with config: %s\n", config);
+            int ret = m_FaceAnalizer->init(analyserLicense);
+            NSLog(@"### VisageFaceAnalyser _initFaceAnalyser :%d", ret);
+            if (analyserInitCallback != NULL){
+                
+                
+                NSLog(@"### VisageFaceAnalyser _initFaceAnalyser CALLBACK :%d", ret);
+                analyserInitCallback();
+            }
+        });
     }
     
     void _refreshAgeEstimate(){
@@ -674,4 +713,7 @@ extern "C" {
         [cameraGrabber toggleTorch];
     }
     
+    void _tapToFocus (float x, float y){
+        
+    }
 }

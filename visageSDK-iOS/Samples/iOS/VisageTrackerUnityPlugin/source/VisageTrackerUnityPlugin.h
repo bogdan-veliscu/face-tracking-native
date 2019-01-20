@@ -12,7 +12,12 @@
  
  It implements high-level wrapper functions around key functionalities from visage|SDK that enable usage of visage|SDK face tracking capabilities in Unity C# scripts.
  */
-extern "C" { 
+extern "C" {
+    
+    /// -------------- QR scanner new methods
+    typedef void (*callbackFunc)(const char *, float top, float left, float bottom, float right);
+    typedef void (*transitionCallback)();
+    
 	/** Binds a texture with the given native hardware texture id through Metal.
 	 */
 	EXPORT_API void _bindTextureMetal(void* texID);
@@ -38,7 +43,7 @@ extern "C" {
      
      */
     EXPORT_API void _initFaceAnalyser(char* config, char* license);
-    
+    EXPORT_API void _initFaceAnalyserWithCallback(char* config, char* license, transitionCallback callbackFunc);
     /*
      
      int VisageSDK::VisageFaceAnalyser::estimateEmotion    (    VsImage *     frame,
@@ -52,7 +57,9 @@ extern "C" {
     
 	/** Initialises the tracker.
 	 */
-	EXPORT_API void _initTracker(char* config, char* license);
+    EXPORT_API void _initTracker(char* config, char* license);
+    
+    EXPORT_API void _initTrackerWithCallback(char* config, char* license, transitionCallback callbackFunc);
     
     
 	
@@ -116,9 +123,7 @@ extern "C" {
 	*/
 	EXPORT_API bool _getFeaturePoints3DRel(int number, int* groups, int* indices, float* positions);
 	
-    /// -------------- QR scanner new methods
-    typedef void (*callbackFunc)(const char *, float top, float left, float bottom, float right);
-    typedef void (*transitionCallback)();
+
     
     EXPORT_API void _initScanner(transitionCallback initCallback, callbackFunc scanCallback);
     
@@ -127,6 +132,8 @@ extern "C" {
     EXPORT_API void _releaseScanner(transitionCallback callback);
     
     EXPORT_API void _toggleTorch(int on);
+    
+    EXPORT_API void _tapToFocus(float x, float y);
 
 }
 

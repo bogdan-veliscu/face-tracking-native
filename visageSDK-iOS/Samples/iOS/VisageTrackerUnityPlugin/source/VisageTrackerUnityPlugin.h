@@ -55,6 +55,8 @@ extern "C" {
     EXPORT_API int _estimateAge();
     EXPORT_API int _estimateGender();
     
+    EXPORT_API void _estimateEmotion(float *emotions);
+    
 	/** Initialises the tracker.
 	 */
     EXPORT_API void _initTracker(char* config, char* license);

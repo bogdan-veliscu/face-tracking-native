@@ -65,6 +65,8 @@ static BOOL switchingCamera = false;
 static int framesToFade = 0;
 static int maxFramesToFade = 15;
 
+static float * detectedEmotions = new float [7];
+
 static int clamp(int x)
 {
     unsigned y;
@@ -194,6 +196,13 @@ extern "C" {
     }
     int _estimateGender(){
         return detectedGender;
+    }
+    
+    void _estimateEmotion(float *emotions){
+        
+        for (int i=0; i<7; i++) {
+            emotions[i] = detectedEmotions[i];
+        }
     }
     
     void _openCamera(int orientation, int device, int width2, int height, int isMirrored)
@@ -355,6 +364,8 @@ extern "C" {
                     if (m_FaceAnalizer) {
                         detectedAge = m_FaceAnalizer->estimateAge(m_Frame, &trackingData[0]);
                         detectedGender = m_FaceAnalizer->estimateGender(m_Frame, &trackingData[0]);
+                        
+                        m_FaceAnalizer->estimateEmotion(m_Frame, &trackingData[0], detectedEmotions);
                         NSLog(@"#### Detected age:%d and gender: %d", detectedAge, detectedGender);
                     }
                 });

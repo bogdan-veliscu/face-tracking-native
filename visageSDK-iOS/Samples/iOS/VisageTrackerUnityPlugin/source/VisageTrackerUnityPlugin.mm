@@ -31,7 +31,7 @@ static CameraGrabber *cameraGrabber = 0;
 
 static VsImage *m_Frame = 0;
 static VisageFaceAnalyser *m_FaceAnalizer = 0;
-
+pthread_mutex_t mFrameMutex;
 static int detectedAge = -2;
 static int detectedGender = -2;
 static int ageRefreshRequested = 1;
@@ -48,7 +48,10 @@ static int frameHeight;
 static int cam_width;
 static int cam_height;
 //
-unsigned char* pixels = 0;
+static unsigned char* pixels = 0;
+static unsigned char* pixelsFA = 0;
+int FAframeWidth = 0;
+int FAframeHeight = 0;
 
 int format = VISAGE_FRAMEGRABBER_FMT_LUMINANCE;
 static int _rotated = 0;
@@ -61,6 +64,8 @@ static const float inv_pi = 1.0f/m_pi;
 
 static BOOL scannerEnabled = false;
 static BOOL switchingCamera = false;
+
+static BOOL frameReady = false;
 
 static int framesToFade = 0;
 static int maxFramesToFade = 15;
@@ -125,20 +130,20 @@ extern "C" {
     }
     
     void _initTrackerWithCallback(char* config, char* license, transitionCallback callback){
-        NSLog(@"### _initTrackerWithCallback v6");
+        NSLog(@"### _initTrackerWithCallback v5");
         trackerConfig = MakeStringCopy(config);
         trackerLicense = MakeStringCopy(license);
         trackerInitCallback = callback;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
+            
             NSLog(@"### _initTrackerWithCallback ----- 1");
             initializeLicenseManager(trackerLicense);
             
             NSLog(@"### _initTrackerWithCallback ----- 2");
             if (m_Tracker)
                 _releaseTracker();
-        
-            NSLog(@"### _initTrackerWithCallback ----- 3");
+            
+            NSLog(@"### _initTrackerWithCallback ----- config: %s", trackerConfig);
             m_Tracker = new VisageTracker(trackerConfig);
             NSLog(@"### _initTrackerWithCallback ----- 4");
             if (trackerInitCallback != NULL){
@@ -164,8 +169,9 @@ extern "C" {
         analyserConfig = MakeStringCopy(config);
         analyserLicense = MakeStringCopy(license);
         analyserInitCallback = callbackFunc;
+        pthread_mutex_init(&mFrameMutex, NULL);
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSLog(@"### _initFaceAnalyserWithCallback v2 ");
+            NSLog(@"### _initFaceAnalyserWithCallback v3 ");
             
             initializeLicenseManager(analyserLicense);
             
@@ -173,8 +179,16 @@ extern "C" {
                 delete m_FaceAnalizer;
             }
             m_FaceAnalizer = new VisageFaceAnalyser();
-            printf("@@ VisageFaceAnalyser initi with config: %s\n", config);
-            int ret = m_FaceAnalizer->init(analyserLicense);
+            NSLog(@"@@ VisageFaceAnalyser initi with config: [%s]\n", "Data/Raw/Visage Tracker/bdtsdata/LBF/vfadata/");
+            
+            NSBundle *mainBundle = [NSBundle mainBundle];
+            NSString *myFile = [mainBundle pathForResource:@"Data/Raw/Visage Tracker/bdtsdata/LBF/vfadata" ofType: @""];
+            
+            
+            analyserConfig = MakeStringCopy([myFile UTF8String]);
+            NSLog(@"@@ 2222 VisageFaceAnalyser initi with config: [%s]\n", analyserConfig);
+            
+            int ret = m_FaceAnalizer->init(analyserConfig);
             NSLog(@"### VisageFaceAnalyser _initFaceAnalyser :%d", ret);
             if (analyserInitCallback != NULL){
                 
@@ -207,7 +221,7 @@ extern "C" {
     
     void _openCamera(int orientation, int device, int width2, int height, int isMirrored)
     {
-        
+        NSLog(@"#### _openCamera --- [%d] <%d>", device, orientation);
         NSString* deviceType = [UIDeviceHardware platform];
         
         int cam_fps = 30;
@@ -260,6 +274,8 @@ extern "C" {
         
         pixelsRGBA = new unsigned char [cam_width*cam_height*CHANNEL_COUNT];
         
+        
+        
         // initialize new camera
         cameraGrabber = [[CameraGrabber alloc] initWithSessionPreset:preset UseFPS:cam_fps withDevice:device];
         [cameraGrabber startCapture: nil];
@@ -271,7 +287,31 @@ extern "C" {
         else
             format = VISAGE_FRAMEGRABBER_FMT_BGRA;
         
-        m_Frame = vsCreateImage(vsSize(frameWidth, frameHeight), VS_DEPTH_8U, 4);
+        //NSLog(@"#### _openCamera ---  111 %d x %d --> %p <> %p", frameWidth, frameHeight, pixelsFA , pixels);
+        pthread_mutex_lock(&mFrameMutex);
+        frameWidth     = cam_width;
+        frameHeight = cam_height;
+        
+        if (FAframeWidth != frameWidth || FAframeHeight != frameHeight){
+            delete[] pixelsFA;
+            pixelsFA = new unsigned char[frameWidth * frameHeight * CHANNEL_COUNT];
+            FAframeWidth = frameWidth;
+            FAframeHeight = frameHeight;
+            NSLog(@"#### _openCamera - pixels intialized %d x %d", frameWidth, frameHeight);
+            
+            if (m_Frame)
+            {
+                vsReleaseImageHeader(&m_Frame);
+                //NSLog(@"#### vsReleaseImageHeader(&m_Frame);");
+            }
+            m_Frame = vsCreateImageHeader(vsSize(FAframeWidth, FAframeHeight), 8, CHANNEL_COUNT);
+            
+            //NSLog(@"#### vsCreateImageHeader(vsSize(FAframeWidth, FAframeHeight), 8, CHANNEL_COUNT);");
+        }
+        
+        //NSLog(@"#### _openCamera ---  222 %d x %d --> %p <> %p [%c]", frameWidth, frameHeight, pixelsFA , pixels, pixelsFA[0]);
+        pthread_mutex_unlock(&mFrameMutex);
+        //frameReady = true;
     }
     
     // closes camera
@@ -284,6 +324,25 @@ extern "C" {
             delete[] pixelsRGBA;
             pixelsRGBA = 0;
         }
+        
+        pthread_mutex_lock(&mFrameMutex);
+        
+        if(m_Frame){
+            //NSLog(@"#### BEFORE delete %d x %d --> %p <> %p", frameWidth, frameHeight, pixelsFA , pixels);
+            NSLog(@"#### realeasing frame 22");
+            //vsReleaseImage(&m_Frame);
+            //m_Frame = 0;
+            if(pixelsFA){
+                delete[] pixelsFA;
+                pixelsFA = 0;
+            }
+            
+            frameReady = false;
+            framesToFade = maxFramesToFade;
+            ageRefreshRequested = false;
+            //NSLog(@"#### AFTER delete %d x %d --> %p <> %p", frameWidth, frameHeight, pixelsFA , pixels);
+        }
+        pthread_mutex_unlock(&mFrameMutex);
     }
     
     // binds a texture with the given native hardware texture id through opengl
@@ -312,7 +371,7 @@ extern "C" {
             memset(pixelsRGBA, 0, frameWidth * frameHeight);
             framesToFade = maxFramesToFade;
         } else {
-
+            
             if (format == VISAGE_FRAMEGRABBER_FMT_LUMINANCE) {
                 //Convert to RGBA for image to be drawn
                 YUV_TO_RGBA(pixels, pixelsRGBA, frameWidth, frameHeight);
@@ -334,9 +393,16 @@ extern "C" {
         if(switchingCamera){
             return;
         }
+        
+        pthread_mutex_lock(&mFrameMutex);
         pixels = [cameraGrabber getBuffer:_rotated isMirrored:_isMirrored];
-        frameWidth 	= cam_width;
+        
+        if(m_Frame){
+        frameReady = true;
+        frameWidth     = cam_width;
         frameHeight = cam_height;
+        }
+        pthread_mutex_unlock(&mFrameMutex);
     }
     
     // starts face tracking on current frame
@@ -346,31 +412,50 @@ extern "C" {
         if(!scannerEnabled){
             trackerStatus = m_Tracker->track(frameWidth, frameHeight, (const char *)pixels, trackingData,format);
             
-            if(ageRefreshRequested){
+            pthread_mutex_lock(&mFrameMutex);
+            if(ageRefreshRequested && trackerStatus[0] == TRACK_STAT_OK && pixelsRGBA && m_Frame != 0 && frameReady) {
                 ageRefreshRequested =0;
-                if (format == 1) {
-                    //Convert to RGBA for image to be drawn
-                    YUV_TO_RGBA(pixels, (unsigned char*)m_Frame->imageData, frameWidth, frameHeight);
-                }
-                else {
-                    memcpy(m_Frame->imageData, pixels, m_Frame->imageSize);
-                }
                 
-                m_Frame->width = cam_width;
-                m_Frame->height = cam_height;
+                if (!pixelsFA){
+                   pixelsFA = new unsigned char[frameWidth * frameHeight * CHANNEL_COUNT];
+                }
+                if (FAframeWidth != frameWidth || FAframeHeight != frameHeight){
+                    delete[] pixelsFA;
+                    pixelsFA = new unsigned char[frameWidth * frameHeight * CHANNEL_COUNT];
+                    FAframeWidth = frameWidth;
+                    FAframeHeight = frameHeight;
+                    //NSLog(@"#### FAframeWidth != frameWidth || FAframeHeight != frameHeight %d x %d", frameWidth, frameHeight);
+                    
+                    if (m_Frame)
+                    {
+                        vsReleaseImageHeader(&m_Frame);
+                        //NSLog(@"#### vsReleaseImageHeader(&m_Frame);");
+                    }
+                    m_Frame = vsCreateImageHeader(vsSize(FAframeWidth, FAframeHeight), 8, CHANNEL_COUNT);
+                    
+                    //NSLog(@"#### vsCreateImageHeader(vsSize(FAframeWidth, FAframeHeight), 8, CHANNEL_COUNT);");
+                }
+                //NSLog(@"#### BEFORE memcpy %d x %d --> %p <> %p", frameWidth, frameHeight, pixelsFA , pixels);
+                memcpy(pixelsFA, pixelsRGBA, frameWidth*frameHeight*CHANNEL_COUNT);
+                
+                //NSLog(@"#### memcpy(pixelsFA, pixels, frameWidth*frameHeight*CHANNEL_COUNT); %p, %p", pixelsFA, pixels);
+
+                vsSetImageData(m_Frame, (void*)pixelsFA, m_Frame->widthStep);
                 
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    
-                    if (m_FaceAnalizer) {
+                    pthread_mutex_lock(&mFrameMutex);
+                    if (m_FaceAnalizer && m_Frame != 0 && frameReady) {
                         detectedAge = m_FaceAnalizer->estimateAge(m_Frame, &trackingData[0]);
                         detectedGender = m_FaceAnalizer->estimateGender(m_Frame, &trackingData[0]);
                         
                         m_FaceAnalizer->estimateEmotion(m_Frame, &trackingData[0], detectedEmotions);
-                        NSLog(@"#### Detected age:%d and gender: %d", detectedAge, detectedGender);
+                        //NSLog(@"#### Detected age:%d and gender: %d", detectedAge, detectedGender);
                     }
+                    pthread_mutex_unlock(&mFrameMutex);
                 });
-                
             }
+            
+            pthread_mutex_unlock(&mFrameMutex);
         } else {
             trackerStatus[0] = TRACK_STAT_RECOVERING;
         }
@@ -576,6 +661,51 @@ extern "C" {
         return true;
     }
     
+    
+    // returns the global feature point position, indication of whether the point is defined and detected and quality for all feature points (6 float values for every feature point)
+    // the method assumes the featurePointArray has been allocated by the callee
+    bool _getAllFeaturePoints3D(ActionUnitStruct* featurePointArray, int length)
+    {
+        
+        //NSLog(@"### _getAllFeaturePoints3D");
+        if (trackerStatus[0] != TRACK_STAT_OK)
+            return false;
+        NSLog(@"### _getAllFeaturePoints3D tracking OK");
+        int index = 0;
+        for (int groupIndex = FDP::FP_START_GROUP_INDEX; groupIndex <= FDP::FP_END_GROUP_INDEX; ++groupIndex)
+        {
+            for (int pointIndex = 1; pointIndex <= FDP::groupSize(groupIndex); ++pointIndex)
+            {
+                if (index < length)
+                {
+                    
+                    const float* positions3 = trackingData->featurePoints3D->getFPPos(groupIndex, pointIndex);
+                    featurePointArray[index].posX = positions3[0];
+                    featurePointArray[index].posY = positions3[1];
+                    featurePointArray[index].posZ = positions3[2];
+                    
+                    const FeaturePoint fp = trackingData->featurePoints3D->getFP(groupIndex, pointIndex);
+                    
+                    featurePointArray[index].defined = fp.defined;
+                    featurePointArray[index].detected = fp.detected;
+                    featurePointArray[index].quality = fp.quality;
+                    
+                    featurePointArray[index].index = pointIndex;
+                    featurePointArray[index].group = groupIndex;
+                    index ++;
+                } else {
+                    //NSLog(@"### _getAllFeaturePoints3D --- OVERFLOW ?");
+                    break;
+                }
+            }
+        }
+        
+        
+        NSLog(@"### _getAllFeaturePoints3D tracking  ---- COMPLETED");
+        return true;
+    }
+    
+    
     bool _getFeaturePoints3D(int number, int* groups, int* indices, float* positions)
     {
         if (trackerStatus[0] != TRACK_STAT_OK)
@@ -683,7 +813,7 @@ extern "C" {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             _openCamera(VISAGE_PORTRAIT, 1,cam_width, cam_height, true);
-           
+            
             NSLog(@"### QR SCAN _initScanner - ASYNC - returned");
             if (initCallback != NULL){
                 initCallback();
@@ -725,7 +855,7 @@ extern "C" {
     }
     
     void _tapToFocus (float x, float y){
-
+        
         [cameraGrabber focusOnPoint: CGPointMake(x, y)];
     }
 }

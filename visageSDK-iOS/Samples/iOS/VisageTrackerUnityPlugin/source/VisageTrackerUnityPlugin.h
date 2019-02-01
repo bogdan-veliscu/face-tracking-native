@@ -17,6 +17,20 @@ extern "C" {
     /// -------------- QR scanner new methods
     typedef void (*callbackFunc)(const char *, float top, float left, float bottom, float right);
     typedef void (*transitionCallback)();
+
+    typedef struct _ActionUnitStruct
+    {
+        int group;
+        int index;
+        
+        float posX;
+        float posY;
+        float posZ;
+        int detected;
+        int defined;
+        int quality;
+        
+    } ActionUnitStruct;
     
 	/** Binds a texture with the given native hardware texture id through Metal.
 	 */
@@ -121,6 +135,8 @@ extern "C" {
 	*/
 	EXPORT_API bool _getFeaturePoints3D(int number, int* groups, int* indices, float* positions);
 	
+    
+    EXPORT_API bool _getAllFeaturePoints3D(ActionUnitStruct* featurePointArray, int length);
 	/** Returns the relative 3d feature point positions in meters.
 	*/
 	EXPORT_API bool _getFeaturePoints3DRel(int number, int* groups, int* indices, float* positions);

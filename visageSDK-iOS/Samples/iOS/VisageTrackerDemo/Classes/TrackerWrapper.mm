@@ -88,7 +88,7 @@ VsImage *CreateVsImageFromUIImage(UIImage *image, int nChannels);
 //    tracker = new VisageTracker("Head Tracker.cfg");
 //#endif
 
-    tracker = new VisageTracker("Head Tracker2.cfg");
+    tracker = new VisageTracker("Facial Features Tracker - High2.cfg");
     
 	//get OpenGL context size
 	glWidth = glView.bounds.size.width;

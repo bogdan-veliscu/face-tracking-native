@@ -531,8 +531,8 @@ GLuint FrameRenderer::createProgram() {
   m_textureUVLoc = glGetUniformLocation(m_program, "s_textureU");
   m_textureLoc = (GLuint)glGetAttribLocation(m_program, "texcoord");
 
-/*
-m_program2 = ::create_program(kGlesVProgTextGLES3, kGlesFShaderTextGLES3, m_vertexShader2, m_pixelShader2);
+
+  m_program2 = ::create_program(kGlesVProgTextGLES3, kGlesFShaderTextGLES3, m_vertexShader2, m_pixelShader2);
 
 
   m_UniformWorldMatrix = glGetUniformLocation(m_program2, "worldMatrix");
@@ -543,7 +543,7 @@ m_program2 = ::create_program(kGlesVProgTextGLES3, kGlesFShaderTextGLES3, m_vert
   glBufferData(GL_ARRAY_BUFFER, 1024, NULL, GL_STREAM_DRAW);
 
   glUseProgram(m_program);
-  */
+
 
   return m_program;
 }

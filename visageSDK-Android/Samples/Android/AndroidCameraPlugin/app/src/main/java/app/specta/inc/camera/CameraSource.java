@@ -576,6 +576,67 @@ public class CameraSource {
         }
     }
 
+	private android.graphics.Rect calculateTapArea(int x, int y, float coefficient) {
+		int areaSize = 500;
+		int left = clamp((int) x - areaSize / 2, 0, areaSize);
+		int top = clamp((int) y - areaSize / 2, 0, y + areaSize);
+
+		return new android.graphics.Rect(left, top, left + areaSize, top - areaSize);
+	}
+
+    private int clamp(int x, int min, int max) {
+        if (x > max) {
+            return max;
+        }
+        if (x < min) {
+            return min;
+        }
+        return x;
+    }
+
+	public boolean focusOnPoint(int x, int y) {
+		if (mCamera != null) {
+			Camera camera = mCamera;
+			camera.cancelAutoFocus();
+			android.graphics.Rect focusRect = calculateTapArea(x, y, 1f);
+
+            Camera.Parameters parameters = camera.getParameters();
+			if (parameters.getFocusMode().equals(
+					Camera.Parameters.FOCUS_MODE_AUTO)) {
+				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+			}
+
+			if (parameters.getMaxNumFocusAreas() > 0) {
+				List<Camera.Area> mylist = new ArrayList<Camera.Area>();
+				mylist.add(new Camera.Area(focusRect, 1000));
+				parameters.setFocusAreas(mylist);
+			}
+
+			try {
+				camera.cancelAutoFocus();
+				camera.setParameters(parameters);
+				camera.startPreview();
+				camera.autoFocus(new Camera.AutoFocusCallback() {
+					@Override
+					public void onAutoFocus(boolean success, Camera camera) {
+						if (!camera.getParameters().getFocusMode().equals(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+                            Camera.Parameters parameters = camera.getParameters();
+							parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+							if (parameters.getMaxNumFocusAreas() > 0) {
+								parameters.setFocusAreas(null);
+							}
+							camera.setParameters(parameters);
+							camera.startPreview();
+						}
+					}
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return true;
+    }
+
     /**
      * Gets the current flash mode setting.
      *

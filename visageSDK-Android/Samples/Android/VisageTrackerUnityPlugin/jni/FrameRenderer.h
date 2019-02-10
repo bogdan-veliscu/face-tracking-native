@@ -43,7 +43,7 @@ class FrameRenderer {
   GLuint m_vertexShader;
   GLuint m_pixelShader;
 
-/*
+
   GLuint m_program2;
   GLuint m_vertexShader2;
   GLuint m_pixelShader2;
@@ -52,7 +52,7 @@ class FrameRenderer {
   GLuint m_UniformProjMatrix;
 
   GLuint  m_VertexBuffer;
-*/
+
   size_t m_width;
   size_t m_height;
   size_t m_backingWidth;

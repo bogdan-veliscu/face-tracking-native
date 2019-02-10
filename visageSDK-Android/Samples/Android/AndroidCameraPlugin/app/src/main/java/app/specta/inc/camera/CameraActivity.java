@@ -247,6 +247,14 @@ public class CameraActivity extends UnityPlayerActivity {
         return nativeTexturePointer;
     }
 
+	public void focusOnPoint(final String message) {
+		int delimiterPos = message.indexOf( "x" );
+		String xPos = message.substring(0, delimiterPos);
+		String yPos = message.substring(delimiterPos + 1, message.length() - 1);
+
+		cameraSource.focusOnPoint(Integer.parseInt(xPos), Integer.parseInt(yPos));
+	}
+
     public int startScanner(int nativeCode) {
         Log.d(TAG, "#### Start QR scanner with code:" + nativeCode);
 

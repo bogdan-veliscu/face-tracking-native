@@ -44,7 +44,7 @@ task deleteOldJar(type: Delete) {
 //task to export contents as jar
 task exportJar(type: Copy) {
     from('build/intermediates/packaged-classes/release/')
-    into('/Users/bogdan/work/specta-try-on/Assets/Plugins/Android/')
+    into('C:/Users/tinca/Desktop/Workspace/Projects/TryOn/specta-virtual-mirror/Assets/Plugins/Android/')
     include('classes.jar')
     ///Rename the jar
     rename('classes.jar', 'AndroidCameraPlugin.jar')

@@ -14,7 +14,10 @@
 #define VISAGE_TRACKER_UNITY_PLUGIN_H
 
 extern "C" {
-	
+	/// -------------- QR scanner new methods
+	typedef void(*callbackFunc)(const char *, float top, float left, float bottom, float right);
+	typedef void(*transitionCallback)();
+
 	void AlertCallback(const char* warningMessage);
 
 	/** Passes pointer to frame from camera
@@ -24,20 +27,25 @@ extern "C" {
 	/** Initialises the tracker.
 	 */
 	void _initTracker(char* configuration, char* license);
+	void _initTrackerWithCallback(char* config, char* license, transitionCallback callbackFunc);
+	void asyncInitTrackerWithCallback();
 
     void _initFaceAnalyser(char* config, char* license);
+	void _initFaceAnalyserWithCallback(char* config, char* license, transitionCallback callbackFunc);
+	void asyncInitFaceAnalyserWithCallback();
 
     void _refreshAgeEstimate();
     int _estimateAge();
     int _estimateGender();
-	
+	void _estimateEmotion(float* emotions);
+
 	/** Releases memory allocated by the tracker in the initTracker function.
 	*/
 	void _releaseTracker();
 	
 	/** Binds a texture with the given native hardware texture id through OpenGL.
 	 */
-	void _bindTexture(int texID, int width, int height);
+	void _bindTexture(int texID);
 
 	/** Returns the current head translation, rotation and tracking status.
 	 */
@@ -95,10 +103,6 @@ extern "C" {
 
     int getTexturePointer();
 
-    /// -------------- QR scanner new methods
-    typedef void (*callbackFunc)(const char *, float top, float left, float bottom, float right);
-    typedef void (*transitionCallback)();
-
     struct RectStruct {
       short               top;
       short               left;
@@ -113,6 +117,7 @@ extern "C" {
     void _releaseScanner(transitionCallback callback);
 
     void _toggleTorch(int on);
+	void _tapToFocus(float x, float y);
 
     static int framesToFade = 0;
     static int maxFramesToFade = 100;

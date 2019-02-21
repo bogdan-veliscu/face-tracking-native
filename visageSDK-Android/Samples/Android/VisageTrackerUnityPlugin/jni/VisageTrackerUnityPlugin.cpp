@@ -796,6 +796,44 @@ extern "C" {
 		return true;
 	}
 
+	// returns the global feature point position, indication of whether the point is defined and detected and quality for all feature points (6 float values for every feature point)
+// the method assumes the featurePointArray has been allocated by the callee
+	bool _getAllFeaturePoints3D(ActionUnitStruct* featurePointArray, int length)
+	{
+		if (trackingStatus[0] != TRACK_STAT_OK)
+			return false;
+			int index = 0;
+		for (int groupIndex = FDP::FP_START_GROUP_INDEX; groupIndex <= FDP::FP_END_GROUP_INDEX; ++groupIndex)
+		{
+			for (int pointIndex = 1; pointIndex <= FDP::groupSize(groupIndex); ++pointIndex)
+			{
+				if (index < length)
+				{
+
+					const float* positions3 = trackingData->featurePoints3D->getFPPos(groupIndex, pointIndex);
+					featurePointArray[index].posX = positions3[0];
+					featurePointArray[index].posY = positions3[1];
+					featurePointArray[index].posZ = positions3[2];
+
+					const FeaturePoint fp = trackingData->featurePoints3D->getFP(groupIndex, pointIndex);
+
+					featurePointArray[index].defined = fp.defined;
+					featurePointArray[index].detected = fp.detected;
+					featurePointArray[index].quality = fp.quality;
+
+					featurePointArray[index].index = pointIndex;
+					featurePointArray[index].group = groupIndex;
+					index++;
+				}
+				else {
+					break;
+				}
+			}
+		}
+
+		return true;
+	}
+
 	bool _getFeaturePoints3DRel(int number, int* groups, int* indices, float* positions)
 	{
 		if (trackingStatus[0] != TRACK_STAT_OK)

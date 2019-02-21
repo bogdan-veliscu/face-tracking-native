@@ -18,12 +18,26 @@ extern "C" {
 	typedef void(*callbackFunc)(const char *, float top, float left, float bottom, float right);
 	typedef void(*transitionCallback)();
 
+	typedef struct _ActionUnitStruct
+	{
+		int group;
+		int index;
+
+		float posX;
+		float posY;
+		float posZ;
+		int detected;
+		int defined;
+		int quality;
+
+	} ActionUnitStruct;
+
 	void AlertCallback(const char* warningMessage);
 
 	/** Passes pointer to frame from camera
 	*/
 	void _writeFrame(void * pixelData);
-	
+
 	/** Initialises the tracker.
 	 */
 	void _initTracker(char* configuration, char* license);
@@ -91,6 +105,8 @@ extern "C" {
 	*/
 	bool _getFeaturePoints3D(int number, int* groups, int* indices, float* positions);
 	
+	bool _getAllFeaturePoints3D(ActionUnitStruct* featurePointArray, int length);
+
 	/** Returns the relative 3d feature point positions in meters.
 	*/
 	bool _getFeaturePoints3DRel(int number, int* groups, int* indices, float* positions);

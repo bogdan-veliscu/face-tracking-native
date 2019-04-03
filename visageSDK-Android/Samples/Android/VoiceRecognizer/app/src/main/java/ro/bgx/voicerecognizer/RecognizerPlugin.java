@@ -28,6 +28,10 @@ public class RecognizerPlugin implements
 
         context = activity;
 
+        _startListener();
+    }
+
+    public void _startListener() {
         context.runOnUiThread(new Runnable() {
             public void run() {
 
@@ -59,7 +63,6 @@ public class RecognizerPlugin implements
     }
 
     public void _listen() {
-
         context.runOnUiThread(new Runnable() {
             public void run() {
                 Log.i(LOG_TAG, "_listen : start");
@@ -80,6 +83,10 @@ public class RecognizerPlugin implements
     }
 
     public String _recognize(){
+        if (lastRecognized != "") {
+            Log.i(LOG_TAG, "Recognized: " + lastRecognized);
+        }
+
         return  lastRecognized;
     }
 
@@ -125,16 +132,20 @@ public class RecognizerPlugin implements
         Log.i(LOG_TAG, "onEndOfSpeech");
 
         //TODO restart with a small delay??
-        speech.startListening(recognizerIntent);
+        _release();
+        _startListener();
+        _listen();
     }
 
     @Override
     public void onError(int errorCode) {
         String errorMessage = getErrorText(errorCode);
         Log.d(LOG_TAG, "FAILED " + errorMessage);
-        if (errorCode == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
+        if (errorCode == SpeechRecognizer.ERROR_SPEECH_TIMEOUT || errorCode == SpeechRecognizer.ERROR_NETWORK) {
             //TODO try to restart after a small dealy
-            speech.startListening(recognizerIntent);
+            _release();
+            _startListener();
+            _listen();
         }
     }
 
@@ -146,9 +157,9 @@ public class RecognizerPlugin implements
     @Override
     public void onPartialResults(Bundle results) {
         Log.i(LOG_TAG, "onPartialResults");
-        ArrayList<String> matches = results
-                .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-        lastRecognized = matches.get(0);
+        ArrayList<String> data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        ArrayList<String> unstableData = results.getStringArrayList("android.speech.extra.UNSTABLE_TEXT");
+        lastRecognized = data.get(0) + unstableData.get(0);
     }
 
     @Override
@@ -163,6 +174,8 @@ public class RecognizerPlugin implements
         ArrayList<String> matches = results
                 .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         lastRecognized = matches.get(0);
+
+        speech.startListening(recognizerIntent);
     }
 
     @Override

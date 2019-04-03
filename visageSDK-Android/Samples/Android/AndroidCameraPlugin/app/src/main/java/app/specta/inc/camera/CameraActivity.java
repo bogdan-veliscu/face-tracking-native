@@ -157,20 +157,21 @@ public class CameraActivity extends UnityPlayerActivity {
         }
 
         setPreviewSize(parameters, ImageWidth, ImageHeight);
-        parameters.setPreviewFormat(ImageFormat.NV21);
+        //parameters.setPreviewFormat(ImageFormat.NV21);
 
-        parameters.setExposureCompensation(parameters.getMinExposureCompensation());
+        //parameters.setExposureCompensation(parameters.getMaxExposureCompensation());
 
-        if (parameters.isAutoWhiteBalanceLockSupported()) {
-            parameters.setAutoWhiteBalanceLock(false);
-            Log.i(TAG, "@@@ setAutoWhiteBalanceLock ");
-        }
+//        if (parameters.isAutoWhiteBalanceLockSupported()) {
+//            parameters.setAutoWhiteBalanceLock(false);
+//            Log.i(TAG, "@@@ setAutoWhiteBalanceLock ");
+//        }
+//
+//        Log.i(TAG, "setExposureCompensation" + parameters.getMaxExposureCompensation()+ ", " + parameters.getMinExposureCompensation());
+//        if(parameters.isAutoExposureLockSupported()) {
+//            parameters.setAutoExposureLock(false);
+//        }
 
-        Log.i(TAG, "setExposureCompensation" + parameters.getMaxExposureCompensation()+ ", " + parameters.getMinExposureCompensation());
-        if(parameters.isAutoExposureLockSupported()) {
-            parameters.setAutoExposureLock(false);
-        }
-
+        //parameters.setWhiteBalance(parameters.WHITE_BALANCE_CLOUDY_DAYLIGHT);
         cam.setParameters(parameters);
         Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
         int screenOrientation = display.getRotation();
